@@ -4,17 +4,21 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const crypto = require('crypto');
 const fs = require('fs');
+const storeApi = require('./lib/api');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ═══════════════════════════════════════════════════════════
-// cbay — computational instruments
+// cbay — computational instruments marketplace
 // Route-aware security hardening
 // ═══════════════════════════════════════════════════════════
 
 const PAGES = {
   '/':         { file: 'index.html',    security: 'strict' },
+  '/store':    { file: 'store.html',    security: 'strict' },
+  '/pay':      { file: 'pay.html',      security: 'strict' },
+  '/unlock':   { file: 'unlock.html',   security: 'strict' },
   '/spectra':  { file: 'spectra.html',  security: 'camera' },
   '/artifact': { file: 'artifact.html', security: 'camera' },
   '/take':     { file: 'take.html',     security: 'camera' },
@@ -37,7 +41,11 @@ const ALLOWED = new Set([
   ...Object.keys(PAGES),
   ...STATIC_FILES,
   '/index.html', '/spectra.html', '/artifact.html', '/take.html',
+  '/store.html', '/pay.html', '/unlock.html',
 ]);
+
+// API routes bypass the static allowlist
+const API_PREFIX = '/api/';
 
 // ── Fingerprint removal ──
 app.disable('x-powered-by');
@@ -90,7 +98,7 @@ function csp(nonce, level) {
     d.childSrc = ["'self'", 'blob:'];
     d.imgSrc.push('blob:');
   } else {
-    d.connectSrc = ["'none'"];
+    d.connectSrc = ["'self'"];
     d.mediaSrc = ["'none'"];
     d.workerSrc = ["'none'"];
     d.childSrc = ["'none'"];
@@ -144,6 +152,8 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   const p = req.path.split('?')[0].split('#')[0].toLowerCase();
   if (p.includes('..') || p.includes('%2e') || p.includes('%00')) return res.status(400).end();
+  // API routes have their own routing
+  if (p.startsWith('/api/')) return next();
   if (!ALLOWED.has(p)) return res.status(404).end();
   next();
 });
@@ -160,6 +170,9 @@ function serve(route) {
 }
 
 app.get('/', serve('/'));
+app.get('/store', serve('/store'));
+app.get('/pay', serve('/pay'));
+app.get('/unlock', serve('/unlock'));
 app.get('/spectra', serve('/spectra'));
 app.get('/artifact', serve('/artifact'));
 app.get('/take', serve('/take'));
@@ -169,6 +182,12 @@ app.get('/index.html', (_, res) => res.redirect(301, '/'));
 app.get('/spectra.html', (_, res) => res.redirect(301, '/spectra'));
 app.get('/artifact.html', (_, res) => res.redirect(301, '/artifact'));
 app.get('/take.html', (_, res) => res.redirect(301, '/take'));
+app.get('/store.html', (_, res) => res.redirect(301, '/store'));
+app.get('/pay.html', (_, res) => res.redirect(301, '/pay'));
+app.get('/unlock.html', (_, res) => res.redirect(301, '/unlock'));
+
+// ── Store API ──
+app.use('/api', storeApi);
 
 // ── Static assets ──
 app.use(express.static(path.join(__dirname, 'public'), {

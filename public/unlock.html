@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>unlock — cbay</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #0c0b09;
+      color: #d4c8a8;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 6vh 32px 10vh;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2418;
+    }
+    .nav a {
+      color: #a08860;
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav a:hover { color: #e8a040; }
+    .nav .brand { font-size: 14px; letter-spacing: 6px; color: #e8a040; }
+
+    /* ── Content ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .heading {
+      font-size: 12px;
+      letter-spacing: 5px;
+      color: #a08860;
+      font-weight: normal;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .sub {
+      font-size: 10px;
+      color: #6a5a40;
+      letter-spacing: 1px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    /* ── Code input ── */
+    .code-input-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .code-prefix {
+      font-size: 14px;
+      color: #4a3a28;
+      letter-spacing: 2px;
+    }
+    .code-segment {
+      width: 80px;
+      background: rgba(42, 36, 24, 0.3);
+      border: 1px solid #2a2418;
+      border-bottom: 2px solid #3a3020;
+      color: #e8a040;
+      padding: 12px 8px;
+      font-family: inherit;
+      font-size: 16px;
+      letter-spacing: 4px;
+      text-align: center;
+      text-transform: uppercase;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .code-segment:focus {
+      border-color: #e8a040;
+      border-bottom-color: #e8a040;
+    }
+    .code-sep {
+      color: #3a3020;
+      font-size: 16px;
+    }
+
+    .hint {
+      font-size: 9px;
+      color: #4a3a28;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-primary {
+      background: rgba(232, 160, 64, 0.1);
+      border: 1px solid #e8a040;
+      color: #e8a040;
+    }
+    .btn-primary:hover { background: rgba(232, 160, 64, 0.2); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: none;
+      border: 1px solid #3a3020;
+      color: #a08860;
+    }
+
+    /* ── Result ── */
+    .result {
+      display: none;
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid #2a2418;
+    }
+    .result.valid {
+      border-color: #6a8a5a;
+    }
+    .result.invalid {
+      border-color: #a04040;
+    }
+    .result.redeemed {
+      border-color: #e8a040;
+    }
+
+    .result-status {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .result.valid .result-status { color: #6a8a5a; }
+    .result.invalid .result-status { color: #a04040; }
+    .result.redeemed .result-status { color: #e8a040; }
+
+    .result-detail {
+      font-size: 11px;
+      color: #a08860;
+      line-height: 1.7;
+      margin-bottom: 4px;
+    }
+    .result-detail .label {
+      color: #6a5a40;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .unlock-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+    }
+    .unlock-list li {
+      font-size: 11px;
+      color: #d4c8a8;
+      padding: 6px 0;
+      border-bottom: 1px solid #1a1408;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .unlock-list li::before {
+      content: '◆';
+      color: #e8a040;
+      font-size: 6px;
+    }
+
+    .redeem-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #2a2418;
+    }
+    .redeem-section label {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #6a5a40;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .redeem-section input {
+      width: 100%;
+      background: rgba(42, 36, 24, 0.3);
+      border: 1px solid #2a2418;
+      color: #d4c8a8;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 11px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .redeem-section input:focus { border-color: #e8a040; }
+
+    .error-msg {
+      color: #a04040;
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-top: 8px;
+    }
+
+    .buy-prompt {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid #2a2418;
+    }
+    .buy-prompt p {
+      font-size: 10px;
+      color: #4a3a28;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .page { padding: 4vh 16px 8vh; }
+      .code-segment { width: 60px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav">
+      <a href="/" class="brand">cbay</a>
+      <div style="display:flex;gap:16px;">
+        <a href="/store">store</a>
+        <a href="/unlock">unlock</a>
+      </div>
+    </nav>
+
+    <div class="main">
+      <div style="border:1px solid #3a3020;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#0c0b09;background:#e8a040;padding:2px 8px;">beta</span>
+        <p style="font-size:10px;color:#6a5a40;letter-spacing:1px;line-height:1.6;">access codes are not yet active. all instruments are free during beta.</p>
+      </div>
+
+      <h1 class="heading">enter access code</h1>
+      <p class="sub">
+        Purchased from the cbay store? Enter your access code to verify and activate your apps.
+      </p>
+
+      <div class="code-input-group">
+        <span class="code-prefix">CBAY</span>
+        <span class="code-sep">—</span>
+        <input class="code-segment" id="seg1" maxlength="4" placeholder="····" autocomplete="off" spellcheck="false">
+        <span class="code-sep">—</span>
+        <input class="code-segment" id="seg2" maxlength="4" placeholder="····" autocomplete="off" spellcheck="false">
+        <span class="code-sep">—</span>
+        <input class="code-segment" id="seg3" maxlength="4" placeholder="····" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="hint">format: CBAY-XXXX-XXXX-XXXX</p>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" id="btn-verify">verify code</button>
+      </div>
+
+      <div id="error" class="error-msg" style="display:none;"></div>
+
+      <!-- Result panel -->
+      <div class="result" id="result">
+        <div class="result-status" id="result-status">—</div>
+
+        <div id="result-details"></div>
+
+        <div class="redeem-section" id="redeem-section" style="display:none;">
+          <label>device identifier</label>
+          <input type="text" id="device-id" placeholder="e.g. your-device-name or app install ID">
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" id="btn-redeem">redeem &amp; activate</button>
+          </div>
+          <div id="redeem-error" class="error-msg" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="buy-prompt">
+        <p>don't have a code?</p>
+        <a href="/store" class="btn btn-secondary">browse the store</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var segments = [
+        document.getElementById('seg1'),
+        document.getElementById('seg2'),
+        document.getElementById('seg3')
+      ];
+
+      // Auto-advance and format
+      segments.forEach(function(seg, i) {
+        seg.addEventListener('input', function() {
+          this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+          if (this.value.length === 4 && i < 2) {
+            segments[i + 1].focus();
+          }
+        });
+        seg.addEventListener('keydown', function(e) {
+          if (e.key === 'Backspace' && this.value.length === 0 && i > 0) {
+            segments[i - 1].focus();
+          }
+        });
+      });
+
+      // Handle paste of full code
+      segments[0].addEventListener('paste', function(e) {
+        e.preventDefault();
+        var text = (e.clipboardData || window.clipboardData).getData('text').trim().toUpperCase();
+        // strip CBAY- prefix if present
+        text = text.replace(/^CBAY[-–—]/, '');
+        var parts = text.split(/[-–—]/);
+        if (parts.length === 3) {
+          for (var i = 0; i < 3; i++) {
+            segments[i].value = parts[i].substring(0, 4);
+          }
+        }
+      });
+
+      function getCode() {
+        return 'CBAY-' + segments[0].value + '-' + segments[1].value + '-' + segments[2].value;
+      }
+
+      function showError(id, msg) {
+        var el = document.getElementById(id);
+        el.textContent = msg;
+        el.style.display = msg ? 'block' : 'none';
+      }
+
+      // Verify
+      document.getElementById('btn-verify').addEventListener('click', function() {
+        var code = getCode();
+        if (code.length !== 19) {
+          showError('error', 'enter all three code segments');
+          return;
+        }
+
+        showError('error', '');
+        this.disabled = true;
+        this.textContent = 'verifying...';
+
+        fetch('/api/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('btn-verify').disabled = false;
+          document.getElementById('btn-verify').textContent = 'verify code';
+
+          var resultEl = document.getElementById('result');
+          var statusEl = document.getElementById('result-status');
+          var detailsEl = document.getElementById('result-details');
+          var redeemEl = document.getElementById('redeem-section');
+
+          resultEl.style.display = 'block';
+          redeemEl.style.display = 'none';
+          resultEl.className = 'result';
+
+          if (data.error) {
+            resultEl.classList.add('invalid');
+            statusEl.textContent = 'invalid code';
+            detailsEl.innerHTML = '<p class="result-detail">' + data.error + '</p>';
+            return;
+          }
+
+          if (data.redeemed) {
+            resultEl.classList.add('redeemed');
+            statusEl.textContent = 'already redeemed';
+            detailsEl.innerHTML =
+              '<p class="result-detail"><span class="label">product:</span> ' + data.product + '</p>' +
+              '<p class="result-detail"><span class="label">redeemed:</span> ' + new Date(data.redeemedAt).toLocaleDateString() + '</p>';
+            return;
+          }
+
+          resultEl.classList.add('valid');
+          statusEl.textContent = 'valid — ready to activate';
+          var html =
+            '<p class="result-detail"><span class="label">product:</span> ' + data.product + '</p>' +
+            '<p class="result-detail"><span class="label">unlocks:</span></p>' +
+            '<ul class="unlock-list">';
+          for (var i = 0; i < data.unlocks.length; i++) {
+            html += '<li>' + data.unlocks[i] + '</li>';
+          }
+          html += '</ul>';
+          detailsEl.innerHTML = html;
+          redeemEl.style.display = 'block';
+        })
+        .catch(function() {
+          document.getElementById('btn-verify').disabled = false;
+          document.getElementById('btn-verify').textContent = 'verify code';
+          showError('error', 'network error — try again');
+        });
+      });
+
+      // Redeem
+      document.getElementById('btn-redeem').addEventListener('click', function() {
+        var deviceId = document.getElementById('device-id').value.trim();
+        if (!deviceId) {
+          showError('redeem-error', 'enter a device identifier');
+          return;
+        }
+
+        showError('redeem-error', '');
+        this.disabled = true;
+        this.textContent = 'redeeming...';
+
+        fetch('/api/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: getCode(), deviceId: deviceId })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('btn-redeem').disabled = false;
+          document.getElementById('btn-redeem').textContent = 'redeem & activate';
+
+          if (data.error) {
+            showError('redeem-error', data.error);
+            return;
+          }
+
+          var resultEl = document.getElementById('result');
+          resultEl.className = 'result redeemed';
+          resultEl.style.display = 'block';
+          document.getElementById('result-status').textContent = 'activated ✓';
+          document.getElementById('result-details').innerHTML =
+            '<p class="result-detail" style="color:#6a8a5a;">Code redeemed and bound to your device. Full access granted.</p>' +
+            '<ul class="unlock-list">' +
+            data.unlocks.map(function(u) { return '<li>' + u + '</li>'; }).join('') +
+            '</ul>';
+          document.getElementById('redeem-section').style.display = 'none';
+        })
+        .catch(function() {
+          document.getElementById('btn-redeem').disabled = false;
+          document.getElementById('btn-redeem').textContent = 'redeem & activate';
+          showError('redeem-error', 'network error — try again');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

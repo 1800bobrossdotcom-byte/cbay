@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>store — cbay</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #0c0b09;
+      color: #d4c8a8;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 6vh 32px 10vh;
+      min-height: 100vh;
+    }
+
+    /* ── Navigation ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2418;
+    }
+    .nav a {
+      color: #a08860;
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav a:hover { color: #e8a040; }
+    .nav .brand {
+      font-size: 14px;
+      letter-spacing: 6px;
+      color: #e8a040;
+    }
+
+    /* ── Section headers ── */
+    .section-title {
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #6a5a40;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2a2418;
+    }
+
+    /* ── Coin selector ── */
+    .coin-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 32px;
+    }
+    .coin-btn {
+      background: #0c0b08;
+      border: 1px solid #2a2418;
+      color: #6a5a40;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .coin-btn.active {
+      border-color: #e8a040;
+      color: #e8a040;
+      background: rgba(232, 160, 64, 0.06);
+    }
+    .coin-btn:hover:not(.active) {
+      border-color: #4a3a28;
+      color: #a08860;
+    }
+
+    /* ── Product cards ── */
+    .products {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      border: 1px solid #2a2418;
+      padding: 24px;
+      position: relative;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border: 1px solid rgba(58, 48, 32, 0.2);
+      pointer-events: none;
+    }
+    .card:hover {
+      border-color: #e8a040;
+      background: rgba(232, 160, 64, 0.02);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2a2418;
+      flex-shrink: 0;
+    }
+    .card-icon img { width: 100%; height: 100%; display: block; }
+
+    .card-meta { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 16px;
+      letter-spacing: 5px;
+      color: #e8a040;
+      font-weight: normal;
+      margin-bottom: 2px;
+    }
+    .card-tagline {
+      font-size: 10px;
+      color: #a08860;
+      letter-spacing: 1px;
+    }
+
+    .card-price {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .card-price .amount {
+      font-size: 18px;
+      color: #e8a040;
+      letter-spacing: 1px;
+    }
+    .card-price .coin-label {
+      font-size: 9px;
+      color: #6a5a40;
+      letter-spacing: 2px;
+    }
+    .card-price .usd {
+      font-size: 9px;
+      color: #4a3a28;
+      letter-spacing: 1px;
+    }
+
+    .card-desc {
+      font-size: 11px;
+      color: #8a7a60;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .card-tags {
+      font-size: 9px;
+      color: #4a3a28;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-primary {
+      background: rgba(232, 160, 64, 0.1);
+      border: 1px solid #e8a040;
+      color: #e8a040;
+    }
+    .btn-primary:hover {
+      background: rgba(232, 160, 64, 0.2);
+    }
+    .btn-secondary {
+      background: none;
+      border: 1px solid #3a3020;
+      color: #a08860;
+    }
+    .btn-secondary:hover {
+      border-color: #6a5a40;
+      color: #d4c8a8;
+    }
+    .btn-free {
+      background: none;
+      border: 1px solid #2a4a2a;
+      color: #6a8a5a;
+    }
+    .btn-free:hover {
+      background: rgba(106, 138, 90, 0.1);
+    }
+    .btn-disabled {
+      background: rgba(74, 58, 40, 0.1);
+      border: 1px solid #3a3020;
+      color: #4a3a28;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ── Beta badge ── */
+    .beta-banner {
+      border: 1px solid #3a3020;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .beta-tag {
+      font-size: 8px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #0c0b09;
+      background: #e8a040;
+      padding: 2px 8px;
+      flex-shrink: 0;
+    }
+    .beta-banner p {
+      font-size: 10px;
+      color: #6a5a40;
+      letter-spacing: 1px;
+      line-height: 1.6;
+    }
+
+    .badge-type {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: #4a3a28;
+      text-transform: uppercase;
+    }
+
+    /* ── Crypto info ── */
+    .crypto-info {
+      border: 1px solid #2a2418;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+    .crypto-info h3 {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #a08860;
+      font-weight: normal;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .crypto-info p {
+      font-size: 11px;
+      color: #6a5a40;
+      line-height: 1.7;
+    }
+    .crypto-info .coins {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .crypto-info .coin {
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+    .crypto-info .coin .symbol { color: #e8a040; }
+    .crypto-info .coin .name { color: #6a5a40; }
+
+    /* ── Already have code ── */
+    .unlock-prompt {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid #2a2418;
+      margin-top: 32px;
+    }
+    .unlock-prompt p {
+      font-size: 10px;
+      color: #6a5a40;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Marketplace teaser ── */
+    .marketplace-teaser {
+      border: 1px dashed #2a2418;
+      padding: 24px;
+      text-align: center;
+      margin-top: 48px;
+    }
+    .marketplace-teaser h3 {
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: #6a5a40;
+      font-weight: normal;
+      margin-bottom: 8px;
+    }
+    .marketplace-teaser p {
+      font-size: 10px;
+      color: #4a3a28;
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 600px) {
+      .page { padding: 4vh 16px 8vh; }
+      .card-top { flex-direction: column; }
+      .card-price { text-align: left; }
+      .coin-bar { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav">
+      <a href="/" class="brand">cbay</a>
+      <div style="display:flex;gap:16px;">
+        <a href="/store">store</a>
+        <a href="/unlock">unlock</a>
+      </div>
+    </nav>
+
+    <!-- beta banner -->
+    <div class="beta-banner">
+      <span class="beta-tag">beta</span>
+      <p>cbay is in beta. all instruments are free to use right now. payments coming soon.</p>
+    </div>
+
+    <!-- crypto info -->
+    <div class="crypto-info">
+      <h3>crypto payments only</h3>
+      <p>cbay accepts cryptocurrency exclusively. Purchase an app, receive an access code. Use it to unlock the full version on any device.</p>
+      <div class="coins">
+        <span class="coin"><span class="symbol">XMR</span> <span class="name">Monero</span></span>
+        <span class="coin"><span class="symbol">LTC</span> <span class="name">Litecoin</span></span>
+        <span class="coin"><span class="symbol">BTC</span> <span class="name">Bitcoin</span></span>
+        <span class="coin"><span class="symbol">ETH</span> <span class="name">Ethereum</span></span>
+      </div>
+    </div>
+
+    <!-- coin selector -->
+    <div class="section-title">show prices in</div>
+    <div class="coin-bar">
+      <button class="coin-btn active" data-coin="XMR">XMR</button>
+      <button class="coin-btn" data-coin="LTC">LTC</button>
+      <button class="coin-btn" data-coin="BTC">BTC</button>
+      <button class="coin-btn" data-coin="ETH">ETH</button>
+    </div>
+
+    <div class="section-title">instruments</div>
+
+    <div class="products" id="products">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- unlock prompt -->
+    <div class="unlock-prompt">
+      <p>already have an access code?</p>
+      <a href="/unlock" class="btn btn-secondary">enter code</a>
+    </div>
+
+    <!-- marketplace teaser -->
+    <div class="marketplace-teaser">
+      <h3>build for cbay</h3>
+      <p>
+        cbay is an open marketplace for computational instruments.<br>
+        if you build with claude, you can sell here. get in touch.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var selectedCoin = 'XMR';
+      var products = [];
+
+      function fetchProducts() {
+        fetch('/api/products')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            products = data.products || [];
+            renderProducts();
+          })
+          .catch(function() {
+            document.getElementById('products').innerHTML =
+              '<p style="color:#6a5a40;font-size:11px;letter-spacing:1px;">failed to load catalog</p>';
+          });
+      }
+
+      function renderProducts() {
+        var container = document.getElementById('products');
+        container.innerHTML = '';
+
+        for (var i = 0; i < products.length; i++) {
+          var p = products[i];
+          var price = p.prices[selectedCoin] || '—';
+          var iconPath = p.id === 'cbay-suite' ? '/icon-spectra.svg' : '/icon-' + p.id + '.svg';
+          var isFree = p.access === 'free';
+          var hasWeb = p.webPath !== null;
+
+          var card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML =
+            '<span class="badge-type">' + p.type + '</span>' +
+            '<div class="card-top">' +
+              '<div class="card-icon"><img src="' + iconPath + '" alt="' + p.name + '"></div>' +
+              '<div class="card-meta">' +
+                '<h2 class="card-name">' + p.name + '</h2>' +
+                '<p class="card-tagline">' + p.tagline + '</p>' +
+              '</div>' +
+              '<div class="card-price">' +
+                '<div class="amount">' + price + '</div>' +
+                '<div class="coin-label">' + selectedCoin + '</div>' +
+                '<div class="usd">~$' + p.priceUSD.toFixed(2) + ' USD</div>' +
+              '</div>' +
+            '</div>' +
+            '<p class="card-desc">' + p.description + '</p>' +
+            '<p class="card-tags">' + p.tags.join(' · ') + '</p>' +
+            '<div class="card-actions">' +
+              '<span class="btn btn-disabled">buy with ' + selectedCoin + ' — soon</span>' +
+              (hasWeb ? '<a href="' + p.webPath + '" class="btn btn-free">try free · beta</a>' : '') +
+            '</div>';
+
+          container.appendChild(card);
+        }
+      }
+
+      // Coin selector
+      document.querySelectorAll('.coin-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.coin-btn').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          selectedCoin = btn.getAttribute('data-coin');
+          renderProducts();
+        });
+      });
+
+      fetchProducts();
+    })();
+  </script>
+</body>
+</html>
