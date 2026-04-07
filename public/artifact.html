@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ARTIFACT — b0b</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #050504;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      color: #b0a880;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100%; height: 100%;
+      height: 100dvh;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      padding: 0 12px;
+      background: rgba(5, 5, 4, 0.94);
+      border-bottom: 1px solid #2a2518;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .topbar a {
+      color: #c4a060;
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    .topbar .title {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #8a8068;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .topbar .controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .topbar button {
+      background: none;
+      border: 1px solid #3a3528;
+      color: #a8a080;
+      width: 32px; height: 32px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .topbar button:active {
+      background: rgba(170, 138, 90, 0.15);
+      border-color: #aa8a5a;
+    }
+
+    /* ── Viewport ── */
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+    }
+
+    canvas {
+      width: 100%; height: 100%;
+      display: block;
+    }
+
+    /* ── Bottom bar ── */
+    .bottombar {
+      background: rgba(5, 5, 4, 0.95);
+      border-top: 1px solid #2a2518;
+      padding: 10px 12px 14px;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .modes {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .modes::-webkit-scrollbar { display: none; }
+
+    .modes button {
+      background: #0c0b08;
+      border: 1px solid #3a3528;
+      color: #908870;
+      padding: 6px 8px;
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 36px;
+      flex-shrink: 0;
+    }
+
+    .modes button.active {
+      border-color: #c4a060;
+      color: #ddb86a;
+      background: rgba(196, 160, 96, 0.1);
+    }
+
+    .modes button:active {
+      background: rgba(170, 138, 90, 0.15);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-row.hidden { display: none; }
+
+    .slider-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #908870;
+      min-width: 40px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 2px;
+      background: #3a3528;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      background: #c4a060;
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      background: #c4a060;
+      border-radius: 0;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ── Overlay ── */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      background: #040404;
+      z-index: 5;
+    }
+
+    .overlay p {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #908870;
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.8;
+    }
+
+    .overlay .error { color: #aa5a5a; }
+
+    .overlay button {
+      background: none;
+      border: 1px solid #c4a060;
+      color: #ddb86a;
+      padding: 10px 24px;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .overlay button:active {
+      background: rgba(196, 160, 96, 0.15);
+    }
+
+    /* ── Mode indicator HUD ── */
+    .hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .hud-mode {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: rgba(221, 184, 106, 0.65);
+      text-transform: uppercase;
+    }
+
+    .hud-fps {
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: rgba(144, 136, 112, 0.5);
+      margin-top: 4px;
+    }
+
+    .hud-rec {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #cc3333;
+      margin-top: 6px;
+      animation: blink-rec 0.8s infinite;
+    }
+    @keyframes blink-rec { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    @media (max-width: 380px) {
+      .modes button { padding: 6px 6px; font-size: 8px; min-width: 28px; }
+    }
+
+    .vhs-date {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      z-index: 4;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #ffaa33;
+      text-shadow: 0 0 6px rgba(255,170,51,0.4);
+      pointer-events: none;
+      display: none;
+      font-family: inherit;
+      opacity: 0.85;
+    }
+
+    .mic-active {
+      border-color: #c4a060 !important;
+      color: #ddb86a !important;
+    }
+
+    /* ── Norse / Vinland Saga ── */
+    .rune-border {
+      font-size: 7px;
+      letter-spacing: 3px;
+      color: rgba(196, 160, 96, 0.12);
+      text-align: center;
+      line-height: 1;
+      pointer-events: none;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .topbar::after {
+      content: 'ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛈ ᛇ ᛊ ᛏ ᛒ ᛖ ᛗ ᛚ ᛜ ᛞ ᛟ ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      font-size: 6px;
+      letter-spacing: 4px;
+      color: rgba(196, 160, 96, 0.08);
+      text-align: center;
+      pointer-events: none;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .bottombar::before {
+      content: 'ᛞ ᛟ ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛈ ᛇ ᛊ ᛏ ᛒ ᛖ ᛗ ᛚ ᛜ ᛞ ᛟ ᚠ ᚢ ᚦ ᚨ ᚱ';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      font-size: 6px;
+      letter-spacing: 4px;
+      color: rgba(196, 160, 96, 0.08);
+      text-align: center;
+      pointer-events: none;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .saga-mark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 140px;
+      color: rgba(196, 160, 96, 0.025);
+      pointer-events: none;
+      z-index: 1;
+      line-height: 1;
+    }
+
+    .hud-rune {
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: rgba(196, 160, 96, 0.2);
+      margin-top: 6px;
+    }
+
+    @media (env(safe-area-inset-bottom)) {
+      .bottombar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="topbar">
+      <a href="/">&larr; b0b</a>
+      <span class="title">ARTIFACT</span>
+      <div class="controls">
+        <button id="formatBtn" title="cycle format" style="font-size:9px;letter-spacing:1px;width:auto;padding:0 8px;">PNG</button>
+        <button id="captureBtn" title="capture">&#x2299;</button>
+        <button id="micBtn" title="microphone">&#x266A;</button>
+        <button id="flipBtn" title="flip camera">&#x21CC;</button>
+      </div>
+    </div>
+
+    <div class="viewport">
+      <canvas id="gl"></canvas>
+      <div class="saga-mark">ᛞ</div>
+      <div class="hud">
+        <div class="hud-mode" id="hudMode">NRM</div>
+        <div class="hud-fps" id="hudFps"></div>
+        <div class="hud-rec" id="hudRec" style="display:none;"></div>
+        <div class="hud-rune" id="hudRune">ᚠᚢᚦᚨᚱᚲ</div>
+      </div>
+      <div class="vhs-date" id="vhsDate"></div>
+      <div class="overlay" id="overlay">
+        <p id="overlayMsg">initializing artifact...</p>
+        <p style="font-size:8px;color:rgba(196,160,96,0.25);letter-spacing:3px;margin-top:4px;">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ</p>
+      </div>
+    </div>
+
+    <div class="bottombar">
+      <div class="modes" id="modes">
+        <button class="active" data-mode="0">NRM</button>
+        <button data-mode="1">SORT</button>
+        <button data-mode="2">VHS</button>
+        <button data-mode="3">BEND</button>
+        <button data-mode="4">MOD</button>
+        <button data-mode="5">MELT</button>
+        <button data-mode="6">POST</button>
+        <button data-mode="7">KAL</button>
+        <button data-mode="8">INV</button>
+        <button data-mode="9">HALF</button>
+      </div>
+      <div class="slider-row hidden" id="sliderRow">
+        <span class="slider-label" id="sliderLabel">FX</span>
+        <input type="range" id="fxSlider" min="0" max="100" value="50">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ═══════════════════════════════════════════════
+      // ARTIFACT — analog glitch camera
+      // ═══════════════════════════════════════════════
+
+      var canvas = document.getElementById('gl');
+      var overlay = document.getElementById('overlay');
+      var overlayMsg = document.getElementById('overlayMsg');
+      var sliderRow = document.getElementById('sliderRow');
+      var sliderLabel = document.getElementById('sliderLabel');
+      var fxSlider = document.getElementById('fxSlider');
+      var captureBtn = document.getElementById('captureBtn');
+      var flipBtn = document.getElementById('flipBtn');
+      var modeButtons = document.querySelectorAll('#modes button');
+      var hudMode = document.getElementById('hudMode');
+      var hudFps = document.getElementById('hudFps');
+
+      var MODE_NAMES = ['NRM', 'SORT', 'VHS', 'BEND', 'MOD', 'MELT', 'POST', 'KAL', 'INV', 'HALF'];
+      var SLIDER_LABELS = ['', 'THRESH', 'DECAY', 'CORRUPT', 'FREQ', 'TRAIL', 'LEVELS', 'FOLD', 'MIX', 'SCALE'];
+
+      var currentMode = 0;
+      var fxAmount = 0.5;
+      var useFront = false;
+      var video = null;
+      var stream = null;
+      var gl = null;
+      var program = null;
+      var uniforms = {};
+      var cameraTextures = [];
+      var frameIdx = 0;
+      var running = false;
+      var firstFrame = true;
+      var feedbackTex = null;
+
+      // Touch
+      var touchX = 0.5, touchY = 0.5, touchActive = false;
+
+      // Audio reactivity
+      var audioCtx = null;
+      var analyser = null;
+      var audioData = null;
+      var audioLevel = 0;
+      var audioActive = false;
+
+      // FPS counter
+      var fpsFrames = 0;
+      var fpsTime = performance.now();
+
+      // ── Shader sources ──
+
+      var VERT = [
+        'attribute vec2 aPosition;',
+        'varying vec2 vUv;',
+        'void main() {',
+        '  vUv = aPosition * 0.5 + 0.5;',
+        '  gl_Position = vec4(aPosition, 0.0, 1.0);',
+        '}'
+      ].join('\n');
+
+      var FRAG = [
+        '#ifdef GL_FRAGMENT_PRECISION_HIGH',
+        '  precision highp float;',
+        '#else',
+        '  precision mediump float;',
+        '#endif',
+        '',
+        'varying vec2 vUv;',
+        'uniform sampler2D uCamera;',
+        'uniform sampler2D uPrevFrame;',
+        'uniform int uMode;',
+        'uniform float uTime;',
+        'uniform vec2 uResolution;',
+        'uniform vec2 uVideoSize;',
+        'uniform float uFx;',
+        'uniform float uMirror;',
+        'uniform vec2 uTouch;',
+        'uniform float uTouchActive;',
+        'uniform float uAudio;',
+        '',
+        'vec2 adjustUv(vec2 uv) {',
+        '  if (uMirror > 0.5) uv.x = 1.0 - uv.x;',
+        '  uv.y = 1.0 - uv.y;',
+        '  float va = uVideoSize.x / uVideoSize.y;',
+        '  float ca = uResolution.x / uResolution.y;',
+        '  if (ca > va) {',
+        '    float s = va / ca;',
+        '    uv.y = uv.y * s + (1.0 - s) * 0.5;',
+        '  } else {',
+        '    float s = ca / va;',
+        '    uv.x = uv.x * s + (1.0 - s) * 0.5;',
+        '  }',
+        '  return uv;',
+        '}',
+        '',
+        'float lum(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }',
+        '',
+        'float hash(float n) { return fract(sin(n) * 43758.5453123); }',
+        'float hash2(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
+        '',
+        '// Noise function for time-varying effects',
+        'float noise(float x) {',
+        '  float i = floor(x);',
+        '  float f = fract(x);',
+        '  f = f * f * (3.0 - 2.0 * f);',
+        '  return mix(hash(i), hash(i + 1.0), f);',
+        '}',
+        '',
+        'void main() {',
+        '  vec2 uv = adjustUv(vUv);',
+        '',
+        '  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {',
+        '    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);',
+        '    return;',
+        '  }',
+        '',
+        '  vec4 color = texture2D(uCamera, uv);',
+        '  float fx = uFx;',
+        '  vec2 touchPt = uTouch;',
+        '  float ta = uTouchActive;',
+        '  float aa = uAudio;',
+        '  float fxA = min(fx + aa * 0.3 * fx, 1.0);',
+        '',
+        '  if (uMode == 0) {',
+        '    // ── NORMAL ──',
+        '    gl_FragColor = color;',
+        '',
+        '  } else if (uMode == 1) {',
+        '    // ── PIXEL SORT ── UV displacement by luminance',
+        '    float threshold = 0.85 - fxA * 0.8;',
+        '    float l = lum(color.rgb);',
+        '    float pixY = 1.0 / uVideoSize.y;',
+        '',
+        '    if (l < threshold) {',
+        '      gl_FragColor = color;',
+        '    } else {',
+        '      float strength = (l - threshold) / (1.0 - threshold);',
+        '      float maxShift = 20.0 + fxA * 44.0;',
+        '      float dirY = ta > 0.5 ? (touchPt.y - 0.5) * 2.0 : -1.0;',
+        '      float dirX = ta > 0.5 ? (touchPt.x - 0.5) * 0.3 : 0.0;',
+        '      float offset = strength * strength * maxShift;',
+        '      vec2 sortedUv = uv + vec2(dirX * offset * pixY, dirY * offset * pixY);',
+        '      sortedUv = clamp(sortedUv, vec2(0.001), vec2(0.999));',
+        '      vec3 sorted = texture2D(uCamera, sortedUv).rgb;',
+        '      float mask = smoothstep(threshold - 0.02, threshold + 0.02, l);',
+        '      gl_FragColor = vec4(mix(color.rgb, sorted, mask), 1.0);',
+        '    }',
+        '',
+        '  } else if (uMode == 2) {',
+        '    // ── VHS ── improved analog tape emulation',
+        '    float t = uTime;',
+        '    float decay = 0.3 + fxA * 0.7;',
+        '',
+        '    // Tracking wobble',
+        '    float wobble = sin(uv.y * 80.0 + t * 3.0) * 0.003 * decay;',
+        '    wobble += noise(uv.y * 20.0 + t * 2.0) * 0.004 * decay;',
+        '',
+        '    // Touch shifts roll bar position',
+        '    float rollCenter = ta > 0.5 ? touchPt.y : fract(t * 0.15);',
+        '',
+        '    // Tracking error — sudden horizontal jumps',
+        '    float band = step(0.97, hash2(vec2(floor(uv.y * 40.0), floor(t * 4.0))));',
+        '    wobble += band * (hash(floor(t * 8.0)) - 0.5) * 0.1 * decay;',
+        '',
+        '    // Head switch noise at bottom',
+        '    float headSwitch = smoothstep(0.97, 1.0, uv.y);',
+        '    wobble += headSwitch * sin(uv.x * 200.0 + t * 50.0) * 0.02 * decay;',
+        '',
+        '    // Chromatic aberration',
+        '    float spread = 0.005 * decay;',
+        '    float r = texture2D(uCamera, vec2(uv.x + wobble + spread, uv.y)).r;',
+        '    float g = texture2D(uCamera, vec2(uv.x + wobble, uv.y)).g;',
+        '    float b = texture2D(uCamera, vec2(uv.x + wobble - spread, uv.y)).b;',
+        '    vec3 vhs = vec3(r, g, b);',
+        '',
+        '    // Color bleed — desaturate + warm shift',
+        '    float l = lum(vhs);',
+        '    vhs = mix(vhs, vec3(l), 0.2 * decay);',
+        '    vhs *= vec3(1.06, 0.97, 0.88);',
+        '',
+        '    // Scanlines',
+        '    float scanline = 0.9 + 0.1 * sin(vUv.y * uResolution.y * 1.5);',
+        '    vhs *= scanline;',
+        '',
+        '    // Static noise',
+        '    float staticNoise = hash2(uv * uResolution + t * 100.0) * 0.08 * decay;',
+        '    vhs += vec3(staticNoise);',
+        '',
+        '    // Bottom roll bar',
+        '    float roll = smoothstep(0.0, 0.05, abs(uv.y - rollCenter));',
+        '    roll *= smoothstep(0.0, 0.05, abs(uv.y - rollCenter - 1.0));',
+        '    vhs *= 0.2 + 0.8 * roll;',
+        '',
+        '    // Vignette',
+        '    float vig = 1.0 - length(vUv - 0.5) * 0.6;',
+        '    vhs *= vig;',
+        '',
+        '    // Jitter',
+        '    vhs += (hash2(floor(vUv * uResolution * 0.5) + t * 10.0) - 0.5) * 0.02 * decay;',
+        '',
+        '    gl_FragColor = vec4(clamp(vhs, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 3) {',
+        '    // ── DATABEND ── fixed sensitivity + touch center',
+        '    float t = uTime;',
+        '    float corrupt = 0.2 + fxA * 0.8;',
+        '',
+        '    vec2 buv = uv;',
+        '',
+        '    // Touch shifts corruption center',
+        '    float corruptY = ta > 0.5 ? touchPt.y : 0.5;',
+        '    float distFromTouch = abs(uv.y - corruptY);',
+        '    float touchMask = ta > 0.5 ? smoothstep(0.5, 0.0, distFromTouch) : 1.0;',
+        '',
+        '    // Block displacement',
+        '    float blockY = floor(uv.y * 20.0);',
+        '    float blockSeed = hash(blockY + floor(t * 2.0) * 100.0);',
+        '    if (blockSeed > 1.0 - corrupt * 0.5 * touchMask) {',
+        '      float shift = (hash(blockY * 7.0 + floor(t * 3.0)) - 0.5) * 0.2 * corrupt;',
+        '      buv.x = fract(buv.x + shift);',
+        '      buv.y = clamp(buv.y + (hash(blockY * 3.0) - 0.5) * 0.03 * corrupt, 0.0, 1.0);',
+        '    }',
+        '',
+        '    // Fine-line glitch',
+        '    float lineY = floor(uv.y * 200.0);',
+        '    float lineSeed = hash(lineY + floor(t * 6.0) * 50.0);',
+        '    if (lineSeed > 1.0 - corrupt * 0.2 * touchMask) {',
+        '      buv.x = fract(buv.x + (hash(lineY * 13.0) - 0.5) * 0.08 * corrupt);',
+        '    }',
+        '',
+        '    vec4 bent = texture2D(uCamera, buv);',
+        '',
+        '    // Channel separation in bands',
+        '    float bandY = floor(uv.y * 12.0);',
+        '    float bandSeed = hash(bandY + floor(t) * 30.0);',
+        '    if (bandSeed > 1.0 - corrupt * 0.35) {',
+        '      float off = 0.01 * corrupt;',
+        '      bent.r = texture2D(uCamera, buv + vec2(off, 0.0)).r;',
+        '      bent.b = texture2D(uCamera, buv - vec2(off, off * 0.5)).b;',
+        '    }',
+        '',
+        '    // Quantization',
+        '    float quant = 32.0 - 28.0 * corrupt;',
+        '    bent.rgb = floor(bent.rgb * quant) / quant;',
+        '',
+        '    // Audio-triggered bursts',
+        '    float burstThresh = 0.08 + aa * 0.15;',
+        '    float burstSeed = hash2(vec2(floor(uv.y * 60.0), floor(t * 5.0)));',
+        '    if (burstSeed > 1.0 - corrupt * burstThresh) {',
+        '      bent.rgb = vec3(hash2(uv * uResolution + t));',
+        '    }',
+        '',
+        '    // Row inversion',
+        '    float invSeed = hash(floor(uv.y * 80.0) + floor(t * 3.0) * 200.0);',
+        '    if (invSeed > 1.0 - corrupt * 0.06) {',
+        '      bent.rgb = 1.0 - bent.rgb;',
+        '    }',
+        '',
+        '    gl_FragColor = bent;',
+        '',
+        '  } else if (uMode == 4) {',
+        '    // ── MOD (signal modulation) ── inspired by AEscripts Signal',
+        '    float t = uTime;',
+        '    float amt = 0.2 + fxA * 0.8;',
+        '',
+        '    // Touch shifts modulation frequency',
+        '    float freqMod = ta > 0.5 ? 0.5 + touchPt.x * 1.5 : 1.0;',
+        '    float freq = (10.0 + amt * 50.0) * freqMod;',
+        '',
+        '    // Per-channel phase modulation — core analog signal effect',
+        '    float phaseR = sin(uv.y * freq + t * 3.0) * amt * 0.04;',
+        '    float phaseG = sin(uv.y * freq * 1.15 + t * 2.3 + 1.0) * amt * 0.025;',
+        '    float phaseB = sin(uv.y * freq * 0.85 + t * 3.7 + 2.0) * amt * 0.05;',
+        '',
+        '    float mr = texture2D(uCamera, vec2(uv.x + phaseR, uv.y)).r;',
+        '    float mg = texture2D(uCamera, vec2(uv.x + phaseG, uv.y)).g;',
+        '    float mb = texture2D(uCamera, vec2(uv.x + phaseB, uv.y)).b;',
+        '    vec3 sig = vec3(mr, mg, mb);',
+        '',
+        '    // Amplitude modulation',
+        '    float ampMod = 0.65 + 0.35 * sin(uv.y * freq * 0.4 + t * 1.5);',
+        '    sig *= mix(1.0, ampMod, amt);',
+        '',
+        '    // Signal clipping',
+        '    sig = clamp(sig * (1.0 + amt * 0.6), 0.0, 1.0);',
+        '',
+        '    // Sync pulse errors — horizontal tears',
+        '    float syncSeed = hash(floor(uv.y * 30.0) + floor(t * 4.0) * 50.0);',
+        '    if (syncSeed > 1.0 - amt * 0.15) {',
+        '      float mshift = (hash(floor(uv.y * 30.0) * 7.0) - 0.5) * 0.12 * amt;',
+        '      sig = texture2D(uCamera, vec2(fract(uv.x + mshift), uv.y)).rgb;',
+        '    }',
+        '',
+        '    // Cross-channel modulation',
+        '    sig.r = mix(sig.r, sig.r * (0.8 + sig.g * 0.4), amt * 0.3);',
+        '    sig.b = mix(sig.b, sig.b * (0.8 + sig.r * 0.4), amt * 0.25);',
+        '',
+        '    // Frequency roll-off',
+        '    float rolloff = 1.0 - abs(uv.x - 0.5) * amt * 0.4;',
+        '    sig *= rolloff;',
+        '',
+        '    // Audio modulates amplitude',
+        '    sig *= 1.0 + aa * 0.4;',
+        '    sig = clamp(sig, 0.0, 1.0);',
+        '',
+        '    gl_FragColor = vec4(sig, 1.0);',
+        '',
+        '  } else if (uMode == 5) {',
+        '    // ── MELT (ghost trails) ── uses feedback texture',
+        '    float trail = 0.5 + fxA * 0.48;',
+        '    vec4 prev = texture2D(uPrevFrame, uv);',
+        '    vec3 melted = mix(color.rgb, prev.rgb, trail);',
+        '',
+        '    // Drip effect',
+        '    float dripStr = fxA * 0.006;',
+        '    float dripDirY = ta > 0.5 ? (touchPt.y - 0.5) * 0.012 : dripStr;',
+        '    float dripDirX = ta > 0.5 ? (touchPt.x - 0.5) * 0.006 : 0.0;',
+        '    vec2 dripUv = uv + vec2(dripDirX, dripDirY);',
+        '    dripUv = clamp(dripUv, vec2(0.001), vec2(0.999));',
+        '    vec3 drip = texture2D(uPrevFrame, dripUv).rgb;',
+        '    melted = mix(melted, drip, fxA * 0.45);',
+        '',
+        '    // Audio turbulence',
+        '    melted += (aa * 0.1) * (hash2(uv * 100.0 + uTime) - 0.5);',
+        '',
+        '    float flicker = 0.97 + 0.03 * hash2(vec2(uTime, 0.0));',
+        '    gl_FragColor = vec4(clamp(melted * flicker, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 6) {',
+        '    // ── POST (posterize) ──',
+        '    float levels = 2.0 + (1.0 - fxA) * 22.0;',
+        '    float touchMod = ta > 0.5 ? 1.0 + distance(uv, touchPt) * 8.0 : 0.0;',
+        '    float lv = levels + touchMod;',
+        '    vec3 p = floor(color.rgb * lv + 0.5) / lv;',
+        '    float audioLevels = max(levels - aa * 4.0, 2.0);',
+        '    p = mix(p, floor(color.rgb * audioLevels + 0.5) / audioLevels, aa * 0.5);',
+        '    gl_FragColor = vec4(p, 1.0);',
+        '',
+        '  } else if (uMode == 7) {',
+        '    // ── KAL (kaleidoscope) ──',
+        '    vec2 center = ta > 0.5 ? touchPt : vec2(0.5);',
+        '    vec2 kUv = uv - center;',
+        '    float angle = atan(kUv.y, kUv.x);',
+        '    float radius = length(kUv);',
+        '    float segments = 3.0 + fxA * 9.0;',
+        '    angle += aa * 0.5;',
+        '    float segAngle = 6.28318530718 / segments;',
+        '    angle = mod(angle, segAngle);',
+        '    if (angle > segAngle * 0.5) angle = segAngle - angle;',
+        '    vec2 kalUv = vec2(cos(angle), sin(angle)) * radius + center;',
+        '    kalUv = clamp(kalUv, 0.001, 0.999);',
+        '    gl_FragColor = texture2D(uCamera, kalUv);',
+        '',
+        '  } else if (uMode == 8) {',
+        '    // ── INV (band inversion) ──',
+        '    float t = uTime;',
+        '    float bandSpeed = 2.0 + aa * 4.0;',
+        '    float shift = ta > 0.5 ? (touchPt.y - 0.5) * 3.0 : 0.0;',
+        '    float bandPos = sin(uv.y * 10.0 + t * bandSpeed + shift) * 0.5 + 0.5;',
+        '    float inv = step(1.0 - fxA, bandPos);',
+        '    vec3 c = mix(color.rgb, 1.0 - color.rgb, inv);',
+        '    float swapBand = step(0.7, hash2(vec2(floor(uv.y * 30.0), floor(t * 2.0))));',
+        '    if (swapBand > 0.5 && fxA > 0.3) c = c.bgr;',
+        '    gl_FragColor = vec4(c, 1.0);',
+        '',
+        '  } else if (uMode == 9) {',
+        '    // ── HALF (halftone) ──',
+        '    float cellSize = 3.0 + (1.0 - fxA) * 13.0;',
+        '    cellSize += aa * 3.0;',
+        '    vec2 gridOffset = ta > 0.5 ? (touchPt - 0.5) * 20.0 : vec2(0.0);',
+        '    vec2 pixPos = vUv * uResolution + gridOffset;',
+        '    vec2 cellId = floor(pixPos / cellSize);',
+        '    vec2 cellCenter = (cellId + 0.5) * cellSize / uResolution;',
+        '    vec2 cellUv = adjustUv(cellCenter);',
+        '    vec3 cellColor = texture2D(uCamera, clamp(cellUv, 0.001, 0.999)).rgb;',
+        '    float cellLum = lum(cellColor);',
+        '    float dotR = cellLum * 0.5 * cellSize;',
+        '    vec2 pixInCell = mod(pixPos, cellSize) - cellSize * 0.5;',
+        '    float dist = length(pixInCell);',
+        '    if (dist < dotR) gl_FragColor = vec4(cellColor, 1.0);',
+        '    else gl_FragColor = vec4(vec3(0.02), 1.0);',
+        '  }',
+        '}'
+      ].join('\n');
+
+      // ── WebGL Setup ──
+
+      function compileShader(type, src) {
+        var s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          var log = gl.getShaderInfoLog(s);
+          gl.deleteShader(s);
+          return null;
+        }
+        return s;
+      }
+
+      function initGL() {
+        gl = canvas.getContext('webgl', {
+          premultipliedAlpha: false,
+          preserveDrawingBuffer: true,
+          antialias: false,
+          alpha: false,
+        });
+
+        if (!gl) {
+          showError('webgl not supported');
+          return false;
+        }
+
+        var vs = compileShader(gl.VERTEX_SHADER, VERT);
+        var fs = compileShader(gl.FRAGMENT_SHADER, FRAG);
+        if (!vs || !fs) {
+          showError('shader compilation failed');
+          return false;
+        }
+
+        program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+          showError('shader link failed');
+          return false;
+        }
+
+        gl.useProgram(program);
+
+        // Cache uniform locations
+        var uniNames = ['uCamera', 'uPrevFrame', 'uMode', 'uTime',
+                        'uResolution', 'uVideoSize', 'uFx', 'uMirror',
+                        'uTouch', 'uTouchActive', 'uAudio'];
+        for (var i = 0; i < uniNames.length; i++) {
+          uniforms[uniNames[i]] = gl.getUniformLocation(program, uniNames[i]);
+        }
+
+        // Fullscreen quad
+        var quad = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, quad, gl.STATIC_DRAW);
+
+        var aPos = gl.getAttribLocation(program, 'aPosition');
+        gl.enableVertexAttribArray(aPos);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+        // Create ping-pong textures
+        for (var j = 0; j < 2; j++) {
+          var tex = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          cameraTextures.push(tex);
+        }
+
+        // Feedback texture for MELT mode
+        feedbackTex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, feedbackTex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, canvas.width || 2, canvas.height || 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+        return true;
+      }
+
+      // ── Camera ──
+
+      function startCamera() {
+        if (stream) {
+          stream.getTracks().forEach(function(t) { t.stop(); });
+        }
+
+        var constraints = {
+          video: {
+            facingMode: useFront ? 'user' : 'environment',
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
+          audio: false,
+        };
+
+        return navigator.mediaDevices.getUserMedia(constraints)
+        .catch(function() {
+          return navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+        }).then(function(s) {
+          stream = s;
+
+          if (!video) {
+            video = document.createElement('video');
+            video.setAttribute('playsinline', '');
+            video.setAttribute('autoplay', '');
+            video.muted = true;
+          }
+
+          video.srcObject = stream;
+          return video.play();
+        }).then(function() {
+          firstFrame = true;
+          overlay.style.display = 'none';
+          return true;
+        }).catch(function(err) {
+          if (err.name === 'NotAllowedError') {
+            showError('camera access denied');
+          } else if (err.name === 'NotFoundError') {
+            showError('no camera found');
+          } else if (err.name === 'NotReadableError') {
+            showError('camera in use by another app');
+          } else {
+            showError('camera error');
+          }
+          return false;
+        });
+      }
+
+      function showError(msg) {
+        overlayMsg.textContent = msg;
+        overlayMsg.className = 'error';
+
+        var existing = overlay.querySelector('button');
+        if (!existing) {
+          var btn = document.createElement('button');
+          btn.textContent = 'retry';
+          btn.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            overlayMsg.textContent = 'requesting camera...';
+            overlayMsg.className = '';
+            btn.remove();
+            startCamera().then(function(ok) {
+              if (ok) {
+                running = true;
+                render();
+              }
+            });
+          });
+          overlay.appendChild(btn);
+        }
+
+        overlay.style.display = 'flex';
+      }
+
+      // ── Resize ──
+
+      function resize() {
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+        if (gl) {
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          // Re-allocate feedback texture on resize
+          if (feedbackTex) {
+            gl.bindTexture(gl.TEXTURE_2D, feedbackTex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, canvas.width, canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+          }
+        }
+      }
+
+      // ── Render Loop ──
+
+      var time = 0;
+
+      function render() {
+        if (!running) return;
+
+        requestAnimationFrame(render);
+
+        if (!video || video.readyState < 2) return;
+
+        time += 0.016;
+
+        var currentTex = cameraTextures[frameIdx];
+        var prevTex = cameraTextures[1 - frameIdx];
+
+        // On first frame, seed both textures
+        if (firstFrame) {
+          for (var i = 0; i < 2; i++) {
+            gl.activeTexture(gl.TEXTURE0 + i);
+            gl.bindTexture(gl.TEXTURE_2D, cameraTextures[i]);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+          }
+          firstFrame = false;
+        }
+
+        // Upload current camera frame
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, currentTex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+
+        // Bind previous frame — feedback for MELT, raw camera prev for others
+        gl.activeTexture(gl.TEXTURE1);
+        if (currentMode === 5) {
+          gl.bindTexture(gl.TEXTURE_2D, feedbackTex);
+        } else {
+          gl.bindTexture(gl.TEXTURE_2D, prevTex);
+        }
+
+        // Set uniforms
+        gl.uniform1i(uniforms.uCamera, 0);
+        gl.uniform1i(uniforms.uPrevFrame, 1);
+        gl.uniform1i(uniforms.uMode, currentMode);
+        gl.uniform1f(uniforms.uTime, time);
+        gl.uniform2f(uniforms.uResolution, canvas.width, canvas.height);
+        gl.uniform2f(uniforms.uVideoSize, video.videoWidth, video.videoHeight);
+        gl.uniform1f(uniforms.uFx, fxAmount);
+        gl.uniform1f(uniforms.uMirror, useFront ? 1.0 : 0.0);
+        gl.uniform2f(uniforms.uTouch, touchX, touchY);
+        gl.uniform1f(uniforms.uTouchActive, touchActive ? 1.0 : 0.0);
+        audioLevel = getAudioLevel();
+        gl.uniform1f(uniforms.uAudio, audioLevel);
+
+        // Draw
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+        // Copy rendered frame to feedback texture (for MELT persistence)
+        gl.bindTexture(gl.TEXTURE_2D, feedbackTex);
+        gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, canvas.width, canvas.height);
+
+        // Swap ping-pong index
+        frameIdx = 1 - frameIdx;
+
+        // FPS
+        fpsFrames++;
+        var now = performance.now();
+        if (now - fpsTime >= 1000) {
+          hudFps.textContent = fpsFrames + ' fps';
+          fpsFrames = 0;
+          fpsTime = now;
+        }
+      }
+
+      // ── Event Handlers ──
+
+      var RUNE_GLYPHS = ['\u16a0', '\u16a2', '\u16a6', '\u16a8', '\u16b1', '\u16b2', '\u16b7', '\u16b9', '\u16ba', '\u16be'];
+      var hudRune = document.getElementById('hudRune');
+
+      function setMode(mode) {
+        currentMode = mode;
+        hudMode.textContent = MODE_NAMES[mode];
+        hudRune.textContent = RUNE_GLYPHS[mode] + '\u2009' + RUNE_GLYPHS[(mode + 3) % 10] + '\u2009' + RUNE_GLYPHS[(mode + 7) % 10];
+        for (var i = 0; i < modeButtons.length; i++) {
+          if (parseInt(modeButtons[i].getAttribute('data-mode'), 10) === mode) {
+            modeButtons[i].classList.add('active');
+            modeButtons[i].style.borderColor = '#c4a060';
+          } else {
+            modeButtons[i].classList.remove('active');
+            modeButtons[i].style.borderColor = '';
+          }
+        }
+        if (mode === 0) {
+          sliderRow.classList.add('hidden');
+        } else {
+          sliderRow.classList.remove('hidden');
+          sliderLabel.textContent = SLIDER_LABELS[mode];
+        }
+      }
+
+      for (var i = 0; i < modeButtons.length; i++) {
+        (function(btn) {
+          btn.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            setMode(parseInt(btn.getAttribute('data-mode'), 10));
+          });
+        })(modeButtons[i]);
+      }
+
+      fxSlider.addEventListener('input', function() {
+        fxAmount = fxSlider.value / 100;
+      });
+
+      flipBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        useFront = !useFront;
+        startCamera();
+      });
+
+      // ── Touch Sensitivity ──
+
+      function updateTouch(e) {
+        var rect = canvas.getBoundingClientRect();
+        touchX = (e.clientX - rect.left) / rect.width;
+        touchY = (e.clientY - rect.top) / rect.height;
+      }
+
+      canvas.addEventListener('pointerdown', function(e) {
+        if (e.target !== canvas) return;
+        touchActive = true;
+        updateTouch(e);
+      });
+      canvas.addEventListener('pointermove', function(e) {
+        if (touchActive) updateTouch(e);
+      });
+      canvas.addEventListener('pointerup', function() { touchActive = false; });
+      canvas.addEventListener('pointercancel', function() { touchActive = false; });
+
+      // ── Audio Sensitivity ──
+
+      var micBtn = document.getElementById('micBtn');
+
+      function getAudioLevel() {
+        if (!audioActive || !analyser) return 0;
+        analyser.getByteTimeDomainData(audioData);
+        var sum = 0;
+        for (var i = 0; i < audioData.length; i++) {
+          var v = (audioData[i] - 128) / 128;
+          sum += v * v;
+        }
+        return Math.min(1, Math.sqrt(sum / audioData.length) * 4);
+      }
+
+      function initAudio() {
+        if (audioActive) {
+          // Toggle off
+          audioActive = false;
+          micBtn.classList.remove('mic-active');
+          return;
+        }
+        navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(audioStream) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          var source = audioCtx.createMediaStreamSource(audioStream);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          source.connect(analyser);
+          audioData = new Uint8Array(analyser.frequencyBinCount);
+          audioActive = true;
+          micBtn.classList.add('mic-active');
+        }).catch(function() {
+          // Audio not available
+        });
+      }
+
+      micBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        initAudio();
+      });
+
+      // ── Export / GIF ──
+
+      var exportFormat = 'png';
+      var FORMATS = ['png', 'jpg', 'gif'];
+      var gifRecording = false;
+      var gifFrames = [];
+      var gifStartTime = 0;
+      var GIF_DURATION = 3000;
+      var GIF_FPS = 10;
+      var GIF_MAX_W = 320;
+      var gifCaptureInterval = null;
+      var formatBtn = document.getElementById('formatBtn');
+      var hudRec = document.getElementById('hudRec');
+
+      // ── Inline GIF89a encoder ──
+
+      function encodeGIF(gw, gh, frames, delay) {
+        var buf = [];
+        function wb(b) { buf.push(b & 0xFF); }
+        function w16(v) { wb(v); wb(v >> 8); }
+        function ws(s) { for (var i = 0; i < s.length; i++) wb(s.charCodeAt(i)); }
+
+        // 6-6-6 color cube (216) + 40 grays = 256
+        var palette = [];
+        for (var ri = 0; ri < 6; ri++)
+          for (var gi = 0; gi < 6; gi++)
+            for (var bi = 0; bi < 6; bi++)
+              palette.push(Math.round(ri * 255 / 5), Math.round(gi * 255 / 5), Math.round(bi * 255 / 5));
+        for (var i = 0; i < 40; i++) { var v = Math.round(i * 255 / 39); palette.push(v, v, v); }
+
+        function quant(r, g, b) {
+          return Math.round(r * 5 / 255) * 36 + Math.round(g * 5 / 255) * 6 + Math.round(b * 5 / 255);
+        }
+
+        function lzwEnc(pixels) {
+          var clearCode = 256, eoiCode = 257;
+          var cs = 9, next = 258, mx = 512;
+          var dict = {}, out = [], bits = 0, bc = 0;
+          function emit(code) {
+            bits |= code << bc; bc += cs;
+            while (bc >= 8) { out.push(bits & 0xFF); bits >>= 8; bc -= 8; }
+          }
+          function reset() { dict = {}; cs = 9; next = 258; mx = 512; }
+          emit(clearCode);
+          var pre = pixels[0];
+          for (var i = 1; i < pixels.length; i++) {
+            var suf = pixels[i];
+            var key = pre + ',' + suf;
+            if (dict[key] !== undefined) { pre = dict[key]; }
+            else {
+              emit(pre);
+              if (next < 4096) { dict[key] = next++; if (next > mx && cs < 12) { cs++; mx <<= 1; } }
+              else { emit(clearCode); reset(); }
+              pre = suf;
+            }
+          }
+          emit(pre); emit(eoiCode);
+          if (bc > 0) out.push(bits & 0xFF);
+          return out;
+        }
+
+        // Header
+        ws('GIF89a');
+        w16(gw); w16(gh); wb(0xF7); wb(0); wb(0);
+        for (var i = 0; i < palette.length; i++) wb(palette[i]);
+        // NETSCAPE loop
+        wb(0x21); wb(0xFF); wb(11); ws('NETSCAPE2.0'); wb(3); wb(1); w16(0); wb(0);
+        // Frames
+        for (var f = 0; f < frames.length; f++) {
+          var px = frames[f];
+          wb(0x21); wb(0xF9); wb(4); wb(0); w16(delay); wb(0); wb(0);
+          wb(0x2C); w16(0); w16(0); w16(gw); w16(gh); wb(0);
+          var idx = new Uint8Array(gw * gh);
+          for (var p = 0; p < gw * gh; p++) idx[p] = quant(px[p * 4], px[p * 4 + 1], px[p * 4 + 2]);
+          wb(8);
+          var enc = lzwEnc(idx);
+          var off = 0;
+          while (off < enc.length) { var sz = Math.min(255, enc.length - off); wb(sz); for (var j = 0; j < sz; j++) buf.push(enc[off + j]); off += sz; }
+          wb(0);
+        }
+        wb(0x3B);
+        return new Uint8Array(buf);
+      }
+
+      function startGifRecording() {
+        gifRecording = true;
+        gifFrames = [];
+        gifStartTime = performance.now();
+        hudRec.style.display = 'block';
+        hudRec.textContent = '\u25CF REC 3s';
+        captureBtn.style.borderColor = '#cc3333';
+        captureBtn.style.color = '#cc3333';
+        gifCaptureInterval = setInterval(function() {
+          if (!gifRecording) return;
+          var scale = Math.min(1, GIF_MAX_W / canvas.width);
+          var gw = Math.round(canvas.width * scale);
+          var gh = Math.round(canvas.height * scale);
+          var tmp = document.createElement('canvas');
+          tmp.width = gw; tmp.height = gh;
+          var ctx = tmp.getContext('2d');
+          ctx.drawImage(canvas, 0, 0, gw, gh);
+          gifFrames.push(ctx.getImageData(0, 0, gw, gh).data);
+          var elapsed = performance.now() - gifStartTime;
+          var remaining = Math.ceil((GIF_DURATION - elapsed) / 1000);
+          hudRec.textContent = '\u25CF REC ' + remaining + 's';
+          if (elapsed >= GIF_DURATION) stopGifRecording();
+        }, 1000 / GIF_FPS);
+      }
+
+      function stopGifRecording() {
+        gifRecording = false;
+        clearInterval(gifCaptureInterval);
+        hudRec.textContent = 'encoding...';
+        captureBtn.style.borderColor = '';
+        captureBtn.style.color = '';
+        setTimeout(function() {
+          var scale = Math.min(1, GIF_MAX_W / canvas.width);
+          var gw = Math.round(canvas.width * scale);
+          var gh = Math.round(canvas.height * scale);
+          var data = encodeGIF(gw, gh, gifFrames, Math.round(100 / GIF_FPS));
+          var blob = new Blob([data], { type: 'image/gif' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'artifact-' + MODE_NAMES[currentMode].toLowerCase() + '-' + Date.now() + '.gif';
+          a.click();
+          setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+          gifFrames = [];
+          hudRec.style.display = 'none';
+        }, 50);
+      }
+
+      formatBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        var idx = FORMATS.indexOf(exportFormat);
+        exportFormat = FORMATS[(idx + 1) % FORMATS.length];
+        formatBtn.textContent = exportFormat.toUpperCase();
+      });
+
+      captureBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        if (exportFormat === 'gif') {
+          if (gifRecording) stopGifRecording();
+          else startGifRecording();
+        } else {
+          var mime = exportFormat === 'jpg' ? 'image/jpeg' : 'image/png';
+          var ext = exportFormat;
+          canvas.toBlob(function(blob) {
+            if (!blob) return;
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'artifact-' + MODE_NAMES[currentMode].toLowerCase() + '-' + Date.now() + '.' + ext;
+            a.click();
+            setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+          }, mime, mime === 'image/jpeg' ? 0.92 : undefined);
+        }
+      });
+
+      // ── Init ──
+
+      window.addEventListener('resize', resize);
+
+      resize();
+
+      if (!initGL()) return;
+
+      // VHS date overlay timer
+      var vhsDate = document.getElementById('vhsDate');
+      setInterval(function() {
+        if (currentMode !== 2) { vhsDate.style.display = 'none'; return; }
+        vhsDate.style.display = 'block';
+        var d = new Date();
+        var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        var h = d.getHours();
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12; if (h === 0) h = 12;
+        var m = ('0' + d.getMinutes()).slice(-2);
+        vhsDate.textContent = months[d.getMonth()] + ' ' + ('0' + d.getDate()).slice(-2) + ' ' + d.getFullYear() + '  ' + h + ':' + m + ampm;
+      }, 1000);
+
+      // Show start button for camera permission
+      overlayMsg.textContent = 'analog glitch camera';
+      var startBtn = document.createElement('button');
+      startBtn.textContent = 'start camera';
+      startBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        overlayMsg.textContent = 'requesting camera...';
+        startBtn.remove();
+        startCamera().then(function(ok) {
+          if (ok) {
+            running = true;
+            render();
+          }
+        });
+      });
+      overlay.appendChild(startBtn);
+
+    })();
+  </script>
+</body>
+</html>

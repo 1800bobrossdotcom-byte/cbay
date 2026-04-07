@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/favicon.svg", "destination": "/public/favicon.svg" },
+    { "source": "/favicon.png", "destination": "/public/favicon.png" },
+    { "source": "/icon-transparent.svg", "destination": "/public/icon-transparent.svg" },
+    { "source": "/(.*)", "destination": "/api/index" }
+  ]
+}
