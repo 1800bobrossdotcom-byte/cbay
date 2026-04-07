@@ -27,7 +27,11 @@ for (const [route, cfg] of Object.entries(PAGES)) {
   if (fs.existsSync(fp)) TEMPLATES[route] = fs.readFileSync(fp, 'utf8');
 }
 
-const STATIC_FILES = new Set(['/favicon.svg', '/favicon.png', '/icon-transparent.svg']);
+const STATIC_FILES = new Set([
+  '/favicon.svg', '/favicon.png', '/icon-transparent.svg',
+  '/icon-spectra.svg', '/icon-artifact.svg', '/icon-take.svg',
+  '/preview-spectra.svg', '/preview-artifact.svg', '/preview-take.svg',
+]);
 
 const ALLOWED = new Set([
   ...Object.keys(PAGES),

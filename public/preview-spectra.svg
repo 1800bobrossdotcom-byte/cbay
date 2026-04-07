@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <defs>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0e08"/>
+      <stop offset="100%" stop-color="#060806"/>
+    </linearGradient>
+  </defs>
+  <!-- phone frame -->
+  <rect x="200" y="20" width="240" height="360" rx="20" fill="#1a1a18" stroke="#333" stroke-width="1"/>
+  <rect x="210" y="40" width="220" height="310" rx="4" fill="url(#screen)"/>
+  <!-- camera viewfinder -->
+  <rect x="230" y="60" width="180" height="180" fill="#0c100a"/>
+  <!-- night vision green overlay -->
+  <rect x="230" y="60" width="180" height="180" fill="#1a3a1a" opacity="0.3"/>
+  <!-- silhouette shapes -->
+  <ellipse cx="320" cy="160" rx="30" ry="50" fill="#2a4a2a" opacity="0.6"/>
+  <rect x="280" y="200" width="80" height="40" fill="#1a3a1a" opacity="0.4"/>
+  <!-- scan line -->
+  <rect x="230" y="140" width="180" height="1" fill="#7acd3a" opacity="0.4"/>
+  <!-- HUD elements -->
+  <text x="240" y="80" font-family="monospace" font-size="8" fill="#7acd3a" opacity="0.7">NIGHT</text>
+  <text x="370" y="80" font-family="monospace" font-size="7" fill="#7acd3a" opacity="0.5">24fps</text>
+  <!-- mode buttons -->
+  <g font-family="monospace" font-size="7" fill="#7acd3a" opacity="0.5">
+    <rect x="230" y="260" width="30" height="16" rx="2" fill="none" stroke="#7acd3a" stroke-width="0.5" opacity="0.4"/>
+    <text x="237" y="271">NV</text>
+    <rect x="266" y="260" width="30" height="16" rx="2" fill="none" stroke="#7acd3a" stroke-width="0.5" opacity="0.4"/>
+    <text x="271" y="271">THR</text>
+    <rect x="302" y="260" width="30" height="16" rx="2" fill="none" stroke="#7acd3a" stroke-width="0.5" opacity="0.4"/>
+    <text x="308" y="271">MOT</text>
+    <rect x="338" y="260" width="30" height="16" rx="2" fill="none" stroke="#7acd3a" stroke-width="0.5" opacity="0.4"/>
+    <text x="343" y="271">EDG</text>
+    <rect x="374" y="260" width="30" height="16" rx="2" fill="none" stroke="#7acd3a" stroke-width="0.5" opacity="0.4"/>
+    <text x="381" y="271">IR</text>
+  </g>
+  <!-- slider -->
+  <rect x="230" y="290" width="180" height="2" rx="1" fill="#1a2a1a"/>
+  <rect x="230" y="290" width="100" height="2" rx="1" fill="#4a8a2a" opacity="0.6"/>
+  <circle cx="330" cy="291" r="4" fill="#7acd3a" opacity="0.7"/>
+  <!-- bottom bar -->
+  <rect x="230" y="310" width="180" height="20" fill="#0a0e08"/>
+  <text x="240" y="324" font-family="monospace" font-size="8" fill="#4a8a2a" opacity="0.5">◉ CAPTURE</text>
+  <text x="370" y="324" font-family="monospace" font-size="8" fill="#4a8a2a" opacity="0.5">GIF</text>
+</svg>

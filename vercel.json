@@ -3,6 +3,12 @@
     { "source": "/favicon.svg", "destination": "/public/favicon.svg" },
     { "source": "/favicon.png", "destination": "/public/favicon.png" },
     { "source": "/icon-transparent.svg", "destination": "/public/icon-transparent.svg" },
+    { "source": "/icon-spectra.svg", "destination": "/public/icon-spectra.svg" },
+    { "source": "/icon-artifact.svg", "destination": "/public/icon-artifact.svg" },
+    { "source": "/icon-take.svg", "destination": "/public/icon-take.svg" },
+    { "source": "/preview-spectra.svg", "destination": "/public/preview-spectra.svg" },
+    { "source": "/preview-artifact.svg", "destination": "/public/preview-artifact.svg" },
+    { "source": "/preview-take.svg", "destination": "/public/preview-take.svg" },
     { "source": "/(.*)", "destination": "/api/index" }
   ]
 }

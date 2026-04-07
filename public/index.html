@@ -9,12 +9,14 @@
 
     html, body {
       width: 100%; height: 100%;
-      background: #060606;
-      color: #8a8a6a;
+      background: #0c0b09;
+      color: #d4c8a8;
       font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
+    /* ── Blueprint grid canvas ── */
     canvas#bg {
       position: fixed; inset: 0;
       width: 100%; height: 100%;
@@ -22,148 +24,330 @@
       z-index: 0;
     }
 
+    /* ── Main container ── */
     .page {
       position: relative;
       z-index: 1;
-      max-width: 560px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 15vh 24px 10vh;
+      padding: 8vh 32px 10vh;
       min-height: 100vh;
     }
 
-    .mark {
-      font-size: 24px;
-      letter-spacing: 12px;
-      text-align: center;
-      color: #6a8a4a;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      font-size: 10px;
-      letter-spacing: 4px;
-      text-align: center;
-      text-transform: uppercase;
-      color: #4a4a3a;
+    /* ── Technical drawing frame ── */
+    .drawing-frame {
+      border: 1px solid #3a3020;
+      position: relative;
+      padding: 40px 32px 32px;
       margin-bottom: 48px;
     }
-
-    .rule {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #1a1a14 20%, #1a1a14 80%, transparent);
-      margin: 0 0 40px;
-    }
-
-    .entry {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      border: 1px solid transparent;
-      border-radius: 2px;
-      transition: border-color 0.4s, background 0.4s;
-      padding: 24px 20px;
-      margin-bottom: 32px;
-      position: relative;
-    }
-
-    .entry:hover {
-      border-color: #1a1a14;
-      background: rgba(12, 12, 10, 0.5);
-    }
-
-    .entry-num {
-      font-size: 9px;
-      letter-spacing: 3px;
-      color: #3a3a2a;
-      margin-bottom: 10px;
-    }
-
-    .entry-name {
-      font-size: 16px;
-      letter-spacing: 6px;
-      font-weight: normal;
-      margin-bottom: 8px;
-      transition: color 0.3s, text-shadow 0.3s;
-    }
-
-    .entry-desc {
-      font-size: 11px;
-      color: #5a5a4a;
-      margin-bottom: 10px;
-      letter-spacing: 1px;
-    }
-
-    .entry-tags {
-      font-size: 10px;
-      color: #3a3a2a;
-      letter-spacing: 1px;
-    }
-
-    .entry-arrow {
+    .drawing-frame::before {
+      content: '';
       position: absolute;
-      right: 20px;
-      bottom: 24px;
-      font-size: 11px;
-      color: #3a3a2a;
-      opacity: 0;
-      transition: opacity 0.3s, transform 0.3s;
-      transform: translateX(-4px);
-    }
-
-    .entry:hover .entry-arrow {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    /* SPECTRA hover — green phosphor glow */
-    .entry--spectra:hover { border-color: rgba(106, 138, 74, 0.3); }
-    .entry--spectra:hover .entry-name {
-      color: #8aaa5a;
-      text-shadow: 0 0 20px rgba(106, 138, 74, 0.2);
-    }
-
-    /* ARTIFACT hover — chromatic aberration */
-    .entry--artifact:hover { border-color: rgba(138, 74, 106, 0.3); }
-    .entry--artifact:hover .entry-name {
-      text-shadow: 2px 0 rgba(255, 0, 128, 0.15), -2px 0 rgba(0, 255, 255, 0.15);
-      color: #aa8a5a;
-    }
-
-    /* TAKE hover — warm red accent */
-    .entry--take:hover { border-color: rgba(138, 74, 74, 0.3); }
-    .entry--take:hover .entry-name { color: #aa6a5a; }
-    .entry--take .rec-dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      background: #5a2a2a;
-      border-radius: 50%;
-      margin-left: 8px;
-      vertical-align: middle;
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-    .entry--take:hover .rec-dot {
-      background: #cc3333;
-      box-shadow: 0 0 8px rgba(204, 51, 51, 0.5);
-      animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .unavailable {
+      inset: 4px;
+      border: 1px solid rgba(58, 48, 32, 0.3);
       pointer-events: none;
     }
-    .unavailable .entry-tags::after {
-      content: ' — coming soon';
-      color: #2a2a20;
+    /* corner marks */
+    .drawing-frame::after {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px; right: -1px; bottom: -1px;
+      background:
+        linear-gradient(#e8a040, #e8a040) 0 0 / 16px 1px no-repeat,
+        linear-gradient(#e8a040, #e8a040) 0 0 / 1px 16px no-repeat,
+        linear-gradient(#e8a040, #e8a040) 100% 0 / 16px 1px no-repeat,
+        linear-gradient(#e8a040, #e8a040) 100% 0 / 1px 16px no-repeat,
+        linear-gradient(#e8a040, #e8a040) 0 100% / 16px 1px no-repeat,
+        linear-gradient(#e8a040, #e8a040) 0 100% / 1px 16px no-repeat,
+        linear-gradient(#e8a040, #e8a040) 100% 100% / 16px 1px no-repeat,
+        linear-gradient(#e8a040, #e8a040) 100% 100% / 1px 16px no-repeat;
+      pointer-events: none;
+      opacity: 0.5;
     }
 
-    @media (max-width: 480px) {
-      .page { padding: 10vh 16px 8vh; }
-      .mark { font-size: 20px; letter-spacing: 10px; }
-      .entry-name { font-size: 14px; letter-spacing: 4px; }
+    /* ── Title block (like a technical drawing title block) ── */
+    .title-block {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .mark {
+      font-size: 48px;
+      letter-spacing: 18px;
+      color: #e8a040;
+      font-weight: normal;
+      text-indent: 18px;
+    }
+    .subtitle {
+      font-size: 10px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #a08860;
+      margin-top: 4px;
+    }
+
+    /* ── Dimension line (horizontal rule) ── */
+    .dim-line {
+      position: relative;
+      height: 20px;
+      margin: 24px 0 40px;
+      display: flex;
+      align-items: center;
+    }
+    .dim-line::before, .dim-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #3a3020 10%, #3a3020 90%, transparent);
+    }
+    .dim-line .dim-label {
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: #6a5a40;
+      padding: 0 16px;
+      text-transform: uppercase;
+    }
+    /* arrowheads */
+    .dim-line .arrow-l, .dim-line .arrow-r {
+      width: 0; height: 0;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+    }
+    .dim-line .arrow-l { border-right: 6px solid #3a3020; }
+    .dim-line .arrow-r { border-left: 6px solid #3a3020; }
+
+    /* ── Product cards ── */
+    .products {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .product {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 24px;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      padding: 24px;
+      border: 1px solid #2a2418;
+      transition: border-color 0.4s, background 0.4s, transform 0.3s;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .product::before {
+      content: attr(data-num);
+      position: absolute;
+      top: 6px; right: 10px;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #4a3a28;
+    }
+    .product:hover {
+      border-color: #e8a040;
+      background: rgba(232, 160, 64, 0.03);
+      transform: translateY(-1px);
+    }
+
+    /* ── App icon ── */
+    .product-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #2a2418;
+      transition: border-color 0.4s, box-shadow 0.4s;
+      flex-shrink: 0;
+    }
+    .product:hover .product-icon {
+      border-color: #e8a040;
+      box-shadow: 0 0 20px rgba(232, 160, 64, 0.15);
+    }
+    .product-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── Product info ── */
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+    .product-name {
+      font-size: 18px;
+      letter-spacing: 6px;
+      color: #e8a040;
+      font-weight: normal;
+      margin-bottom: 4px;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+    .product:hover .product-name {
+      text-shadow: 0 0 24px rgba(232, 160, 64, 0.3);
+    }
+    .product-desc {
+      font-size: 11px;
+      color: #a08860;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .product-tags {
+      font-size: 10px;
+      color: #6a5a40;
+      letter-spacing: 1px;
+    }
+    .product-arrow {
+      position: absolute;
+      right: 16px;
+      bottom: 50%;
+      transform: translateY(50%) translateX(-4px);
+      font-size: 14px;
+      color: #4a3a28;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .product:hover .product-arrow {
+      opacity: 1;
+      transform: translateY(50%) translateX(0);
+    }
+
+    /* ── Preview panel (collapsible) ── */
+    .preview-toggle {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #6a5a40;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      padding: 2px 0;
+      border: none;
+      background: none;
+      font-family: inherit;
+      transition: color 0.3s;
+      user-select: none;
+    }
+    .preview-toggle:hover { color: #e8a040; }
+    .preview-toggle::before {
+      content: '▸ ';
+      display: inline-block;
+      transition: transform 0.3s;
+    }
+    .preview-toggle.open::before {
+      transform: rotate(90deg);
+    }
+
+    .preview-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s, margin 0.4s;
+      opacity: 0;
+      margin-top: 0;
+      grid-column: 1 / -1;
+    }
+    .preview-panel.open {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 16px;
+    }
+    .preview-img {
+      width: 100%;
+      max-width: 480px;
+      border: 1px solid #2a2418;
+      border-radius: 4px;
+      display: block;
+      /* technical drawing frame effect */
+      padding: 8px;
+      background:
+        linear-gradient(#3a3020, #3a3020) 0 0 / 8px 1px no-repeat,
+        linear-gradient(#3a3020, #3a3020) 0 0 / 1px 8px no-repeat,
+        linear-gradient(#3a3020, #3a3020) 100% 0 / 8px 1px no-repeat,
+        linear-gradient(#3a3020, #3a3020) 100% 0 / 1px 8px no-repeat,
+        linear-gradient(#3a3020, #3a3020) 0 100% / 8px 1px no-repeat,
+        linear-gradient(#3a3020, #3a3020) 0 100% / 1px 8px no-repeat,
+        linear-gradient(#3a3020, #3a3020) 100% 100% / 8px 1px no-repeat,
+        linear-gradient(#3a3020, #3a3020) 100% 100% / 1px 8px no-repeat,
+        #0c0b09;
+    }
+    .preview-caption {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #4a3a28;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    /* ── Unavailable state ── */
+    .product.unavailable {
+      pointer-events: none;
+      opacity: 0.4;
+    }
+    .product.unavailable .product-tags::after {
+      content: ' — coming soon';
+      color: #4a3a28;
+    }
+    .product.unavailable .preview-toggle { display: none; }
+
+    /* ── Footer info block ── */
+    .info-block {
+      margin-top: 48px;
+      border-top: 1px solid #2a2418;
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .info-block .revision {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #4a3a28;
+      text-transform: uppercase;
+    }
+    .info-block .scale {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #4a3a28;
+    }
+
+    /* ── Dimension annotations (decorative) ── */
+    .dim-annotation {
+      position: absolute;
+      font-size: 7px;
+      color: #3a3020;
+      letter-spacing: 1px;
+    }
+
+    /* ── Animations ── */
+    @keyframes drawIn {
+      from { clip-path: inset(0 100% 0 0); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .drawing-frame {
+      animation: fadeUp 0.8s ease-out;
+    }
+    .product {
+      animation: fadeUp 0.6s ease-out both;
+    }
+    .product:nth-child(1) { animation-delay: 0.2s; }
+    .product:nth-child(2) { animation-delay: 0.35s; }
+    .product:nth-child(3) { animation-delay: 0.5s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .page { padding: 5vh 16px 8vh; }
+      .drawing-frame { padding: 24px 16px 20px; }
+      .mark { font-size: 32px; letter-spacing: 12px; text-indent: 12px; }
+      .product { grid-template-columns: 60px 1fr; gap: 16px; padding: 16px; }
+      .product-icon { width: 60px; height: 60px; border-radius: 14px; }
+      .product-name { font-size: 14px; letter-spacing: 4px; }
+      .preview-img { max-width: 100%; }
     }
   </style>
 </head>
@@ -171,99 +355,181 @@
   <canvas id="bg"></canvas>
 
   <div class="page">
-    <div class="mark">c b a y</div>
-    <div class="subtitle">computational instruments</div>
-    <div class="rule"></div>
+    <!-- title block -->
+    <div class="drawing-frame">
+      <div class="title-block">
+        <h1 class="mark">cbay</h1>
+        <p class="subtitle">computational instruments</p>
+      </div>
 
-    <a href="/spectra" class="entry entry--spectra">
-      <div class="entry-num">001</div>
-      <h2 class="entry-name">SPECTRA</h2>
-      <p class="entry-desc">computational vision engine</p>
-      <p class="entry-tags">night · thermal · motion · edge</p>
-      <span class="entry-arrow">&rarr;</span>
-    </a>
+      <div class="dim-line">
+        <span class="arrow-l"></span>
+        <span class="dim-label">catalog</span>
+        <span class="arrow-r"></span>
+      </div>
 
-    <a href="/artifact" class="entry entry--artifact">
-      <div class="entry-num">002</div>
-      <h2 class="entry-name">ARTIFACT</h2>
-      <p class="entry-desc">analog glitch camera</p>
-      <p class="entry-tags">pixel sort · vhs · databend · scanline</p>
-      <span class="entry-arrow">&rarr;</span>
-    </a>
+      <!-- products -->
+      <div class="products">
 
-    <a href="/take" class="entry entry--take unavailable">
-      <div class="entry-num">003</div>
-      <h2 class="entry-name">TAKE<span class="rec-dot"></span></h2>
-      <p class="entry-desc">short-form video tool</p>
-      <p class="entry-tags">record · effects · concatenate · export</p>
-      <span class="entry-arrow">&rarr;</span>
-    </a>
+        <a href="/spectra" class="product" data-num="001">
+          <div class="product-icon">
+            <img src="/icon-spectra.svg" alt="SPECTRA">
+          </div>
+          <div class="product-info">
+            <h2 class="product-name">SPECTRA</h2>
+            <p class="product-desc">computational vision engine</p>
+            <p class="product-tags">night · thermal · motion · edge · infrared</p>
+            <button class="preview-toggle" data-target="prev-spectra">preview</button>
+          </div>
+          <span class="product-arrow">→</span>
+          <div class="preview-panel" id="prev-spectra">
+            <img class="preview-img" src="/preview-spectra.svg" alt="SPECTRA preview">
+            <p class="preview-caption">fig. 1 — night vision mode with low-light boost</p>
+          </div>
+        </a>
+
+        <a href="/artifact" class="product" data-num="002">
+          <div class="product-icon">
+            <img src="/icon-artifact.svg" alt="ARTIFACT">
+          </div>
+          <div class="product-info">
+            <h2 class="product-name">ARTIFACT</h2>
+            <p class="product-desc">analog glitch camera</p>
+            <p class="product-tags">pixel sort · vhs · databend · signal mod · melt</p>
+            <button class="preview-toggle" data-target="prev-artifact">preview</button>
+          </div>
+          <span class="product-arrow">→</span>
+          <div class="preview-panel" id="prev-artifact">
+            <img class="preview-img" src="/preview-artifact.svg" alt="ARTIFACT preview">
+            <p class="preview-caption">fig. 2 — pixel sort mode with touch sensitivity</p>
+          </div>
+        </a>
+
+        <a href="/take" class="product unavailable" data-num="003">
+          <div class="product-icon">
+            <img src="/icon-take.svg" alt="TAKE">
+          </div>
+          <div class="product-info">
+            <h2 class="product-name">TAKE</h2>
+            <p class="product-desc">short-form video tool</p>
+            <p class="product-tags">record · effects · concatenate · export</p>
+            <button class="preview-toggle" data-target="prev-take">preview</button>
+          </div>
+          <span class="product-arrow">→</span>
+          <div class="preview-panel" id="prev-take">
+            <img class="preview-img" src="/preview-take.svg" alt="TAKE preview">
+            <p class="preview-caption">fig. 3 — timeline editor with clip concatenation</p>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- footer info -->
+      <div class="info-block">
+        <span class="revision">rev. 3.0 — apr 2026</span>
+        <span class="scale">cbay.ing</span>
+      </div>
+    </div>
   </div>
 
   <script>
-    const c = document.getElementById('bg');
-    const x = c.getContext('2d');
-    let W, H;
-    const P = [];
-    const N = 35;
+    /* ── Blueprint grid background ── */
+    var c = document.getElementById('bg');
+    var x = c.getContext('2d');
+    var W, H, t = 0;
 
     function resize() {
       W = c.width = window.innerWidth;
       H = c.height = window.innerHeight;
     }
-
     resize();
     window.addEventListener('resize', resize);
 
-    for (let i = 0; i < N; i++) {
-      P.push({
-        x: Math.random() * (window.innerWidth || 1200),
-        y: Math.random() * (window.innerHeight || 800),
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15,
-        r: 0.8 + Math.random() * 1.2,
-      });
-    }
-
-    function draw() {
+    function drawGrid() {
       x.clearRect(0, 0, W, H);
 
-      for (let i = 0; i < P.length; i++) {
-        for (let j = i + 1; j < P.length; j++) {
-          const dx = P[i].x - P[j].x;
-          const dy = P[i].y - P[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 140) {
-            x.globalAlpha = (1 - d / 140) * 0.04;
-            x.strokeStyle = '#6a8a4a';
-            x.lineWidth = 0.5;
-            x.beginPath();
-            x.moveTo(P[i].x, P[i].y);
-            x.lineTo(P[j].x, P[j].y);
-            x.stroke();
-          }
-        }
+      /* minor grid */
+      x.strokeStyle = '#1a1610';
+      x.lineWidth = 0.5;
+      var step = 40;
+      for (var gx = 0; gx < W; gx += step) {
+        x.beginPath(); x.moveTo(gx, 0); x.lineTo(gx, H); x.stroke();
+      }
+      for (var gy = 0; gy < H; gy += step) {
+        x.beginPath(); x.moveTo(0, gy); x.lineTo(W, gy); x.stroke();
       }
 
-      x.globalAlpha = 0.12;
-      x.fillStyle = '#6a8a4a';
-      for (const p of P) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < -20) p.x = W + 20;
-        if (p.x > W + 20) p.x = -20;
-        if (p.y < -20) p.y = H + 20;
-        if (p.y > H + 20) p.y = -20;
-        x.beginPath();
-        x.arc(p.x, p.y, p.r, 0, 6.283);
-        x.fill();
+      /* major grid */
+      x.strokeStyle = '#2a2218';
+      x.lineWidth = 0.5;
+      var major = 200;
+      for (var mx = 0; mx < W; mx += major) {
+        x.beginPath(); x.moveTo(mx, 0); x.lineTo(mx, H); x.stroke();
+      }
+      for (var my = 0; my < H; my += major) {
+        x.beginPath(); x.moveTo(0, my); x.lineTo(W, my); x.stroke();
       }
 
+      /* animated dimension tick marks along edges */
+      t += 0.003;
+      x.fillStyle = '#e8a040';
+      var tickCount = 12;
+      for (var i = 0; i < tickCount; i++) {
+        var phase = (i / tickCount + t) % 1;
+        var alpha = Math.sin(phase * Math.PI) * 0.12;
+        x.globalAlpha = alpha;
+        /* top edge */
+        var tx = phase * W;
+        x.fillRect(tx, 0, 1, 6);
+        /* bottom edge */
+        x.fillRect(tx, H - 6, 1, 6);
+        /* left edge */
+        var ty = phase * H;
+        x.fillRect(0, ty, 6, 1);
+        /* right edge */
+        x.fillRect(W - 6, ty, 6, 1);
+      }
       x.globalAlpha = 1;
-      requestAnimationFrame(draw);
-    }
 
-    draw();
+      /* corner crosshairs */
+      x.strokeStyle = '#e8a040';
+      x.lineWidth = 0.5;
+      x.globalAlpha = 0.08;
+      var corners = [[60, 60], [W - 60, 60], [60, H - 60], [W - 60, H - 60]];
+      for (var ci = 0; ci < corners.length; ci++) {
+        var cx = corners[ci][0], cy = corners[ci][1];
+        x.beginPath(); x.moveTo(cx - 12, cy); x.lineTo(cx + 12, cy); x.stroke();
+        x.beginPath(); x.moveTo(cx, cy - 12); x.lineTo(cx, cy + 12); x.stroke();
+        x.beginPath(); x.arc(cx, cy, 6, 0, 6.283); x.stroke();
+      }
+      x.globalAlpha = 1;
+
+      requestAnimationFrame(drawGrid);
+    }
+    drawGrid();
+
+    /* ── Preview toggle ── */
+    document.querySelectorAll('.preview-toggle').forEach(function(btn) {
+      btn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var panel = document.getElementById(this.getAttribute('data-target'));
+        if (panel) {
+          var isOpen = panel.classList.contains('open');
+          panel.classList.toggle('open');
+          this.classList.toggle('open');
+        }
+      });
+    });
+
+    /* Prevent preview toggle from navigating */
+    document.querySelectorAll('.product').forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('.preview-toggle')) {
+          e.preventDefault();
+        }
+      });
+    });
   </script>
 </body>
 </html>

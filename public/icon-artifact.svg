@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1418"/>
+      <stop offset="100%" stop-color="#0e0c0e"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- VHS tracking lines -->
+  <g opacity="0.15">
+    <rect x="0" y="80" width="512" height="2" fill="#ff0080"/>
+    <rect x="0" y="160" width="512" height="1" fill="#00ffff"/>
+    <rect x="0" y="240" width="512" height="2" fill="#ff0080"/>
+    <rect x="0" y="320" width="512" height="1" fill="#00ffff"/>
+    <rect x="0" y="400" width="512" height="2" fill="#ff0080"/>
+  </g>
+  <!-- glitch blocks -->
+  <rect x="60" y="140" width="180" height="200" fill="none" stroke="#cc6633" stroke-width="2" opacity="0.5"/>
+  <rect x="70" y="150" width="180" height="200" fill="none" stroke="#ff0080" stroke-width="1" opacity="0.3" transform="translate(4,-2)"/>
+  <rect x="70" y="150" width="180" height="200" fill="none" stroke="#00ffff" stroke-width="1" opacity="0.3" transform="translate(-4,2)"/>
+  <!-- pixel sort streaks -->
+  <g opacity="0.6">
+    <rect x="280" y="140" width="3" height="80" fill="#cc6633"/>
+    <rect x="300" y="160" width="2" height="120" fill="#ff8844"/>
+    <rect x="320" y="130" width="4" height="100" fill="#cc6633"/>
+    <rect x="340" y="170" width="2" height="60" fill="#ff8844"/>
+    <rect x="360" y="140" width="3" height="90" fill="#cc6633"/>
+    <rect x="380" y="155" width="2" height="110" fill="#ff8844"/>
+    <rect x="400" y="145" width="3" height="70" fill="#cc6633"/>
+    <rect x="420" y="135" width="2" height="130" fill="#ff8844"/>
+  </g>
+  <!-- databend wave -->
+  <path d="M60 380 Q130 340 200 380 Q270 420 340 380 Q410 340 460 380" fill="none" stroke="#cc6633" stroke-width="2" opacity="0.5"/>
+  <path d="M60 390 Q130 350 200 390 Q270 430 340 390 Q410 350 460 390" fill="none" stroke="#ff0080" stroke-width="1" opacity="0.2"/>
+  <!-- REC indicator -->
+  <circle cx="420" cy="80" r="8" fill="#cc3333" opacity="0.8"/>
+  <text x="440" y="85" font-family="monospace" font-size="14" fill="#cc3333" opacity="0.6">REC</text>
+  <!-- chromatic text -->
+  <text x="256" y="310" text-anchor="middle" font-family="monospace" font-size="32" font-weight="bold" fill="#00ffff" letter-spacing="6" opacity="0.3" transform="translate(-3,0)">ARTIFACT</text>
+  <text x="256" y="310" text-anchor="middle" font-family="monospace" font-size="32" font-weight="bold" fill="#ff0080" letter-spacing="6" opacity="0.3" transform="translate(3,0)">ARTIFACT</text>
+  <text x="256" y="310" text-anchor="middle" font-family="monospace" font-size="32" font-weight="bold" fill="#cc6633" letter-spacing="6" opacity="0.9">ARTIFACT</text>
+  <text x="256" y="440" text-anchor="middle" font-family="monospace" font-size="12" fill="#886644" letter-spacing="3" opacity="0.6">ANALOG GLITCH CAMERA</text>
+</svg>
