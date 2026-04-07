@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TAKE — cbay</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #0a0406;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      color: #c08080;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100%; height: 100%;
+      height: 100dvh;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      padding: 0 12px;
+      background: rgba(10, 4, 6, 0.94);
+      border-bottom: 1px solid #2a1418;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .topbar a {
+      color: #cc4433;
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    .topbar .title {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #8a6068;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .topbar .controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .topbar button {
+      background: none;
+      border: 1px solid #3a1820;
+      color: #c08080;
+      width: 32px; height: 32px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .topbar button:active {
+      background: rgba(204, 68, 51, 0.15);
+      border-color: #cc4433;
+    }
+
+    /* ── Viewport ── */
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+    }
+
+    canvas {
+      width: 100%; height: 100%;
+      display: block;
+    }
+
+    /* ── HUD ── */
+    .hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .hud-mode {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: rgba(204, 68, 51, 0.6);
+      text-transform: uppercase;
+    }
+
+    .hud-fps {
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: rgba(140, 96, 104, 0.4);
+      margin-top: 4px;
+    }
+
+    .hud-rec {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 4;
+      pointer-events: none;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-rec .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #cc4433;
+      animation: recPulse 1s ease-in-out infinite;
+    }
+
+    .hud-rec .timer {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #cc4433;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @keyframes recPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      height: 48px;
+      background: rgba(10, 4, 6, 0.96);
+      border-top: 1px solid #2a1418;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .timeline::-webkit-scrollbar { display: none; }
+
+    .timeline .empty-msg {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #4a2830;
+      width: 100%;
+      text-align: center;
+    }
+
+    .clip-thumb {
+      height: 32px;
+      min-width: 40px;
+      border: 1px solid #3a1820;
+      background: #1a0a0e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: #8a5060;
+      letter-spacing: 1px;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .clip-thumb.active {
+      border-color: #cc4433;
+      color: #cc4433;
+    }
+
+    .clip-thumb .delete-clip {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 14px; height: 14px;
+      background: #cc4433;
+      color: #0a0406;
+      font-size: 8px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .clip-thumb:hover .delete-clip,
+    .clip-thumb:active .delete-clip {
+      display: flex;
+    }
+
+    /* ── Bottom bar ── */
+    .bottombar {
+      background: rgba(10, 4, 6, 0.95);
+      border-top: 1px solid #2a1418;
+      padding: 10px 12px 14px;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .modes {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      scrollbar-width: none;
+      justify-content: center;
+    }
+    .modes::-webkit-scrollbar { display: none; }
+
+    .modes button {
+      background: #120608;
+      border: 1px solid #3a1820;
+      color: #8a5060;
+      padding: 6px 10px;
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 36px;
+      flex-shrink: 0;
+    }
+
+    .modes button.active {
+      border-color: #cc4433;
+      color: #ee6655;
+      background: rgba(204, 68, 51, 0.1);
+    }
+
+    /* ── Record row ── */
+    .rec-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .rec-btn {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 3px solid #cc4433;
+      background: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .rec-btn .inner {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #cc4433;
+      transition: all 0.2s;
+    }
+
+    .rec-btn.recording .inner {
+      width: 20px; height: 20px;
+      border-radius: 4px;
+    }
+
+    .action-btn {
+      background: none;
+      border: 1px solid #3a1820;
+      color: #8a5060;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:active {
+      background: rgba(204, 68, 51, 0.15);
+      border-color: #cc4433;
+    }
+
+    .action-btn.ready {
+      border-color: #cc4433;
+      color: #cc4433;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    /* ── Overlay ── */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      background: #0a0406;
+      z-index: 5;
+    }
+
+    .overlay p {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #8a5060;
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.8;
+    }
+
+    .overlay .error { color: #cc4433; }
+
+    .overlay button {
+      background: none;
+      border: 1px solid #cc4433;
+      color: #ee6655;
+      padding: 10px 24px;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .overlay button:active {
+      background: rgba(204, 68, 51, 0.15);
+    }
+
+    /* ── Slider ── */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .slider-row.hidden { display: none; }
+
+    .slider-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #8a5060;
+      min-width: 40px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 2px;
+      background: #3a1820;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      background: #cc4433;
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      background: #cc4433;
+      border-radius: 0;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ── Export overlay ── */
+    .export-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 4, 6, 0.95);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .export-overlay.active { display: flex; }
+
+    .export-progress {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #cc4433;
+    }
+
+    .export-bar {
+      width: 200px;
+      height: 2px;
+      background: #3a1820;
+      position: relative;
+    }
+
+    .export-bar .fill {
+      height: 100%;
+      background: #cc4433;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    @media (max-width: 380px) {
+      .modes button { padding: 6px 6px; font-size: 8px; }
+    }
+
+    @media (env(safe-area-inset-bottom)) {
+      .bottombar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="topbar">
+      <a href="/">&larr; cbay</a>
+      <span class="title">TAKE</span>
+      <div class="controls">
+        <button id="flipBtn" title="flip camera">&#x21CC;</button>
+      </div>
+    </div>
+
+    <div class="viewport">
+      <canvas id="gl"></canvas>
+      <div class="hud">
+        <div class="hud-mode" id="hudMode">NRM</div>
+        <div class="hud-fps" id="hudFps"></div>
+      </div>
+      <div class="hud-rec" id="hudRec">
+        <span class="dot"></span>
+        <span class="timer" id="recTimer">00:00.0</span>
+      </div>
+      <div class="overlay" id="overlay">
+        <p id="overlayMsg">initializing take...</p>
+      </div>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <span class="empty-msg">no clips yet</span>
+    </div>
+
+    <div class="bottombar">
+      <div class="slider-row hidden" id="sliderRow">
+        <span class="slider-label" id="sliderLabel">FX</span>
+        <input type="range" id="fxSlider" min="0" max="100" value="50">
+      </div>
+      <div class="modes" id="modes">
+        <button class="active" data-mode="0">NRM</button>
+        <button data-mode="1">FILM</button>
+        <button data-mode="2">NEON</button>
+        <button data-mode="3">BW</button>
+        <button data-mode="4">VHS</button>
+        <button data-mode="5">TILT</button>
+        <button data-mode="6">BLOOM</button>
+        <button data-mode="7">GRAIN</button>
+      </div>
+      <div class="rec-row">
+        <button class="action-btn" id="undoBtn" disabled>UNDO</button>
+        <button class="rec-btn" id="recBtn"><span class="inner"></span></button>
+        <button class="action-btn" id="exportBtn" disabled>EXPORT</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="export-overlay" id="exportOverlay">
+    <p class="export-progress" id="exportStatus">concatenating clips...</p>
+    <div class="export-bar"><div class="fill" id="exportFill"></div></div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ═══════════════════════════════════════════════
+      // TAKE — short-form video tool
+      // record · effects · concatenate · export
+      // ═══════════════════════════════════════════════
+
+      var canvas = document.getElementById('gl');
+      var overlay = document.getElementById('overlay');
+      var overlayMsg = document.getElementById('overlayMsg');
+      var sliderRow = document.getElementById('sliderRow');
+      var sliderLabel = document.getElementById('sliderLabel');
+      var fxSlider = document.getElementById('fxSlider');
+      var flipBtn = document.getElementById('flipBtn');
+      var recBtn = document.getElementById('recBtn');
+      var undoBtn = document.getElementById('undoBtn');
+      var exportBtn = document.getElementById('exportBtn');
+      var timelineEl = document.getElementById('timeline');
+      var hudMode = document.getElementById('hudMode');
+      var hudFps = document.getElementById('hudFps');
+      var hudRec = document.getElementById('hudRec');
+      var recTimer = document.getElementById('recTimer');
+      var exportOverlay = document.getElementById('exportOverlay');
+      var exportStatus = document.getElementById('exportStatus');
+      var exportFill = document.getElementById('exportFill');
+      var modeButtons = document.querySelectorAll('#modes button');
+
+      var MODE_NAMES = ['NRM', 'FILM', 'NEON', 'BW', 'VHS', 'TILT', 'BLOOM', 'GRAIN'];
+      var SLIDER_LABELS = ['', 'WARMTH', 'GLOW', 'CONTRAST', 'DECAY', 'FOCUS', 'SOFT', 'AMOUNT'];
+
+      var currentMode = 0;
+      var fxAmount = 0.5;
+      var useFront = true;  // selfie default for short-form
+      var video = null;
+      var stream = null;
+      var gl = null;
+      var program = null;
+      var uniforms = {};
+      var cameraTextures = [];
+      var frameIdx = 0;
+      var running = false;
+      var firstFrame = true;
+
+      // Recording state
+      var isRecording = false;
+      var recorder = null;
+      var clips = []; // { blob, duration }
+      var recStartTime = 0;
+      var recTimerInterval = null;
+      var MAX_CLIP_SEC = 30;
+      var MAX_TOTAL_SEC = 180;
+
+      // FPS
+      var fpsFrames = 0;
+      var fpsTime = performance.now();
+
+      // ── Shader sources ──
+
+      var VERT = [
+        'attribute vec2 aPosition;',
+        'varying vec2 vUv;',
+        'void main() {',
+        '  vUv = aPosition * 0.5 + 0.5;',
+        '  gl_Position = vec4(aPosition, 0.0, 1.0);',
+        '}'
+      ].join('\n');
+
+      var FRAG = [
+        '#ifdef GL_FRAGMENT_PRECISION_HIGH',
+        '  precision highp float;',
+        '#else',
+        '  precision mediump float;',
+        '#endif',
+        '',
+        'varying vec2 vUv;',
+        'uniform sampler2D uCamera;',
+        'uniform sampler2D uPrevFrame;',
+        'uniform int uMode;',
+        'uniform float uTime;',
+        'uniform vec2 uResolution;',
+        'uniform vec2 uVideoSize;',
+        'uniform float uFx;',
+        'uniform float uMirror;',
+        '',
+        'vec2 adjustUv(vec2 uv) {',
+        '  if (uMirror > 0.5) uv.x = 1.0 - uv.x;',
+        '  uv.y = 1.0 - uv.y;',
+        '  float va = uVideoSize.x / uVideoSize.y;',
+        '  float ca = uResolution.x / uResolution.y;',
+        '  if (ca > va) {',
+        '    float s = va / ca;',
+        '    uv.y = uv.y * s + (1.0 - s) * 0.5;',
+        '  } else {',
+        '    float s = ca / va;',
+        '    uv.x = uv.x * s + (1.0 - s) * 0.5;',
+        '  }',
+        '  return uv;',
+        '}',
+        '',
+        'float lum(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }',
+        'float hash2(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
+        '',
+        'void main() {',
+        '  vec2 uv = adjustUv(vUv);',
+        '',
+        '  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {',
+        '    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);',
+        '    return;',
+        '  }',
+        '',
+        '  vec4 color = texture2D(uCamera, uv);',
+        '  float fx = uFx;',
+        '  vec2 tx = 1.0 / uVideoSize;',
+        '',
+        '  if (uMode == 0) {',
+        '    // ── NORMAL ──',
+        '    gl_FragColor = color;',
+        '',
+        '  } else if (uMode == 1) {',
+        '    // ── FILM (cinematic warm grade) ──',
+        '    vec3 c = color.rgb;',
+        '    // Lift shadows warm, pull highlights cool',
+        '    c = pow(c, vec3(0.95, 1.0, 1.08));',
+        '    // Orange/teal split tone',
+        '    float l = lum(c);',
+        '    vec3 shadows = mix(c, c * vec3(1.1, 0.9, 0.75), (1.0 - l) * fx * 0.6);',
+        '    vec3 highs = mix(c, c * vec3(0.9, 0.95, 1.15), l * fx * 0.4);',
+        '    c = mix(shadows, highs, l);',
+        '    // Subtle contrast S-curve',
+        '    c = mix(vec3(0.5), c, 1.0 + fx * 0.3);',
+        '    // Film grain',
+        '    float grain = (hash2(vUv * uResolution + uTime * 60.0) - 0.5) * 0.04 * fx;',
+        '    c += grain;',
+        '    // Vignette',
+        '    float vig = 1.0 - length(vUv - 0.5) * 0.5 * fx;',
+        '    c *= vig;',
+        '    gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 2) {',
+        '    // ── NEON (high-contrast color boost) ──',
+        '    vec3 c = color.rgb;',
+        '    float l = lum(c);',
+        '    // Saturate heavily',
+        '    c = mix(vec3(l), c, 1.0 + fx * 2.5);',
+        '    // Boost contrast',
+        '    c = pow(c, vec3(1.0 + fx * 0.8));',
+        '    // Glow: blur and add',
+        '    vec3 blur = vec3(0.0);',
+        '    for (int i = -2; i <= 2; i++) {',
+        '      for (int j = -2; j <= 2; j++) {',
+        '        blur += texture2D(uCamera, uv + vec2(float(i), float(j)) * tx * 3.0).rgb;',
+        '      }',
+        '    }',
+        '    blur /= 25.0;',
+        '    c += (blur - c) * fx * 0.3;',
+        '    // Darken midtones for neon pop',
+        '    float mid = smoothstep(0.2, 0.5, l) * smoothstep(0.8, 0.5, l);',
+        '    c *= 1.0 - mid * fx * 0.2;',
+        '    gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 3) {',
+        '    // ── BW (cinematic black & white) ──',
+        '    float l = lum(color.rgb);',
+        '    // Channel mixer weighted toward red for skin tones',
+        '    float bw = dot(color.rgb, vec3(0.4, 0.35, 0.25));',
+        '    // Contrast',
+        '    bw = mix(0.5, bw, 1.0 + fx * 0.6);',
+        '    bw = clamp(bw, 0.0, 1.0);',
+        '    // Subtle sepia option based on fx amount',
+        '    vec3 c = mix(vec3(bw), vec3(bw * 1.05, bw, bw * 0.9), fx * 0.3);',
+        '    // Grain',
+        '    float grain = (hash2(vUv * uResolution + uTime * 80.0) - 0.5) * 0.06 * fx;',
+        '    c += grain;',
+        '    // Vignette',
+        '    float vig = 1.0 - length(vUv - 0.5) * 0.6 * fx;',
+        '    c *= vig;',
+        '    gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 4) {',
+        '    // ── VHS (tape emulation) ──',
+        '    float t = uTime;',
+        '    float decay = 0.3 + fx * 0.7;',
+        '    float wobble = sin(uv.y * 80.0 + t * 3.0) * 0.003 * decay;',
+        '    wobble += (hash2(vec2(floor(uv.y * 20.0), floor(t * 2.0))) - 0.5) * 0.004 * decay;',
+        '    float spread = 0.004 * decay;',
+        '    float r = texture2D(uCamera, vec2(uv.x + wobble + spread, uv.y)).r;',
+        '    float g = texture2D(uCamera, vec2(uv.x + wobble, uv.y)).g;',
+        '    float b = texture2D(uCamera, vec2(uv.x + wobble - spread, uv.y)).b;',
+        '    vec3 vhs = vec3(r, g, b);',
+        '    float l = lum(vhs);',
+        '    vhs = mix(vhs, vec3(l), 0.2 * decay);',
+        '    vhs *= vec3(1.06, 0.97, 0.88);',
+        '    float scanline = 0.92 + 0.08 * sin(vUv.y * uResolution.y * 1.5);',
+        '    vhs *= scanline;',
+        '    float noise = hash2(uv * uResolution + t * 100.0) * 0.06 * decay;',
+        '    vhs += noise;',
+        '    float vig = 1.0 - length(vUv - 0.5) * 0.5;',
+        '    vhs *= vig;',
+        '    gl_FragColor = vec4(clamp(vhs, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 5) {',
+        '    // ── TILT SHIFT (selective focus miniature) ──',
+        '    float centerY = 0.5;',
+        '    float bandSize = 0.08 + (1.0 - fx) * 0.25;',
+        '    float dist = abs(uv.y - centerY);',
+        '    float blur_amt = smoothstep(bandSize, bandSize + 0.15, dist);',
+        '    vec3 sharp = color.rgb;',
+        '    vec3 blurred = vec3(0.0);',
+        '    float total = 0.0;',
+        '    for (int i = -3; i <= 3; i++) {',
+        '      for (int j = -3; j <= 3; j++) {',
+        '        float w = 1.0 / (1.0 + float(i*i + j*j));',
+        '        blurred += texture2D(uCamera, uv + vec2(float(i), float(j)) * tx * 4.0 * fx).rgb * w;',
+        '        total += w;',
+        '      }',
+        '    }',
+        '    blurred /= total;',
+        '    vec3 c = mix(sharp, blurred, blur_amt);',
+        '    // Boost saturation slightly for miniature look',
+        '    float l = lum(c);',
+        '    c = mix(vec3(l), c, 1.2);',
+        '    gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 6) {',
+        '    // ── BLOOM (soft highlights) ──',
+        '    vec3 c = color.rgb;',
+        '    float l = lum(c);',
+        '    // Extract bright areas',
+        '    float threshold = 1.0 - fx * 0.6;',
+        '    vec3 bright = max(c - threshold, 0.0) / max(1.0 - threshold, 0.001);',
+        '    // Blur bright areas',
+        '    vec3 bloomBlur = vec3(0.0);',
+        '    float bTotal = 0.0;',
+        '    for (int i = -3; i <= 3; i++) {',
+        '      for (int j = -3; j <= 3; j++) {',
+        '        vec3 s = texture2D(uCamera, uv + vec2(float(i), float(j)) * tx * 5.0).rgb;',
+        '        vec3 sb = max(s - threshold, 0.0) / max(1.0 - threshold, 0.001);',
+        '        float w = 1.0 / (1.0 + float(i*i + j*j) * 0.5);',
+        '        bloomBlur += sb * w;',
+        '        bTotal += w;',
+        '      }',
+        '    }',
+        '    bloomBlur /= bTotal;',
+        '    c += bloomBlur * fx * 0.8;',
+        '    // Slight warmth in bloom',
+        '    c += bloomBlur * vec3(0.05, 0.02, 0.0) * fx;',
+        '    gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);',
+        '',
+        '  } else if (uMode == 7) {',
+        '    // ── FILM GRAIN (16mm / Super 8) ──',
+        '    vec3 c = color.rgb;',
+        '    // Desaturate slightly',
+        '    float l = lum(c);',
+        '    c = mix(vec3(l), c, 1.0 - fx * 0.3);',
+        '    // Gate weave — slight position jitter',
+        '    float weaveX = (hash2(vec2(floor(uTime * 24.0), 1.0)) - 0.5) * 0.002 * fx;',
+        '    float weaveY = (hash2(vec2(floor(uTime * 24.0), 2.0)) - 0.5) * 0.001 * fx;',
+        '    c = texture2D(uCamera, uv + vec2(weaveX, weaveY)).rgb;',
+        '    c = mix(vec3(lum(c)), c, 1.0 - fx * 0.3);',
+        '    // Heavy grain',
+        '    float grain = hash2(vUv * uResolution + uTime * 120.0);',
+        '    grain = (grain - 0.5) * 0.12 * fx;',
+        '    c += grain;',
+        '    // Flicker — exposure variation per frame',
+        '    float flicker = 0.95 + 0.05 * hash2(vec2(floor(uTime * 24.0), 0.0));',
+        '    c *= flicker;',
+        '    // Slight vignette',
+        '    float vig = 1.0 - length(vUv - 0.5) * 0.7 * fx;',
+        '    c *= vig;',
+        '    gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);',
+        '  }',
+        '}'
+      ].join('\n');
+
+      // ── WebGL Setup ──
+
+      function compileShader(type, src) {
+        var s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          gl.deleteShader(s);
+          return null;
+        }
+        return s;
+      }
+
+      function initGL() {
+        gl = canvas.getContext('webgl', {
+          premultipliedAlpha: false,
+          preserveDrawingBuffer: true,
+          antialias: false,
+          alpha: false,
+        });
+
+        if (!gl) { showError('webgl not supported'); return false; }
+
+        var vs = compileShader(gl.VERTEX_SHADER, VERT);
+        var fs = compileShader(gl.FRAGMENT_SHADER, FRAG);
+        if (!vs || !fs) { showError('shader compilation failed'); return false; }
+
+        program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+          showError('shader link failed');
+          return false;
+        }
+
+        gl.useProgram(program);
+
+        var uniNames = ['uCamera', 'uPrevFrame', 'uMode', 'uTime',
+                        'uResolution', 'uVideoSize', 'uFx', 'uMirror'];
+        for (var i = 0; i < uniNames.length; i++) {
+          uniforms[uniNames[i]] = gl.getUniformLocation(program, uniNames[i]);
+        }
+
+        var quad = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, quad, gl.STATIC_DRAW);
+
+        var aPos = gl.getAttribLocation(program, 'aPosition');
+        gl.enableVertexAttribArray(aPos);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+        for (var j = 0; j < 2; j++) {
+          var tex = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          cameraTextures.push(tex);
+        }
+
+        return true;
+      }
+
+      // ── Camera ──
+
+      function startCamera() {
+        if (stream) stream.getTracks().forEach(function(t) { t.stop(); });
+
+        var constraints = {
+          video: {
+            facingMode: useFront ? 'user' : 'environment',
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
+          audio: true,
+        };
+
+        return navigator.mediaDevices.getUserMedia(constraints)
+        .catch(function() {
+          return navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+            audio: true,
+          });
+        }).then(function(s) {
+          stream = s;
+          if (!video) {
+            video = document.createElement('video');
+            video.setAttribute('playsinline', '');
+            video.setAttribute('autoplay', '');
+            video.muted = true;
+          }
+          video.srcObject = stream;
+          return video.play();
+        }).then(function() {
+          firstFrame = true;
+          overlay.style.display = 'none';
+          return true;
+        }).catch(function(err) {
+          if (err.name === 'NotAllowedError') showError('camera access denied');
+          else if (err.name === 'NotFoundError') showError('no camera found');
+          else if (err.name === 'NotReadableError') showError('camera in use');
+          else showError('camera error');
+          return false;
+        });
+      }
+
+      function showError(msg) {
+        overlayMsg.textContent = msg;
+        overlayMsg.className = 'error';
+        var existing = overlay.querySelector('button');
+        if (!existing) {
+          var btn = document.createElement('button');
+          btn.textContent = 'retry';
+          btn.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            overlayMsg.textContent = 'requesting camera...';
+            overlayMsg.className = '';
+            btn.remove();
+            startCamera().then(function(ok) {
+              if (ok) { running = true; render(); }
+            });
+          });
+          overlay.appendChild(btn);
+        }
+        overlay.style.display = 'flex';
+      }
+
+      // ── Resize ──
+
+      function resize() {
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+        if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
+      }
+
+      // ── Recording ──
+
+      function getCanvasStream() {
+        var canvasStream = canvas.captureStream(30);
+        // Mix in audio from camera
+        if (stream) {
+          var audioTracks = stream.getAudioTracks();
+          for (var i = 0; i < audioTracks.length; i++) {
+            canvasStream.addTrack(audioTracks[i]);
+          }
+        }
+        return canvasStream;
+      }
+
+      function startRecording() {
+        if (isRecording) return;
+        if (getTotalDuration() >= MAX_TOTAL_SEC) return;
+
+        var mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
+        var mimeType = '';
+        for (var i = 0; i < mimeTypes.length; i++) {
+          if (MediaRecorder.isTypeSupported(mimeTypes[i])) {
+            mimeType = mimeTypes[i];
+            break;
+          }
+        }
+        if (!mimeType) { showError('recording not supported'); return; }
+
+        var recordedChunks = [];
+        var mixedStream = getCanvasStream();
+
+        recorder = new MediaRecorder(mixedStream, {
+          mimeType: mimeType,
+          videoBitsPerSecond: 5000000,
+        });
+
+        recorder.ondataavailable = function(e) {
+          if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        recorder.onstop = function() {
+          var blob = new Blob(recordedChunks, { type: mimeType });
+          var duration = (performance.now() - recStartTime) / 1000;
+          clips.push({ blob: blob, duration: duration, mode: MODE_NAMES[currentMode] });
+          updateTimeline();
+          updateButtons();
+        };
+
+        recorder.start(100);
+        isRecording = true;
+        recStartTime = performance.now();
+        recBtn.classList.add('recording');
+        hudRec.style.display = 'flex';
+
+        recTimerInterval = setInterval(function() {
+          var elapsed = (performance.now() - recStartTime) / 1000;
+          recTimer.textContent = formatTime(elapsed);
+          if (elapsed >= MAX_CLIP_SEC) stopRecording();
+        }, 100);
+      }
+
+      function stopRecording() {
+        if (!isRecording || !recorder) return;
+        isRecording = false;
+        recorder.stop();
+        recorder = null;
+        recBtn.classList.remove('recording');
+        hudRec.style.display = 'none';
+        clearInterval(recTimerInterval);
+      }
+
+      function formatTime(sec) {
+        var m = Math.floor(sec / 60);
+        var s = Math.floor(sec % 60);
+        var ms = Math.floor((sec % 1) * 10);
+        return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s + '.' + ms;
+      }
+
+      function getTotalDuration() {
+        var total = 0;
+        for (var i = 0; i < clips.length; i++) total += clips[i].duration;
+        return total;
+      }
+
+      // ── Timeline UI ──
+
+      function updateTimeline() {
+        timelineEl.innerHTML = '';
+        if (clips.length === 0) {
+          timelineEl.innerHTML = '<span class="empty-msg">no clips yet</span>';
+          return;
+        }
+        for (var i = 0; i < clips.length; i++) {
+          (function(idx) {
+            var clip = clips[idx];
+            var el = document.createElement('div');
+            el.className = 'clip-thumb';
+            var widthPx = Math.max(40, Math.min(120, clip.duration * 15));
+            el.style.width = widthPx + 'px';
+            el.innerHTML = '<span>' + formatTime(clip.duration) + '</span>' +
+              '<span class="delete-clip">&times;</span>';
+            el.querySelector('.delete-clip').addEventListener('pointerdown', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              clips.splice(idx, 1);
+              updateTimeline();
+              updateButtons();
+            });
+            timelineEl.appendChild(el);
+          })(i);
+        }
+        // Auto-scroll to end
+        timelineEl.scrollLeft = timelineEl.scrollWidth;
+      }
+
+      function updateButtons() {
+        undoBtn.disabled = clips.length === 0;
+        exportBtn.disabled = clips.length === 0;
+        if (clips.length > 0) exportBtn.classList.add('ready');
+        else exportBtn.classList.remove('ready');
+      }
+
+      // ── Export (concatenate + download) ──
+
+      function exportVideo() {
+        if (clips.length === 0) return;
+
+        exportOverlay.classList.add('active');
+        exportFill.style.width = '0%';
+
+        if (clips.length === 1) {
+          // Single clip — just download
+          exportStatus.textContent = 'preparing...';
+          exportFill.style.width = '100%';
+          setTimeout(function() {
+            downloadBlob(clips[0].blob, 'take-' + Date.now());
+            exportOverlay.classList.remove('active');
+          }, 500);
+          return;
+        }
+
+        // Multiple clips — concatenate via re-encoding
+        exportStatus.textContent = 'concatenating ' + clips.length + ' clips...';
+        concatenateClips(clips).then(function(finalBlob) {
+          exportFill.style.width = '100%';
+          exportStatus.textContent = 'done';
+          setTimeout(function() {
+            downloadBlob(finalBlob, 'take-' + Date.now());
+            exportOverlay.classList.remove('active');
+          }, 500);
+        }).catch(function() {
+          // Fallback: download clips individually
+          exportStatus.textContent = 'exporting clips individually...';
+          for (var i = 0; i < clips.length; i++) {
+            downloadBlob(clips[i].blob, 'take-clip' + (i + 1) + '-' + Date.now());
+          }
+          setTimeout(function() { exportOverlay.classList.remove('active'); }, 1000);
+        });
+      }
+
+      function concatenateClips(clipList) {
+        return new Promise(function(resolve, reject) {
+          // Use video element playback → canvas → MediaRecorder to re-encode
+          var concatCanvas = document.createElement('canvas');
+          concatCanvas.width = canvas.width;
+          concatCanvas.height = canvas.height;
+          var ctx = concatCanvas.getContext('2d');
+
+          var mimeType = 'video/webm;codecs=vp9,opus';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm;codecs=vp8,opus';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+          }
+
+          var outputChunks = [];
+          var concatStream = concatCanvas.captureStream(30);
+
+          // Merge audio from clip playback
+          var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          var audioDestination = audioCtx.createMediaStreamDestination();
+          var audioTracks = audioDestination.stream.getAudioTracks();
+          for (var a = 0; a < audioTracks.length; a++) concatStream.addTrack(audioTracks[a]);
+
+          var concatRecorder = new MediaRecorder(concatStream, {
+            mimeType: mimeType,
+            videoBitsPerSecond: 5000000,
+          });
+
+          concatRecorder.ondataavailable = function(e) {
+            if (e.data && e.data.size > 0) outputChunks.push(e.data);
+          };
+
+          concatRecorder.onstop = function() {
+            audioCtx.close();
+            var finalBlob = new Blob(outputChunks, { type: mimeType });
+            resolve(finalBlob);
+          };
+
+          concatRecorder.start();
+
+          var clipIdx = 0;
+          function playNextClip() {
+            if (clipIdx >= clipList.length) {
+              concatRecorder.stop();
+              return;
+            }
+
+            var progress = Math.round((clipIdx / clipList.length) * 100);
+            exportFill.style.width = progress + '%';
+            exportStatus.textContent = 'clip ' + (clipIdx + 1) + ' / ' + clipList.length;
+
+            var clipVideo = document.createElement('video');
+            clipVideo.muted = false;
+            clipVideo.playsInline = true;
+            var url = URL.createObjectURL(clipList[clipIdx].blob);
+            clipVideo.src = url;
+
+            // Connect audio
+            var source = audioCtx.createMediaElementSource(clipVideo);
+            source.connect(audioDestination);
+
+            clipVideo.onended = function() {
+              URL.revokeObjectURL(url);
+              source.disconnect();
+              clipIdx++;
+              playNextClip();
+            };
+
+            clipVideo.onplay = function() {
+              function drawFrame() {
+                if (clipVideo.paused || clipVideo.ended) return;
+                ctx.drawImage(clipVideo, 0, 0, concatCanvas.width, concatCanvas.height);
+                requestAnimationFrame(drawFrame);
+              }
+              drawFrame();
+            };
+
+            clipVideo.onerror = function() {
+              URL.revokeObjectURL(url);
+              clipIdx++;
+              playNextClip();
+            };
+
+            clipVideo.play().catch(function() {
+              clipIdx++;
+              playNextClip();
+            });
+          }
+
+          playNextClip();
+        });
+      }
+
+      function downloadBlob(blob, name) {
+        var ext = blob.type.includes('mp4') ? '.mp4' : '.webm';
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = name + ext;
+        a.click();
+        setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+      }
+
+      // ── Render Loop ──
+
+      var time = 0;
+
+      function render() {
+        if (!running) return;
+        requestAnimationFrame(render);
+        if (!video || video.readyState < 2) return;
+
+        time += 0.016;
+
+        var currentTex = cameraTextures[frameIdx];
+        var prevTex = cameraTextures[1 - frameIdx];
+
+        if (firstFrame) {
+          for (var i = 0; i < 2; i++) {
+            gl.activeTexture(gl.TEXTURE0 + i);
+            gl.bindTexture(gl.TEXTURE_2D, cameraTextures[i]);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+          }
+          firstFrame = false;
+        }
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, currentTex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, prevTex);
+
+        gl.uniform1i(uniforms.uCamera, 0);
+        gl.uniform1i(uniforms.uPrevFrame, 1);
+        gl.uniform1i(uniforms.uMode, currentMode);
+        gl.uniform1f(uniforms.uTime, time);
+        gl.uniform2f(uniforms.uResolution, canvas.width, canvas.height);
+        gl.uniform2f(uniforms.uVideoSize, video.videoWidth, video.videoHeight);
+        gl.uniform1f(uniforms.uFx, fxAmount);
+        gl.uniform1f(uniforms.uMirror, useFront ? 1.0 : 0.0);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        frameIdx = 1 - frameIdx;
+
+        fpsFrames++;
+        var now = performance.now();
+        if (now - fpsTime >= 1000) {
+          hudFps.textContent = fpsFrames + ' fps';
+          fpsFrames = 0;
+          fpsTime = now;
+        }
+      }
+
+      // ── Event Handlers ──
+
+      function setMode(mode) {
+        currentMode = mode;
+        hudMode.textContent = MODE_NAMES[mode];
+        for (var i = 0; i < modeButtons.length; i++) {
+          if (parseInt(modeButtons[i].getAttribute('data-mode'), 10) === mode) {
+            modeButtons[i].classList.add('active');
+          } else {
+            modeButtons[i].classList.remove('active');
+          }
+        }
+        if (mode === 0) {
+          sliderRow.classList.add('hidden');
+        } else {
+          sliderRow.classList.remove('hidden');
+          sliderLabel.textContent = SLIDER_LABELS[mode];
+        }
+      }
+
+      for (var i = 0; i < modeButtons.length; i++) {
+        (function(btn) {
+          btn.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            setMode(parseInt(btn.getAttribute('data-mode'), 10));
+          });
+        })(modeButtons[i]);
+      }
+
+      fxSlider.addEventListener('input', function() {
+        fxAmount = fxSlider.value / 100;
+      });
+
+      flipBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        useFront = !useFront;
+        startCamera();
+      });
+
+      recBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        if (isRecording) stopRecording();
+        else startRecording();
+      });
+
+      undoBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        if (clips.length > 0) {
+          clips.pop();
+          updateTimeline();
+          updateButtons();
+        }
+      });
+
+      exportBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        exportVideo();
+      });
+
+      window.addEventListener('resize', resize);
+
+      // ── Initialize ──
+
+      resize();
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showError('camera api not available — use https');
+      } else if (initGL()) {
+        overlayMsg.textContent = 'TAKE';
+        overlayMsg.className = '';
+        var startBtn = document.createElement('button');
+        startBtn.textContent = 'enable camera';
+        startBtn.addEventListener('pointerdown', function(e) {
+          e.preventDefault();
+          startBtn.remove();
+          overlayMsg.textContent = 'requesting camera...';
+          startCamera().then(function(ok) {
+            if (ok) { running = true; render(); }
+          });
+        });
+        overlay.appendChild(startBtn);
+      } else {
+        showError('webgl init failed');
+      }
+
+    })();
+  </script>
+</body>
+</html>
