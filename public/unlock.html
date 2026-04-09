@@ -328,10 +328,8 @@
         <div id="result-details"></div>
 
         <div class="redeem-section" id="redeem-section" style="display:none;">
-          <label>device identifier</label>
-          <input type="text" id="device-id" placeholder="e.g. your-device-name or app install ID">
           <div style="display:flex;gap:8px;">
-            <button class="btn btn-primary" id="btn-redeem">redeem &amp; activate</button>
+            <button class="btn btn-primary" id="btn-redeem">activate on this device</button>
           </div>
           <div id="redeem-error" class="error-msg" style="display:none;"></div>
         </div>
@@ -466,15 +464,18 @@
 
       // Redeem
       document.getElementById('btn-redeem').addEventListener('click', function() {
-        var deviceId = document.getElementById('device-id').value.trim();
+        // Auto-generate persistent device ID
+        var deviceId = localStorage.getItem('cbay_device_id');
         if (!deviceId) {
-          showError('redeem-error', 'enter a device identifier');
-          return;
+          var arr = new Uint8Array(16);
+          crypto.getRandomValues(arr);
+          deviceId = Array.from(arr, function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+          localStorage.setItem('cbay_device_id', deviceId);
         }
 
         showError('redeem-error', '');
         this.disabled = true;
-        this.textContent = 'redeeming...';
+        this.textContent = 'activating...';
 
         fetch('/api/redeem', {
           method: 'POST',
@@ -484,22 +485,44 @@
         .then(function(r) { return r.json(); })
         .then(function(data) {
           document.getElementById('btn-redeem').disabled = false;
-          document.getElementById('btn-redeem').textContent = 'redeem & activate';
+          document.getElementById('btn-redeem').textContent = 'activate on this device';
 
           if (data.error) {
             showError('redeem-error', data.error);
             return;
           }
 
+          // Store activation locally
+          var activations = JSON.parse(localStorage.getItem('cbay_activations') || '{}');
+          activations[data.product] = {
+            code: getCode(),
+            tier: data.tier,
+            platforms: data.platforms,
+            activatedAt: new Date().toISOString(),
+            unlocks: data.unlocks
+          };
+          localStorage.setItem('cbay_activations', JSON.stringify(activations));
+
           var resultEl = document.getElementById('result');
           resultEl.className = 'result activated';
           resultEl.style.display = 'block';
           document.getElementById('result-status').textContent = 'activated \u2713';
-          document.getElementById('result-details').innerHTML =
-            '<p class="result-detail" style="color:var(--mint);">Code redeemed and bound to your device. Full access granted.</p>' +
-            '<ul class="unlock-list">' +
-            data.unlocks.map(function(u) { return '<li>' + u + '</li>'; }).join('') +
-            '</ul>';
+
+          var webApps = { SPECTRA: '/spectra', ARTIFACT: '/artifact', TAKE: '/take' };
+          var webLinks = [];
+          var nativeNames = [];
+          data.unlocks.forEach(function(u) {
+            if (webApps[u]) webLinks.push('<li><a href="' + webApps[u] + '" style="color:var(--cyan);text-decoration:none;">' + u + ' \u2192 open</a></li>');
+            else nativeNames.push('<li>' + u + ' <span style="color:var(--text-muted);font-size:9px;">(native app)</span></li>');
+          });
+
+          var msg = '<p class="result-detail" style="color:var(--mint);">Code activated and bound to this device.</p>';
+          if (webLinks.length) msg += '<ul class="unlock-list">' + webLinks.join('') + '</ul>';
+          if (nativeNames.length) {
+            msg += '<ul class="unlock-list">' + nativeNames.join('') + '</ul>';
+            msg += '<p class="result-detail" style="margin-top:8px;">Enter this same code in the native app\u2019s activation screen on iOS, Android, or Desktop.</p>';
+          }
+          document.getElementById('result-details').innerHTML = msg;
           document.getElementById('redeem-section').style.display = 'none';
         })
         .catch(function() {
