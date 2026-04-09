@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>b0b Protective Tones</title>
 <meta name="description" content="Binaural beats, pink/brown noise, ocean waves - standalone, zero dependencies">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0a0a14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Protective Tones">
@@ -14,22 +14,22 @@
 <link rel="apple-touch-icon" href="/favicon.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);user-select:none;-webkit-user-select:none}
-.app{max-width:500px;width:100%;padding:24px;border:1px solid #333;border-radius:4px}
-.app h1{color:#00ccff;font-size:1rem;letter-spacing:2px;margin-bottom:16px;text-align:center}
+body{background:#0a0a14;color:#e8e8f0;font-family:system-ui,sans-serif;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);user-select:none;-webkit-user-select:none}
+.app{max-width:500px;width:100%;padding:24px;border:1px solid #1e1e3a;border-radius: 8px}
+.app h1{color:#00E5FF;font-size:1rem;letter-spacing:2px;margin-bottom:16px;text-align:center}
 .freq-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.btn{padding:10px 14px;background:transparent;border:1px solid #00ccff;color:#00ccff;font-family:inherit;font-size:0.8rem;cursor:pointer;border-radius:2px;flex:1 1 calc(50% - 6px);min-width:100px;text-align:center;transition:background 0.2s,color 0.2s}
-.btn:hover,.btn.active{background:#00ccff;color:#0a0a0a}
-.status{margin:12px 0;color:#555;font-size:0.85rem;text-align:center;min-height:1.2em}
+.btn{padding:10px 14px;background:transparent;border:1px solid #00E5FF;color:#00E5FF;font-family:inherit;font-size:0.8rem;cursor:pointer;border-radius: 8px;flex:1 1 calc(50% - 6px);min-width:100px;text-align:center;transition:background 0.2s,color 0.2s}
+.btn:hover,.btn.active{background:#00E5FF;color:#0a0a14}
+.status{margin:12px 0;color:#8888aa;font-size:0.85rem;text-align:center;min-height:1.2em}
 .toggle{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0;cursor:pointer;font-size:0.9rem}
-.toggle input{width:22px;height:22px;accent-color:#00ccff}
-input[type=range]{width:100%;margin:12px 0;accent-color:#00ccff;height:28px}
-.info{color:#555;font-size:0.7rem;text-align:center;margin:8px 0;line-height:1.4}
-.credit{margin-top:20px;color:#333;font-size:0.6rem;text-align:center}
-.credit a{color:#555;text-decoration:none}
-.install-banner{display:none;background:#111;border:1px solid #00ccff;padding:12px;margin-bottom:16px;border-radius:4px;font-size:0.75rem;color:#aaa;text-align:center;line-height:1.5}
-.install-banner strong{color:#00ccff}
-.install-banner .dismiss{color:#555;cursor:pointer;font-size:0.65rem;margin-top:6px;display:block}
+.toggle input{width:22px;height:22px;accent-color:#00E5FF}
+input[type=range]{width:100%;margin:12px 0;accent-color:#00E5FF;height:28px}
+.info{color:#8888aa;font-size:0.7rem;text-align:center;margin:8px 0;line-height:1.4}
+.credit{margin-top:20px;color:#1e1e3a;font-size:0.6rem;text-align:center}
+.credit a{color:#8888aa;text-decoration:none}
+.install-banner{display:none;background:#12121e;border:1px solid #00E5FF;padding:12px;margin-bottom:16px;border-radius: 8px;font-size:0.75rem;color:#aaaacc;text-align:center;line-height:1.5}
+.install-banner strong{color:#00E5FF}
+.install-banner .dismiss{color:#8888aa;cursor:pointer;font-size:0.65rem;margin-top:6px;display:block}
 @media(max-width:360px){.btn{flex:1 1 calc(50% - 4px);padding:8px 8px;font-size:0.7rem;min-width:80px}}
 </style>
 </head>
@@ -54,7 +54,7 @@ input[type=range]{width:100%;margin:12px 0;accent-color:#00ccff;height:28px}
   </div>
   <input type="range" min="0" max="100" value="30" oninput="vol(this.value)" title="Volume">
   <div class="info">🌊 7.83 Hz Schumann is Earth's electromagnetic heartbeat. Use headphones for binaural entrainment. 🐾 ANIMAL-SAFE.</div>
-  <div class="credit"><a href="https://b0b.dev">b0b.dev</a> - COUNTERMEASURES</div>
+  <div class="credit"><a href="https://cbay.ing">cbay.ing</a> - COUNTERMEASURES</div>
 </div>
 <script>
 var ctx,oscL,oscR,noise,lfo,gain,on=false,freq=7.83,name="Schumann Resonance",type="binaural",v=0.075;
@@ -105,13 +105,13 @@ function toggle(e){
     }
     on=true;
     document.getElementById("st").textContent="ACTIVE - "+name;
-    document.getElementById("st").style.color="#00ccff";
+    document.getElementById("st").style.color="#00E5FF";
   } else {
     if(gain&&ctx){gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.4);setTimeout(cleanup,450)}
     else cleanup();
     on=false;
     document.getElementById("st").textContent="INACTIVE";
-    document.getElementById("st").style.color="#555";
+    document.getElementById("st").style.color="#8888aa";
   }
 }
 
@@ -141,7 +141,7 @@ function vol(val){v=(val/100)*0.25;if(on&&gain&&ctx) gain.gain.linearRampToValue
   var deferredPrompt=null;
   window.addEventListener('beforeinstallprompt',function(e){
     e.preventDefault();deferredPrompt=e;
-    inst.innerHTML='<button onclick="installPWA()" style="background:#00ccff;color:#0a0a0a;border:none;padding:8px 16px;font-family:inherit;cursor:pointer;border-radius:2px;font-size:0.8rem">⬇ INSTALL TO HOME SCREEN</button>';
+    inst.innerHTML='<button onclick="installPWA()" style="background:#00E5FF;color:#0a0a14;border:none;padding:8px 16px;font-family:inherit;cursor:pointer;border-radius: 8px;font-size:0.8rem">⬇ INSTALL TO HOME SCREEN</button>';
     banner.style.display='block';
   });
   window.installPWA=function(){

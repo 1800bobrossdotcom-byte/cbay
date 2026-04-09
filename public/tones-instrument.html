@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1">
 <title>b0b TONE LAB v2 - Sacred Frequency Instrument</title>
 <meta name="description" content="Sacred frequency instrument with monk chant synthesis, MIDI control, 32-step sequencer, analog warmth engine, and WAV recording">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0a0a14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="b0b Tone Lab">
@@ -14,37 +14,37 @@
 <link rel="apple-touch-icon" href="/favicon.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 8px env(safe-area-inset-bottom);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;overflow-y:auto;overflow-x:hidden}
+body{background:#0a0a14;color:#e8e8f0;font-family:system-ui,sans-serif;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 8px env(safe-area-inset-bottom);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;overflow-y:auto;overflow-x:hidden}
 
 /* ─── HEADER ─── */
 .header{text-align:center;padding:10px 0 2px;width:100%;max-width:720px;position:relative}
-.header h1{color:#ff4444;font-size:0.9rem;letter-spacing:2px;display:flex;align-items:center;justify-content:center;gap:8px}
-.header .sub{color:#555;font-size:0.55rem;margin-top:2px;letter-spacing:0.5px}
+.header h1{color:#FF00E5;font-size:0.9rem;letter-spacing:2px;display:flex;align-items:center;justify-content:center;gap:8px}
+.header .sub{color:#8888aa;font-size:0.55rem;margin-top:2px;letter-spacing:0.5px}
 .status-pills{display:flex;justify-content:center;gap:6px;margin-top:4px}
-.pill{font-size:0.5rem;padding:1px 7px;border-radius:8px;border:1px solid #333;color:#555}
-.pill.active{border-color:#00ff41;color:#00ff41}
-.pill.rec{border-color:#ff4444;color:#ff4444;animation:pulse-rec 1s ease infinite}
+.pill{font-size:0.5rem;padding:1px 7px;border-radius:8px;border:1px solid #1e1e3a;color:#8888aa}
+.pill.active{border-color:#00E5FF;color:#00E5FF}
+.pill.rec{border-color:#FF00E5;color:#FF00E5;animation:pulse-rec 1s ease infinite}
 @keyframes pulse-rec{0%,100%{opacity:1}50%{opacity:0.4}}
 
 /* ─── VISUALIZER ─── */
 .viz-bar{width:100%;max-width:720px;height:64px;display:flex;gap:4px;margin:4px 0}
-.viz-canvas{flex:1;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:3px}
+.viz-canvas{flex:1;background:#0a0a14;border:1px solid #16162a;border-radius: 8px}
 .vu-wrap{width:28px;display:flex;flex-direction:column;gap:2px}
-.vu-meter{flex:1;background:#111;border:1px solid #1a1a1a;border-radius:2px;position:relative;overflow:hidden}
-.vu-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,#00ff41 0%,#00ff41 60%,#ffcc00 75%,#ff4444 90%);transition:height 0.06s}
-.vu-label{font-size:0.4rem;color:#444;text-align:center}
+.vu-meter{flex:1;background:#12121e;border:1px solid #16162a;border-radius: 8px;position:relative;overflow:hidden}
+.vu-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,#00E5FF 0%,#00E5FF 60%,#FF8800 75%,#FF00E5 90%);transition:height 0.06s}
+.vu-label{font-size:0.4rem;color:#2a2a4a;text-align:center}
 
 /* ─── ACTIVE DISPLAY ─── */
-.active-display{width:100%;max-width:720px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:3px;padding:4px 8px;min-height:24px;display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.active-display{width:100%;max-width:720px;background:#0a0a14;border:1px solid #16162a;border-radius: 8px;padding:4px 8px;min-height:24px;display:flex;flex-wrap:wrap;gap:3px;align-items:center}
 .active-tag{font-size:0.55rem;padding:1px 6px;border-radius:8px;border:1px solid;display:flex;align-items:center;gap:3px}
-.active-tag.sol{border-color:#00ff41;color:#00ff41}
-.active-tag.chant{border-color:#daa520;color:#daa520}
-.active-tag.bin{border-color:#00ccff;color:#00ccff}
+.active-tag.sol{border-color:#00E5FF;color:#00E5FF}
+.active-tag.chant{border-color:#FF8800;color:#FF8800}
+.active-tag.bin{border-color:#00E5FF;color:#00E5FF}
 .active-tag.noi{border-color:#ffaa50;color:#ffaa50}
 .active-tag.ult{border-color:#cc88ff;color:#cc88ff}
 .active-tag .x{cursor:pointer;opacity:0.5;font-size:0.65rem}
 .active-tag .x:hover{opacity:1}
-.empty-state{color:#333;font-size:0.55rem;font-style:italic}
+.empty-state{color:#1e1e3a;font-size:0.55rem;font-style:italic}
 
 /* ─── PAD GRID ─── */
 .pad-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%;max-width:720px;padding:4px 0;touch-action:pan-y}
@@ -58,13 +58,13 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
 
 /* Solfeggio - green */
 .pad.sol .glow{background:radial-gradient(circle,rgba(0,255,65,0.2) 0%,transparent 70%)}
-.pad.sol .freq-label{color:#00ff41}.pad.sol .vol-bar{background:#00ff41}.pad.sol.playing{border-color:#00ff41}
+.pad.sol .freq-label{color:#00E5FF}.pad.sol .vol-bar{background:#00E5FF}.pad.sol.playing{border-color:#00E5FF}
 /* Sacred Chant - gold */
 .pad.chant .glow{background:radial-gradient(circle,rgba(218,165,32,0.25) 0%,transparent 70%)}
-.pad.chant .freq-label{color:#daa520}.pad.chant .vol-bar{background:#daa520}.pad.chant.playing{border-color:#daa520}
+.pad.chant .freq-label{color:#FF8800}.pad.chant .vol-bar{background:#FF8800}.pad.chant.playing{border-color:#FF8800}
 /* Binaural - cyan */
 .pad.bin .glow{background:radial-gradient(circle,rgba(0,204,255,0.2) 0%,transparent 70%)}
-.pad.bin .freq-label{color:#00ccff}.pad.bin .vol-bar{background:#00ccff}.pad.bin.playing{border-color:#00ccff}
+.pad.bin .freq-label{color:#00E5FF}.pad.bin .vol-bar{background:#00E5FF}.pad.bin.playing{border-color:#00E5FF}
 /* Noise/Ambient - warm */
 .pad.noi .glow{background:radial-gradient(circle,rgba(255,170,80,0.18) 0%,transparent 70%)}
 .pad.noi .freq-label{color:#ffaa50}.pad.noi .vol-bar{background:#ffaa50}.pad.noi.playing{border-color:#ffaa50}
@@ -73,97 +73,97 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
 .pad.ult .freq-label{color:#cc88ff}.pad.ult .vol-bar{background:#cc88ff}.pad.ult.playing{border-color:#cc88ff}
 
 /* ─── CONTROL TABS ─── */
-.ctrl-tabs{width:100%;max-width:720px;display:flex;border-bottom:1px solid #222;margin-top:4px}
-.ctrl-tab{flex:1;text-align:center;padding:5px 0;font-size:0.6rem;color:#555;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:1px;transition:all 0.15s}
-.ctrl-tab:hover{color:#888}
-.ctrl-tab.active{color:#ff4444;border-bottom-color:#ff4444}
+.ctrl-tabs{width:100%;max-width:720px;display:flex;border-bottom:1px solid #1e1e3a;margin-top:4px}
+.ctrl-tab{flex:1;text-align:center;padding:5px 0;font-size:0.6rem;color:#8888aa;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:1px;transition:all 0.15s}
+.ctrl-tab:hover{color:#9999bb}
+.ctrl-tab.active{color:#FF00E5;border-bottom-color:#FF00E5}
 .ctrl-panels{width:100%;max-width:720px}
 .ctrl-panel{display:none;padding:6px 0;flex-direction:column;gap:3px}
 .ctrl-panel.active{display:flex}
-.ctrl-row{display:flex;align-items:center;gap:6px;padding:3px 8px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:3px}
-.ctrl-row label{font-size:0.6rem;color:#666;white-space:nowrap;min-width:55px}
-.ctrl-row input[type=range]{flex:1;height:20px;accent-color:#ff4444}
-.ctrl-row .val{font-size:0.55rem;color:#444;min-width:32px;text-align:right}
-.ctrl-row select{background:#0a0a0a;color:#d4d4d4;border:1px solid #333;font-family:inherit;font-size:0.6rem;padding:2px 6px;border-radius:2px}
-.ctrl-row button{background:transparent;border:1px solid #333;color:#777;font-family:inherit;font-size:0.55rem;padding:3px 8px;cursor:pointer;border-radius:2px;transition:all 0.15s}
-.ctrl-row button:hover{border-color:#00ff41;color:#00ff41}
-.ctrl-row button.active{background:#00ff41;color:#0a0a0a;border-color:#00ff41}
-.ctrl-row button.rec-active{background:#ff4444;color:#0a0a0a;border-color:#ff4444}
+.ctrl-row{display:flex;align-items:center;gap:6px;padding:3px 8px;background:#0a0a14;border:1px solid #16162a;border-radius: 8px}
+.ctrl-row label{font-size:0.6rem;color:#8888aa;white-space:nowrap;min-width:55px}
+.ctrl-row input[type=range]{flex:1;height:20px;accent-color:#FF00E5}
+.ctrl-row .val{font-size:0.55rem;color:#2a2a4a;min-width:32px;text-align:right}
+.ctrl-row select{background:#0a0a14;color:#e8e8f0;border:1px solid #1e1e3a;font-family:inherit;font-size:0.6rem;padding:2px 6px;border-radius: 8px}
+.ctrl-row button{background:transparent;border:1px solid #1e1e3a;color:#8888aa;font-family:inherit;font-size:0.55rem;padding:3px 8px;cursor:pointer;border-radius: 8px;transition:all 0.15s}
+.ctrl-row button:hover{border-color:#00E5FF;color:#00E5FF}
+.ctrl-row button.active{background:#00E5FF;color:#0a0a14;border-color:#00E5FF}
+.ctrl-row button.rec-active{background:#FF00E5;color:#0a0a14;border-color:#FF00E5}
 .ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px}
 
 /* ─── SEQUENCER ─── */
-.seq-section{width:100%;max-width:720px;border:1px solid #1a1a1a;border-radius:3px;padding:6px 8px;margin:4px 0;background:#0d0d0d}
+.seq-section{width:100%;max-width:720px;border:1px solid #16162a;border-radius: 8px;padding:6px 8px;margin:4px 0;background:#0a0a14}
 .seq-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .seq-header h3{font-size:0.65rem;color:#ffaa50;letter-spacing:1px;display:flex;align-items:center;gap:5px}
-.seq-header .dot{width:5px;height:5px;border-radius:50%;background:#333;transition:background 0.2s}
+.seq-header .dot{width:5px;height:5px;border-radius:50%;background:#1e1e3a;transition:background 0.2s}
 .seq-header .dot.on{background:#ffaa50;box-shadow:0 0 4px #ffaa50}
 .seq-patterns{display:flex;gap:3px}
-.seq-patterns button{font-size:0.5rem;padding:2px 6px;background:transparent;border:1px solid #333;color:#555;cursor:pointer;font-family:inherit;border-radius:2px}
-.seq-patterns button.active{background:#ffaa50;color:#0a0a0a;border-color:#ffaa50}
-.seq-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#222 #0d0d0d}
+.seq-patterns button{font-size:0.5rem;padding:2px 6px;background:transparent;border:1px solid #1e1e3a;color:#8888aa;cursor:pointer;font-family:inherit;border-radius: 8px}
+.seq-patterns button.active{background:#ffaa50;color:#0a0a14;border-color:#ffaa50}
+.seq-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#1e1e3a #0a0a14}
 .seq-row{display:flex;align-items:center;gap:2px;margin:2px 0;min-width:min-content}
-.seq-row .seq-label{font-size:0.45rem;color:#555;width:32px;text-align:right;flex-shrink:0;padding-right:3px}
-.seq-step{width:18px;height:14px;border:1px solid #1a1a1a;border-radius:1px;cursor:pointer;transition:all 0.08s;flex-shrink:0}
-.seq-step:nth-child(4n+2){border-right-color:#333}
-.seq-step:hover{border-color:#444}
-.seq-step.on{border-color:#00ff41}
+.seq-row .seq-label{font-size:0.45rem;color:#8888aa;width:32px;text-align:right;flex-shrink:0;padding-right:3px}
+.seq-step{width:18px;height:14px;border:1px solid #16162a;border-radius: 6px;cursor:pointer;transition:all 0.08s;flex-shrink:0}
+.seq-step:nth-child(4n+2){border-right-color:#1e1e3a}
+.seq-step:hover{border-color:#2a2a4a}
+.seq-step.on{border-color:#00E5FF}
 .seq-step.accent{border-width:2px}
-.seq-step.sol.on{background:#00ff41;opacity:0.7}
-.seq-step.chant.on{background:#daa520;opacity:0.7}
-.seq-step.bin.on{background:#00ccff;opacity:0.7}
+.seq-step.sol.on{background:#00E5FF;opacity:0.7}
+.seq-step.chant.on{background:#FF8800;opacity:0.7}
+.seq-step.bin.on{background:#00E5FF;opacity:0.7}
 .seq-step.noi.on{background:#ffaa50;opacity:0.7}
 .seq-step.ult.on{background:#cc88ff;opacity:0.7}
 .seq-step.current{box-shadow:inset 0 0 0 1px rgba(255,255,255,0.6)}
 .seq-transport{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
-.seq-transport button{background:transparent;border:1px solid #333;color:#777;font-family:inherit;font-size:0.55rem;padding:3px 10px;cursor:pointer;border-radius:2px}
+.seq-transport button{background:transparent;border:1px solid #1e1e3a;color:#8888aa;font-family:inherit;font-size:0.55rem;padding:3px 10px;cursor:pointer;border-radius: 8px}
 .seq-transport button:hover{border-color:#ffaa50;color:#ffaa50}
-.seq-transport button.playing{background:#ffaa50;color:#0a0a0a;border-color:#ffaa50}
+.seq-transport button.playing{background:#ffaa50;color:#0a0a14;border-color:#ffaa50}
 
 /* ─── RECORDING BAR ─── */
-.rec-bar{width:100%;max-width:720px;display:flex;align-items:center;gap:6px;padding:4px 8px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:3px;margin:3px 0}
-.rec-bar .rec-dot{width:8px;height:8px;border-radius:50%;background:#333;flex-shrink:0}
-.rec-bar .rec-dot.on{background:#ff4444;animation:pulse-rec 1s ease infinite}
-.rec-bar .rec-time{font-size:0.6rem;color:#555;min-width:48px;font-variant-numeric:tabular-nums}
-.rec-bar button{background:transparent;border:1px solid #333;color:#777;font-family:inherit;font-size:0.55rem;padding:3px 8px;cursor:pointer;border-radius:2px}
-.rec-bar button:hover{border-color:#ff4444;color:#ff4444}
+.rec-bar{width:100%;max-width:720px;display:flex;align-items:center;gap:6px;padding:4px 8px;background:#0a0a14;border:1px solid #16162a;border-radius: 8px;margin:3px 0}
+.rec-bar .rec-dot{width:8px;height:8px;border-radius:50%;background:#1e1e3a;flex-shrink:0}
+.rec-bar .rec-dot.on{background:#FF00E5;animation:pulse-rec 1s ease infinite}
+.rec-bar .rec-time{font-size:0.6rem;color:#8888aa;min-width:48px;font-variant-numeric:tabular-nums}
+.rec-bar button{background:transparent;border:1px solid #1e1e3a;color:#8888aa;font-family:inherit;font-size:0.55rem;padding:3px 8px;cursor:pointer;border-radius: 8px}
+.rec-bar button:hover{border-color:#FF00E5;color:#FF00E5}
 
 /* ─── MIDI ─── */
-.midi-section{width:100%;max-width:720px;border:1px solid #1a1a1a;border-radius:3px;padding:6px 8px;margin:3px 0;background:#0d0d0d}
-.midi-section h3{font-size:0.65rem;color:#00ccff;letter-spacing:1px;margin-bottom:4px}
+.midi-section{width:100%;max-width:720px;border:1px solid #16162a;border-radius: 8px;padding:6px 8px;margin:3px 0;background:#0a0a14}
+.midi-section h3{font-size:0.65rem;color:#00E5FF;letter-spacing:1px;margin-bottom:4px}
 .midi-row{display:flex;align-items:center;gap:6px;margin:3px 0}
-.midi-row label{font-size:0.55rem;color:#555;min-width:50px}
-.midi-row select{background:#0a0a0a;color:#d4d4d4;border:1px solid #333;font-family:inherit;font-size:0.55rem;padding:2px 4px;flex:1;border-radius:2px}
-.daw-info{margin-top:6px;padding:6px 8px;background:#111;border:1px solid #1a1a1a;border-radius:3px;font-size:0.5rem;color:#444;line-height:1.5}
-.daw-info strong{color:#666}
+.midi-row label{font-size:0.55rem;color:#8888aa;min-width:50px}
+.midi-row select{background:#0a0a14;color:#e8e8f0;border:1px solid #1e1e3a;font-family:inherit;font-size:0.55rem;padding:2px 4px;flex:1;border-radius: 8px}
+.daw-info{margin-top:6px;padding:6px 8px;background:#12121e;border:1px solid #16162a;border-radius: 8px;font-size:0.5rem;color:#2a2a4a;line-height:1.5}
+.daw-info strong{color:#8888aa}
 
-.credit{margin:6px 0;color:#333;font-size:0.55rem;text-align:center}
-.credit a{color:#444;text-decoration:none}
-.install-banner{display:none;background:#0d0d0d;border:1px solid #ff4444;padding:8px;margin:4px 0;border-radius:3px;font-size:0.65rem;color:#888;text-align:center;line-height:1.4;max-width:720px;width:100%}
-.install-banner strong{color:#ff4444}
-.install-banner .dismiss{color:#444;cursor:pointer;font-size:0.55rem;margin-top:3px;display:block}
+.credit{margin:6px 0;color:#1e1e3a;font-size:0.55rem;text-align:center}
+.credit a{color:#2a2a4a;text-decoration:none}
+.install-banner{display:none;background:#0a0a14;border:1px solid #FF00E5;padding:8px;margin:4px 0;border-radius: 8px;font-size:0.65rem;color:#9999bb;text-align:center;line-height:1.4;max-width:720px;width:100%}
+.install-banner strong{color:#FF00E5}
+.install-banner .dismiss{color:#2a2a4a;cursor:pointer;font-size:0.55rem;margin-top:3px;display:block}
 
 /* ─── MICROPHONE ─── */
 .mic-pitch{font-size:1.2rem;font-weight:bold;color:#ff6699;text-align:center;padding:4px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
-.mic-pitch small{font-size:0.5rem;color:#555;font-weight:normal;display:block}
+.mic-pitch small{font-size:0.5rem;color:#8888aa;font-weight:normal;display:block}
 .mic-note{font-size:0.7rem;color:#ff6699;opacity:0.7}
 .pill.mic{border-color:#ff6699;color:#ff6699}
-.evolve-active{background:#ff6600!important;color:#0a0a0a!important;border-color:#ff6600!important;animation:pulse-rec 1.5s ease infinite}
-.seq-transport input[type=number]{background:#0a0a0a;color:#d4d4d4;border:1px solid #333;font-family:inherit;font-size:0.55rem;padding:2px 4px;width:42px;text-align:center;border-radius:2px}
+.evolve-active{background:#FF8800!important;color:#0a0a14!important;border-color:#FF8800!important;animation:pulse-rec 1.5s ease infinite}
+.seq-transport input[type=number]{background:#0a0a14;color:#e8e8f0;border:1px solid #1e1e3a;font-family:inherit;font-size:0.55rem;padding:2px 4px;width:42px;text-align:center;border-radius: 8px}
 
 /* ─── COLLAPSIBLE SECTIONS ─── */
-.section-toggle{width:100%;max-width:720px;display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:3px;margin:3px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.section-toggle h3{font-size:0.6rem;color:#888;letter-spacing:1px;margin:0}
-.section-toggle .arrow{color:#444;font-size:0.7rem;transition:transform 0.2s}
+.section-toggle{width:100%;max-width:720px;display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:#0a0a14;border:1px solid #16162a;border-radius: 8px;margin:3px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.section-toggle h3{font-size:0.6rem;color:#9999bb;letter-spacing:1px;margin:0}
+.section-toggle .arrow{color:#2a2a4a;font-size:0.7rem;transition:transform 0.2s}
 .section-toggle.open .arrow{transform:rotate(180deg)}
 .section-body{overflow:hidden;transition:max-height 0.3s ease,opacity 0.2s;max-height:0;opacity:0}
 .section-body.open{max-height:2000px;opacity:1}
 
 /* ─── SCROLL HINT ─── */
-.scroll-hint{display:none;text-align:center;color:#333;font-size:0.45rem;padding:2px 0;letter-spacing:1px}
+.scroll-hint{display:none;text-align:center;color:#1e1e3a;font-size:0.45rem;padding:2px 0;letter-spacing:1px}
 
 /* ─── STICKY TRANSPORT (mobile) ─── */
 @media(max-width:720px){
-  .seq-transport-sticky{position:sticky;bottom:0;z-index:50;background:#0a0a0a;border-top:1px solid #222;padding:6px 8px;margin:0 -8px;width:calc(100% + 16px)}
+  .seq-transport-sticky{position:sticky;bottom:0;z-index:50;background:#0a0a14;border-top:1px solid #1e1e3a;padding:6px 8px;margin:0 -8px;width:calc(100% + 16px)}
   .scroll-hint{display:block}
 }
 
@@ -198,7 +198,7 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
 
 <!-- HEADER -->
 <div class="header">
-  <h1>b0b TONE LAB <span style="font-size:0.5rem;color:#555;font-weight:normal">v2</span></h1>
+  <h1>b0b TONE LAB <span style="font-size:0.5rem;color:#8888aa;font-weight:normal">v2</span></h1>
   <div class="sub">SACRED FREQUENCY INSTRUMENT &mdash; TOUCH &middot; MIDI &middot; SEQUENCER &middot; RECORDING</div>
   <div class="status-pills">
     <span class="pill" id="midiPill">MIDI</span>
@@ -260,7 +260,7 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
       <div class="val" id="warmthVal">15%</div>
     </div>
     <div class="ctrl-row">
-      <button onclick="stopAll()" style="border-color:#ff4444;color:#ff4444;flex:1">STOP ALL</button>
+      <button onclick="stopAll()" style="border-color:#FF00E5;color:#FF00E5;flex:1">STOP ALL</button>
       <button onclick="soloMode()" id="soloBtn" style="flex:1">SOLO MODE</button>
     </div>
   </div>
@@ -304,7 +304,7 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
       <label>DRIFT</label>
       <input type="range" min="0" max="100" value="20" oninput="setDrift(this.value)" id="driftRange">
       <div class="val" id="driftVal">20%</div>
-      <span style="font-size:0.45rem;color:#444">analog pitch drift</span>
+      <span style="font-size:0.45rem;color:#2a2a4a">analog pitch drift</span>
     </div>
   </div>
   <!-- EFFECTS TAB -->
@@ -336,7 +336,7 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
       <label>WIDTH</label>
       <input type="range" min="0" max="100" value="50" oninput="setStereoWidth(this.value)" id="widthRange">
       <div class="val" id="widthVal">50%</div>
-      <span style="font-size:0.45rem;color:#444">stereo spread</span>
+      <span style="font-size:0.45rem;color:#2a2a4a">stereo spread</span>
     </div>
   </div>
   <!-- MIC TAB -->
@@ -358,14 +358,14 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
       <label>MIC MIX</label>
       <input type="range" min="0" max="100" value="50" oninput="setMicMix(this.value)" id="micMixRange">
       <div class="val" id="micMixVal">50%</div>
-      <span style="font-size:0.45rem;color:#444">dry/wet blend</span>
+      <span style="font-size:0.45rem;color:#2a2a4a">dry/wet blend</span>
     </div>
     <div class="mic-pitch" id="micPitchDisplay">
       &mdash; Hz
       <small>detected pitch (sing or play into mic)</small>
     </div>
-    <div style="font-size:0.45rem;color:#444;padding:4px 8px;line-height:1.5">
-      <strong style="color:#666">MIC MODES:</strong><br>
+    <div style="font-size:0.45rem;color:#2a2a4a;padding:4px 8px;line-height:1.5">
+      <strong style="color:#8888aa">MIC MODES:</strong><br>
       <strong>Passthrough</strong> &mdash; routes mic through warmth, reverb, delay &amp; filter chain (vocal FX processor)<br>
       <strong>Resonance</strong> &mdash; mic excites resonant filters tuned to active sacred frequencies (sympathetic resonance)<br>
       <strong>Vocoder</strong> &mdash; blends mic timbre with active tone oscillators (voice-controlled synthesis)
@@ -389,15 +389,15 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
   </div>
   <div class="seq-transport seq-transport-sticky">
     <button id="seqPlayBtn" onclick="toggleSeq()">&#9654; PLAY</button>
-    <label style="font-size:0.5rem;color:#555">BPM</label>
+    <label style="font-size:0.5rem;color:#8888aa">BPM</label>
     <input type="range" min="30" max="240" value="90" style="width:70px;accent-color:#ffaa50" oninput="setSeqBPM(this.value)" id="seqBPM">
-    <span style="font-size:0.55rem;color:#444" id="seqBPMVal">90</span>
-    <label style="font-size:0.5rem;color:#555">SWING</label>
+    <span style="font-size:0.55rem;color:#2a2a4a" id="seqBPMVal">90</span>
+    <label style="font-size:0.5rem;color:#8888aa">SWING</label>
     <input type="range" min="0" max="75" value="0" style="width:50px;accent-color:#ffaa50" oninput="setSwing(this.value)" id="swingRange">
-    <span style="font-size:0.55rem;color:#444" id="swingVal">0%</span>
+    <span style="font-size:0.55rem;color:#2a2a4a" id="swingVal">0%</span>
     <input type="number" min="4" max="128" value="32" id="seqSteps" onchange="changeSeqSteps(this.value)">
-    <span style="font-size:0.45rem;color:#444">steps</span>
-    <select id="stepDiv" onchange="setStepDiv(this.value)" style="background:#0a0a0a;color:#d4d4d4;border:1px solid #333;font-family:inherit;font-size:0.55rem;padding:1px 4px;border-radius:2px">
+    <span style="font-size:0.45rem;color:#2a2a4a">steps</span>
+    <select id="stepDiv" onchange="setStepDiv(this.value)" style="background:#0a0a14;color:#e8e8f0;border:1px solid #1e1e3a;font-family:inherit;font-size:0.55rem;padding:1px 4px;border-radius: 8px">
       <option value="4">1/4</option>
       <option value="8" selected>1/8</option>
       <option value="16">1/16</option>
@@ -417,7 +417,7 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
   <button onclick="exportWAV()" id="expWav" style="display:none">WAV</button>
   <button onclick="exportWebM()" id="expWebM" style="display:none">WebM</button>
   <span style="flex:1"></span>
-  <span style="font-size:0.45rem;color:#333" id="recSize"></span>
+  <span style="font-size:0.45rem;color:#1e1e3a" id="recSize"></span>
 </div>
 
 <!-- MIDI & DAW (collapsible on mobile) -->
@@ -436,7 +436,7 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
   </div>
   <div class="midi-row">
     <label>MAP</label>
-    <span style="font-size:0.5rem;color:#555">Notes C2&ndash;F4 &rarr; Pads | CC1 Detune | CC7 Volume | CC91 Reverb</span>
+    <span style="font-size:0.5rem;color:#8888aa">Notes C2&ndash;F4 &rarr; Pads | CC1 Detune | CC7 Volume | CC91 Reverb</span>
   </div>
   <div class="daw-info">
     <strong>ROUTE TO DAW (VST-style)</strong><br>
@@ -445,8 +445,8 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
     <strong>Linux:</strong> Use PulseAudio/PipeWire loopback module for audio routing.<br>
     <strong>Compatible with:</strong> FL Studio, Ableton, Logic Pro, Reason, Bitwig, Reaper, Pro Tools<br><br>
     <strong>STANDALONE APP (Electron)</strong><br>
-    <code style="font-size:0.45rem;color:#666;line-height:1.6">npm init -y &amp;&amp; npm i electron --save-dev</code><br>
-    Create <em>main.js</em> loading this URL in a BrowserWindow &rarr; <code style="font-size:0.45rem;color:#666">npx electron .</code><br>
+    <code style="font-size:0.45rem;color:#8888aa;line-height:1.6">npm init -y &amp;&amp; npm i electron --save-dev</code><br>
+    Create <em>main.js</em> loading this URL in a BrowserWindow &rarr; <code style="font-size:0.45rem;color:#8888aa">npx electron .</code><br>
     Electron exposes system audio I/O &mdash; ASIO on Windows, CoreAudio on Mac. Package with <em>electron-builder</em> for .exe/.dmg/.AppImage.<br><br>
     <strong>WEB AUDIO MODULE (WAM)</strong><br>
     This instrument&rsquo;s AudioWorklet architecture is WAM-compatible. Wrap as a WAM plugin to load inside WAM-enabled DAWs (e.g. <em>webaudiomodules.org</em>).
@@ -455,7 +455,7 @@ body{background:#0a0a0a;color:#d4d4d4;font-family:"Courier New",monospace;min-he
 
 </div><!-- /section-body midiBody -->
 
-<div class="credit"><a href="https://b0b.dev">b0b.dev</a> &mdash; TONE LAB v2</div>
+<div class="credit"><a href="https://cbay.ing">cbay.ing</a> &mdash; TONE LAB v2</div>
 
 <script>
 /* ═══════════════════ AUDIO ENGINE ═══════════════════ */
@@ -634,7 +634,7 @@ function startMic() {
       startPitchDetection();
       document.getElementById('micBtn').textContent = '⏹ MIC ON';
       document.getElementById('micBtn').style.background = '#ff6699';
-      document.getElementById('micBtn').style.color = '#0a0a0a';
+      document.getElementById('micBtn').style.color = '#0a0a14';
       document.getElementById('micPill').classList.add('mic');
       document.getElementById('micPill').style.opacity = '1';
     })
@@ -1666,13 +1666,13 @@ function startVisualizer() {
   function draw() {
     vizRAF = requestAnimationFrame(draw);
     var w = canvas.width, h = canvas.height;
-    cctx.fillStyle = '#0d0d0d';
+    cctx.fillStyle = '#0a0a14';
     cctx.fillRect(0, 0, w, h);
 
     if (vizMode === 'scope') {
       analyser.getByteTimeDomainData(dataArr);
       cctx.lineWidth = 1.5;
-      cctx.strokeStyle = '#00ff41';
+      cctx.strokeStyle = '#00E5FF';
       cctx.beginPath();
       var sliceW = w / dataArr.length;
       for (var i = 0; i < dataArr.length; i++) {
@@ -1680,7 +1680,7 @@ function startVisualizer() {
         if (i === 0) cctx.moveTo(0, y); else cctx.lineTo(i * sliceW, y);
       }
       cctx.stroke();
-      cctx.strokeStyle = '#1a1a1a'; cctx.lineWidth = 0.5;
+      cctx.strokeStyle = '#16162a'; cctx.lineWidth = 0.5;
       cctx.beginPath(); cctx.moveTo(0, h / 2); cctx.lineTo(w, h / 2); cctx.stroke();
     } else {
       analyser.getByteFrequencyData(dataArr);
@@ -1818,8 +1818,8 @@ function toggleHelp() {
   var div = document.createElement('div');
   div.id = 'helpOverlay';
   div.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer';
-  div.innerHTML = '<div style="color:#d4d4d4;font-size:0.6rem;line-height:2;max-width:480px;padding:24px;font-family:monospace" onclick="event.stopPropagation()">'
-    + '<h3 style="color:#ff4444;margin:0 0 12px;font-size:0.85rem">KEYBOARD SHORTCUTS</h3>'
+  div.innerHTML = '<div style="color:#e8e8f0;font-size:0.6rem;line-height:2;max-width:480px;padding:24px;font-family: system-ui, sans-serif" onclick="event.stopPropagation()">'
+    + '<h3 style="color:#FF00E5;margin:0 0 12px;font-size:0.85rem">KEYBOARD SHORTCUTS</h3>'
     + '<div style="columns:2;column-gap:32px">'
     + '<b style="color:#ff6b6b">PADS</b><br>'
     + '1-0 &nbsp;&nbsp; Solfeggio pads<br><br>'
@@ -1845,7 +1845,7 @@ function toggleHelp() {
     + 'F3 &nbsp;&nbsp;&nbsp;&nbsp; Effects<br>'
     + 'F4 &nbsp;&nbsp;&nbsp;&nbsp; Mic<br>'
     + '</div>'
-    + '<div style="color:#555;margin-top:12px;font-size:0.5rem">Press ? to close</div>'
+    + '<div style="color:#8888aa;margin-top:12px;font-size:0.5rem">Press ? to close</div>'
     + '</div>';
   div.addEventListener('click', function() { div.remove(); });
   document.body.appendChild(div);
@@ -1874,7 +1874,7 @@ initMIDI();
   var deferredPrompt = null;
   window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault(); deferredPrompt = e;
-    inst.innerHTML = '<button onclick="installPWA()" style="background:#ff4444;color:#0a0a0a;border:none;padding:8px 16px;font-family:inherit;cursor:pointer;border-radius:2px;font-size:0.8rem">INSTALL</button>';
+    inst.innerHTML = '<button onclick="installPWA()" style="background:#FF00E5;color:#0a0a14;border:none;padding:8px 16px;font-family:inherit;cursor:pointer;border-radius: 8px;font-size:0.8rem">INSTALL</button>';
     banner.style.display = 'block';
   });
   window.installPWA = function() {

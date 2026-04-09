@@ -14,17 +14,17 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="">
   <meta name="twitter:description" content="">
-  <title>b0b.dev - OSINT Map</title>
+  <title>cbay.ing - OSINT Map</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; overflow: hidden; }
-    body { background: #0a0a0a; color: #d4d4d4; font-family: 'Courier New', monospace; }
+    body { background: #0a0a14; color: #e8e8f0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
     #map { width: 100%; height: calc(100vh - 44px); }
     .leaflet-bottom { bottom: 36px !important; }
     .header {
-      background: #0a0a0a;
-      border-bottom: 1px solid #333;
+      background: #0a0a14;
+      border-bottom: 1px solid #1e1e3a;
       padding: 0 1rem;
       display: flex;
       align-items: center;
@@ -33,27 +33,27 @@
       position: relative;
       z-index: 1003;
     }
-    .header h1 { color: #00ff41; font-size: 1.1rem; letter-spacing: 2px; white-space: nowrap; }
+    .header h1 { color: #00E5FF; font-size: 1.1rem; letter-spacing: 2px; white-space: nowrap; }
     .header nav { display: flex; gap: 8px; align-items: center; }
     .header nav a {
-      color: #00ccff;
+      color: #00E5FF;
       text-decoration: none;
       font-size: 0.8rem;
-      border: 1px solid #00ccff;
+      border: 1px solid #00E5FF;
       padding: 0.2rem 0.6rem;
       transition: all 0.3s;
     }
-    .header nav a:hover { background: #00ccff; color: #000; }
+    .header nav a:hover { background: #00E5FF; color: #000; }
     .legend {
       position: absolute;
       bottom: 46px;
       left: 10px;
       z-index: 1000;
       background: rgba(10,10,10,0.95);
-      border: 1px solid #333;
-      font-family: 'Courier New', monospace;
+      border: 1px solid #1e1e3a;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 0.75rem;
-      color: #d4d4d4;
+      color: #e8e8f0;
       max-height: 50vh;
       overflow-y: auto;
     }
@@ -64,7 +64,7 @@
     .legend-header:hover { background: rgba(0,255,65,0.05); }
     .legend-body { padding: 0 14px 10px; }
     .legend-body.collapsed { display: none; }
-    .legend h3 { color: #00ff41; margin-bottom: 0; font-size: 0.85rem; }
+    .legend h3 { color: #00E5FF; margin-bottom: 0; font-size: 0.85rem; }
     .legend-item { display: flex; align-items: center; margin: 4px 0; cursor: pointer; }
     .legend-item:hover { color: #fff; }
     .legend-dot {
@@ -79,39 +79,39 @@
       width: 440px;
       height: calc(100vh - 44px);
       background: rgba(10,10,10,0.98);
-      border-left: 1px solid #333;
-      font-family: 'Courier New', monospace;
+      border-left: 1px solid #1e1e3a;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 0.75rem;
-      color: #d4d4d4;
+      color: #e8e8f0;
       overflow-y: auto;
       transform: translateX(100%);
       transition: transform 0.3s ease;
-      scrollbar-width: thin; scrollbar-color: #333 #0d0d0d;
+      scrollbar-width: thin; scrollbar-color: #1e1e3a #0a0a14;
     }
     .filter-panel::-webkit-scrollbar { width: 3px; }
-    .filter-panel::-webkit-scrollbar-thumb { background: #333; }
+    .filter-panel::-webkit-scrollbar-thumb { background: #1e1e3a; }
     .filter-panel.open { transform: translateX(0); }
     .filter-close {
       position: absolute; top: 10px; right: 14px;
-      color: #555; font-size: 1.2rem; cursor: pointer; z-index: 2;
+      color: #8888aa; font-size: 1.2rem; cursor: pointer; z-index: 2;
     }
-    .filter-close:hover { color: #ff4444; }
+    .filter-close:hover { color: #FF00E5; }
     .filter-header {
       padding: 10px 16px; cursor: pointer; user-select: none;
       display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid #222;
+      border-bottom: 1px solid #1e1e3a;
       position: sticky; top: 0; background: rgba(10,10,10,0.98); z-index: 1;
     }
     .filter-header:hover { background: rgba(0,255,65,0.05); }
-    .filter-header h3 { color: #00ff41; font-size: 0.8rem; margin: 0; }
-    .filter-header .chevron { color: #555; font-size: 0.7rem; transition: transform 0.2s; }
+    .filter-header h3 { color: #00E5FF; font-size: 0.8rem; margin: 0; }
+    .filter-header .chevron { color: #8888aa; font-size: 0.7rem; transition: transform 0.2s; }
     .filter-header .chevron.collapsed { transform: rotate(-90deg); }
     .filter-body { padding: 6px 14px 10px; }
     .filter-body.collapsed { display: none; }
-    .filter-panel h3 { color: #ffcc00; margin-bottom: 6px; font-size: 0.8rem; letter-spacing: 1px; }
+    .filter-panel h3 { color: #FF8800; margin-bottom: 6px; font-size: 0.8rem; letter-spacing: 1px; }
     .filter-section-header { cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 4px 0; user-select: none; }
     .filter-section-header:hover h3 { color: #ffdd33; }
-    .filter-section-header .sec-chev { color: #555; font-size: 0.6rem; transition: transform 0.2s; }
+    .filter-section-header .sec-chev { color: #8888aa; font-size: 0.6rem; transition: transform 0.2s; }
     .filter-section-header .sec-chev.collapsed { transform: rotate(-90deg); }
     .filter-section-body { }
     .filter-section-body.collapsed { display: none; }
@@ -121,15 +121,15 @@
     .filter-item { margin: 3px 0; }
     .filter-item label { cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 0.72rem; line-height: 1.2; }
     .filter-item input { margin-right: 4px; flex-shrink: 0; }
-    .toolkit-section { margin-top: 8px; padding: 8px 10px; border: 1px solid #222; border-radius: 3px; background: rgba(0,255,65,0.02); }
-    .toolkit-link { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid #1a1a1a; text-decoration: none; color: #d4d4d4; font-size: 0.68rem; transition: color 0.15s; }
+    .toolkit-section { margin-top: 8px; padding: 8px 10px; border: 1px solid #1e1e3a; border-radius: 8px; background: rgba(0,255,65,0.02); }
+    .toolkit-link { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid #16162a; text-decoration: none; color: #e8e8f0; font-size: 0.68rem; transition: color 0.15s; }
     .toolkit-link:last-child { border-bottom: none; }
-    .toolkit-link:hover { color: #00ff41; }
+    .toolkit-link:hover { color: #00E5FF; }
     .toolkit-link .tk-icon { font-size: 0.85rem; flex-shrink: 0; width: 20px; text-align: center; }
     .toolkit-link .tk-label { flex: 1; }
-    .toolkit-link .tk-badge { font-size: 0.5rem; padding: 1px 5px; border-radius: 2px; border: 1px solid; letter-spacing: 0.5px; flex-shrink: 0; }
-    .tk-badge.ext { border-color: #00ccff; color: #00ccff; }
-    .tk-badge.live { border-color: #00ff41; color: #00ff41; }
+    .toolkit-link .tk-badge { font-size: 0.5rem; padding: 1px 5px; border-radius: 8px; border: 1px solid; letter-spacing: 0.5px; flex-shrink: 0; }
+    .tk-badge.ext { border-color: #00E5FF; color: #00E5FF; }
+    .tk-badge.live { border-color: #00E5FF; color: #00E5FF; }
     .tk-badge.tool { border-color: #ffaa50; color: #ffaa50; }
     .stats-bar {
       position: absolute;
@@ -137,28 +137,28 @@
       left: 10px;
       z-index: 1000;
       background: rgba(10,10,10,0.92);
-      border: 1px solid #333;
+      border: 1px solid #1e1e3a;
       padding: 8px 14px;
-      font-family: 'Courier New', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 0.75rem;
-      color: #00ff41;
+      color: #00E5FF;
     }
     /* Custom popup styling */
     .leaflet-popup-content-wrapper {
-      background: #111 !important;
-      color: #d4d4d4 !important;
-      border: 1px solid #00ccff !important;
-      border-radius: 4px !important;
-      font-family: 'Courier New', monospace !important;
+      background: #12121e !important;
+      color: #e8e8f0 !important;
+      border: 1px solid #00E5FF !important;
+      border-radius: 8px !important;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;
       font-size: 0.8rem !important;
     }
-    .leaflet-popup-tip { background: #111 !important; border: 1px solid #00ccff !important; }
+    .leaflet-popup-tip { background: #12121e !important; border: 1px solid #00E5FF !important; }
     .leaflet-popup-content { margin: 10px 14px !important; }
-    .popup-title { color: #00ff41; font-weight: bold; font-size: 0.9rem; margin-bottom: 6px; }
-    .popup-section { color: #ffcc00; font-size: 0.75rem; margin-bottom: 4px; }
-    .popup-type { color: #ff6600; font-size: 0.75rem; margin-bottom: 6px; }
-    .popup-context { color: #ccc; font-size: 0.75rem; line-height: 1.5; }
-    .popup-link { color: #00ccff; text-decoration: none; font-size: 0.75rem; }
+    .popup-title { color: #00E5FF; font-weight: bold; font-size: 0.9rem; margin-bottom: 6px; }
+    .popup-section { color: #FF8800; font-size: 0.75rem; margin-bottom: 4px; }
+    .popup-type { color: #FF8800; font-size: 0.75rem; margin-bottom: 6px; }
+    .popup-context { color: #ccccdd; font-size: 0.75rem; line-height: 1.5; }
+    .popup-link { color: #00E5FF; text-decoration: none; font-size: 0.75rem; }
     .popup-link:hover { text-decoration: underline; }
     /* ===================== CONNECTION GLOW ANIMATION ===================== */
     @keyframes lineGlow {
@@ -190,16 +190,16 @@
     }
     .search-box input {
       background: rgba(10,10,10,0.92);
-      border: 1px solid #00ccff;
-      color: #00ff41;
+      border: 1px solid #00E5FF;
+      color: #00E5FF;
       padding: 6px 14px;
-      font-family: 'Courier New', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 0.85rem;
       width: 320px;
       outline: none;
     }
-    .search-box input::placeholder { color: #555; }
-    .search-box input:focus { border-color: #00ff41; }
+    .search-box input::placeholder { color: #8888aa; }
+    .search-box input:focus { border-color: #00E5FF; }
 
     /* ===================== FILTER TOGGLE BUTTON ===================== */
     .filter-toggle {
@@ -208,9 +208,9 @@
       right: 10px;
       z-index: 1001;
       background: rgba(10,10,10,0.95);
-      border: 1px solid #333;
-      color: #00ff41;
-      font-family: 'Courier New', monospace;
+      border: 1px solid #1e1e3a;
+      color: #00E5FF;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 0.7rem;
       padding: 6px 12px;
       cursor: pointer;
@@ -218,7 +218,7 @@
       transition: all 0.2s;
     }
     .filter-toggle:hover, .filter-toggle.active {
-      border-color: #00ff41;
+      border-color: #00E5FF;
       background: rgba(0,255,65,0.1);
     }
 
@@ -238,24 +238,24 @@
       bottom: 36px; left: 0; right: 0;
       z-index: 1002;
       background: rgba(10,10,10,0.96);
-      border-top: 1px solid #333;
+      border-top: 1px solid #1e1e3a;
       max-height: 340px;
-      font-family: 'Courier New', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     }
     .timeline-panel.visible { display: block; }
     .timeline-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 8px 16px;
-      border-bottom: 1px solid #222;
+      border-bottom: 1px solid #1e1e3a;
       cursor: pointer;
     }
     .timeline-header h3 {
-      color: #00ff41; font-size: 0.75rem; letter-spacing: 2px; margin: 0;
+      color: #00E5FF; font-size: 0.75rem; letter-spacing: 2px; margin: 0;
     }
     .timeline-close {
-      color: #555; font-size: 1rem; cursor: pointer; padding: 0 4px;
+      color: #8888aa; font-size: 1rem; cursor: pointer; padding: 0 4px;
     }
-    .timeline-close:hover { color: #ff4444; }
+    .timeline-close:hover { color: #FF00E5; }
     .timeline-body {
       padding: 8px 16px 12px;
       position: relative;
@@ -273,8 +273,8 @@
       display: none;
       position: absolute;
       background: rgba(10,10,10,0.95);
-      border: 1px solid #00ff41;
-      color: #d4d4d4;
+      border: 1px solid #00E5FF;
+      color: #e8e8f0;
       font-size: 0.7rem;
       padding: 6px 10px;
       pointer-events: none;
@@ -304,8 +304,8 @@
       bottom: 0; left: 0; right: 0;
       z-index: 1002;
       background: rgba(10,10,10,0.98);
-      border-top: 1px solid #333;
-      font-family: 'Courier New', monospace;
+      border-top: 1px solid #1e1e3a;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     }
     .cm-drawer-bar {
       height: 36px;
@@ -318,7 +318,7 @@
     }
     .cm-drawer-bar:hover { background: rgba(255,68,68,0.05); }
     .cm-drawer-bar h3 {
-      color: #ff4444;
+      color: #FF00E5;
       font-size: 0.7rem;
       letter-spacing: 2px;
       margin: 0;
@@ -327,13 +327,13 @@
     .cm-status-dots { display: flex; gap: 6px; align-items: center; }
     .cm-dot {
       width: 8px; height: 8px; border-radius: 50%;
-      background: #333; transition: all 0.3s;
+      background: #1e1e3a; transition: all 0.3s;
     }
-    .cm-dot.active { background: #00ff41; box-shadow: 0 0 6px rgba(0,255,65,0.6); }
-    .cm-dot-label { font-size: 0.5rem; color: #555; letter-spacing: 0.5px; }
-    .cm-dot-label.active { color: #00ff41; }
+    .cm-dot.active { background: #00E5FF; box-shadow: 0 0 6px rgba(0,255,65,0.6); }
+    .cm-dot-label { font-size: 0.5rem; color: #8888aa; letter-spacing: 0.5px; }
+    .cm-dot-label.active { color: #00E5FF; }
     .cm-drawer-chevron {
-      color: #555; font-size: 0.7rem; margin-left: auto;
+      color: #8888aa; font-size: 0.7rem; margin-left: auto;
       transition: transform 0.3s;
     }
     .cm-drawer.expanded .cm-drawer-chevron { transform: rotate(180deg); }
@@ -342,10 +342,10 @@
       padding: 0 16px 16px;
       max-height: 50vh;
       overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: #333 #0d0d0d;
+      scrollbar-width: thin; scrollbar-color: #1e1e3a #0a0a14;
     }
     .cm-drawer-content::-webkit-scrollbar { width: 3px; }
-    .cm-drawer-content::-webkit-scrollbar-thumb { background: #333; }
+    .cm-drawer-content::-webkit-scrollbar-thumb { background: #1e1e3a; }
     .cm-drawer.expanded .cm-drawer-content {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -407,28 +407,28 @@
     }
 
     /* ===================== COUNTERMEASURE STATUS ===================== */
-    .cm-panel { padding: 10px 12px; border: 1px solid #333; background: rgba(0,0,0,0.3); border-radius: 2px; }
+    .cm-panel { padding: 10px 12px; border: 1px solid #1e1e3a; background: rgba(0,0,0,0.3); border-radius: 8px; }
     .cm-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .cm-toggle input[type="checkbox"] { width: 16px; height: 16px; accent-color: #ff4444; }
-    .cm-label { font-size: 0.65rem; color: #ff4444; letter-spacing: 1px; font-weight: bold; }
-    .cm-status { font-size: 0.6rem; color: #555; margin-top: 4px; }
-    .cm-status.active { color: #00ff41; }
-    .cm-info { font-size: 0.55rem; color: #666; margin-top: 4px; line-height: 1.4; }
+    .cm-toggle input[type="checkbox"] { width: 16px; height: 16px; accent-color: #FF00E5; }
+    .cm-label { font-size: 0.65rem; color: #FF00E5; letter-spacing: 1px; font-weight: bold; }
+    .cm-status { font-size: 0.6rem; color: #8888aa; margin-top: 4px; }
+    .cm-status.active { color: #00E5FF; }
+    .cm-info { font-size: 0.55rem; color: #8888aa; margin-top: 4px; line-height: 1.4; }
     /* ===================== HEALING TONES ===================== */
     .ht-freq-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 6px; }
     @media (max-width: 400px) { .ht-freq-grid { grid-template-columns: repeat(3, 1fr); } .pt-freq-grid { grid-template-columns: repeat(3, 1fr); } }
-    .ht-freq-btn { padding: 4px 2px; font-size: 0.55rem; font-family: 'Courier New', monospace; background: rgba(0,0,0,0.4); border: 1px solid #333; color: #888; cursor: pointer; text-align: center; transition: all 0.2s; }
-    .ht-freq-btn:hover { border-color: #00ff41; color: #00ff41; }
-    .ht-freq-btn.active { border-color: #00ff41; color: #00ff41; background: rgba(0,255,65,0.08); box-shadow: 0 0 6px rgba(0,255,65,0.15); }
-    .ht-volume { width: 100%; height: 4px; margin-top: 6px; accent-color: #00ff41; cursor: pointer; }
-    .ht-now-playing { font-size: 0.55rem; color: #00ff41; margin-top: 4px; font-style: italic; }
+    .ht-freq-btn { padding: 4px 2px; font-size: 0.55rem; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: rgba(0,0,0,0.4); border: 1px solid #1e1e3a; color: #9999bb; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .ht-freq-btn:hover { border-color: #00E5FF; color: #00E5FF; }
+    .ht-freq-btn.active { border-color: #00E5FF; color: #00E5FF; background: rgba(0,255,65,0.08); box-shadow: 0 0 6px rgba(0,255,65,0.15); }
+    .ht-volume { width: 100%; height: 4px; margin-top: 6px; accent-color: #00E5FF; cursor: pointer; }
+    .ht-now-playing { font-size: 0.55rem; color: #00E5FF; margin-top: 4px; font-style: italic; }
     /* ===================== PROTECTIVE TONES ===================== */
     .pt-freq-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 6px; }
-    .pt-freq-btn { padding: 4px 2px; font-size: 0.55rem; font-family: 'Courier New', monospace; background: rgba(0,0,0,0.4); border: 1px solid #333; color: #888; cursor: pointer; text-align: center; transition: all 0.2s; }
-    .pt-freq-btn:hover { border-color: #00ccff; color: #00ccff; }
-    .pt-freq-btn.active { border-color: #00ccff; color: #00ccff; background: rgba(0,204,255,0.08); box-shadow: 0 0 6px rgba(0,204,255,0.15); }
-    .pt-volume { width: 100%; height: 4px; margin-top: 6px; accent-color: #00ccff; cursor: pointer; }
-    .pt-now-playing { font-size: 0.55rem; color: #00ccff; margin-top: 4px; font-style: italic; }
+    .pt-freq-btn { padding: 4px 2px; font-size: 0.55rem; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: rgba(0,0,0,0.4); border: 1px solid #1e1e3a; color: #9999bb; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .pt-freq-btn:hover { border-color: #00E5FF; color: #00E5FF; }
+    .pt-freq-btn.active { border-color: #00E5FF; color: #00E5FF; background: rgba(0,204,255,0.08); box-shadow: 0 0 6px rgba(0,204,255,0.15); }
+    .pt-volume { width: 100%; height: 4px; margin-top: 6px; accent-color: #00E5FF; cursor: pointer; }
+    .pt-now-playing { font-size: 0.55rem; color: #00E5FF; margin-top: 4px; font-style: italic; }
     /* Dark tile fallback - invert OSM for dark mode */
     .dark-osm-tiles { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.3); }
   </style>
@@ -436,11 +436,11 @@
 <body>
 
 <div class="header">
-  <h1>b0b.dev - OSINT MAP</h1>
+  <h1>cbay.ing - OSINT MAP</h1>
   <nav>
-    <a href="/download" style="border-color:#ff4444;color:#ff4444" title="Download offline backup ZIP" data-i18n="nav.backup">BACKUP</a>
-    <a href="/tones/shield" style="border-color:#ff4444;color:#ff4444" data-i18n="nav.shield">ARC SHIELD</a>
-    <a href="https://dialectforge.com" target="_blank" rel="noopener noreferrer" style="border-color:#00ff41;color:#00ff41">DIALECTFORGE</a>
+    <a href="/download" style="border-color:#FF00E5;color:#FF00E5" title="Download offline backup ZIP" data-i18n="nav.backup">BACKUP</a>
+    <a href="/tones/shield" style="border-color:#FF00E5;color:#FF00E5" data-i18n="nav.shield">ARC SHIELD</a>
+    <a href="https://dialectforge.com" target="_blank" rel="noopener noreferrer" style="border-color:#00E5FF;color:#00E5FF">DIALECTFORGE</a>
     <a href="/" data-i18n="nav.home">HOME</a>
     <a href="/report" data-i18n="nav.report">REPORT</a>
   </nav>
@@ -450,7 +450,7 @@
 
 <div class="search-box">
   <input type="text" id="searchInput" placeholder="Search locations..." data-i18n-ph="action.search" />
-  <button onclick="resetFilters()" style="background:#0a0a0a;color:#00ff41;border:1px solid #333;padding:4px 8px;font-family:Courier New,monospace;font-size:0.7rem;cursor:pointer;margin-left:4px" title="Reset all filters" data-i18n="action.reset">RESET</button>
+  <button onclick="resetFilters()" style="background:#0a0a14;color:#00E5FF;border:1px solid #1e1e3a;padding:4px 8px;font-family:system-ui,sans-serif;font-size:0.7rem;cursor:pointer;margin-left:4px" title="Reset all filters" data-i18n="action.reset">RESET</button>
 </div>
 
 <div class="filter-toggle" id="filterToggle" onclick="toggleFilterPanel()" data-i18n="action.filters">FILTERS</div>
@@ -551,7 +551,7 @@
   <div class="filter-item"><label><input type="checkbox" id="toggleISS" onchange="toggleDataLayer('iss')"> 🛰️ ISS Tracker</label></div>
   <div class="filter-item"><label><input type="checkbox" id="toggleGDACS" onchange="toggleDataLayer('gdacs')"> ⚠️ GDACS Disasters</label></div>
   </div>
-  <div class="filter-item" id="liveFeedStatus" style="display:none;color:#888;font-size:0.6rem;padding-left:4px"></div>
+  <div class="filter-item" id="liveFeedStatus" style="display:none;color:#9999bb;font-size:0.6rem;padding-left:4px"></div>
   <div class="filter-item"><label><input type="checkbox" id="toggleTimeline" onchange="toggleTimelinePanel()"> Correlation Timeline</label></div>
   </div>
   <!-- SEARCH -->
@@ -561,16 +561,16 @@
   </div>
   <div class="filter-section-body" id="searchBody">
   <div class="filter-item">
-    <input type="text" id="patternInput" placeholder="e.g. Palantir, CIA, obelisk..." style="background:#111;border:1px solid #333;color:#00ff41;padding:5px 8px;font-family:Courier New,monospace;font-size:0.7rem;width:100%;margin-bottom:4px" />
+    <input type="text" id="patternInput" placeholder="e.g. Palantir, CIA, obelisk..." style="background:#12121e;border:1px solid #1e1e3a;color:#00E5FF;padding:5px 8px;font-family:system-ui,sans-serif;font-size:0.7rem;width:100%;margin-bottom:4px" />
   </div>
   <div class="filter-item">
-    <button onclick="patternSearchKeyword()" style="background:transparent;border:1px solid #00ccff;color:#00ccff;padding:4px 10px;font-family:Courier New,monospace;font-size:0.65rem;cursor:pointer">SEARCH CONNECTIONS</button>
+    <button onclick="patternSearchKeyword()" style="background:transparent;border:1px solid #00E5FF;color:#00E5FF;padding:4px 10px;font-family:system-ui,sans-serif;font-size:0.65rem;cursor:pointer">SEARCH CONNECTIONS</button>
   </div>
   <div class="filter-item" style="margin-top:6px">
-    <label style="color:#888;font-size:0.65rem;font-weight:bold">PROXIMITY SEARCH</label>
+    <label style="color:#9999bb;font-size:0.65rem;font-weight:bold">PROXIMITY SEARCH</label>
   </div>
   <div class="filter-item">
-    <select id="proximityType" style="background:#111;border:1px solid #333;color:#00ff41;padding:4px 6px;font-family:Courier New,monospace;font-size:0.65rem;width:100%">
+    <select id="proximityType" style="background:#12121e;border:1px solid #1e1e3a;color:#00E5FF;padding:4px 6px;font-family:system-ui,sans-serif;font-size:0.65rem;width:100%">
       <option value="">- select type -</option>
       <option value="obelisk">Obelisks</option>
       <option value="military">Military</option>
@@ -585,9 +585,9 @@
     </select>
   </div>
   <div class="filter-item" style="display:flex;gap:4px;align-items:center;margin-top:4px">
-    <input type="number" id="proximityKm" value="50" min="1" max="500" style="background:#111;border:1px solid #333;color:#00ff41;padding:4px 6px;font-family:Courier New,monospace;font-size:0.65rem;width:60px" />
-    <span style="color:#888;font-size:0.65rem">km</span>
-    <button onclick="proximitySearch()" style="background:transparent;border:1px solid #00ccff;color:#00ccff;padding:4px 10px;font-family:Courier New,monospace;font-size:0.65rem;cursor:pointer">FIND</button>
+    <input type="number" id="proximityKm" value="50" min="1" max="500" style="background:#12121e;border:1px solid #1e1e3a;color:#00E5FF;padding:4px 6px;font-family:system-ui,sans-serif;font-size:0.65rem;width:60px" />
+    <span style="color:#9999bb;font-size:0.65rem">km</span>
+    <button onclick="proximitySearch()" style="background:transparent;border:1px solid #00E5FF;color:#00E5FF;padding:4px 10px;font-family:system-ui,sans-serif;font-size:0.65rem;cursor:pointer">FIND</button>
   </div>
   </div>
   <!-- TOOLKIT RESOURCES -->
@@ -599,42 +599,42 @@
   <div class="toolkit-section">
     <a class="toolkit-link" href="https://github.com/Crosstalk-Solutions/project-nomad" target="_blank" rel="noopener noreferrer">
       <span class="tk-icon">🖥️</span>
-      <span class="tk-label"><strong>Project N.O.M.A.D.</strong><br><span style="color:#888;font-size:0.58rem">Offline knowledge server - AI, maps, education, CyberChef</span></span>
+      <span class="tk-label"><strong>Project N.O.M.A.D.</strong><br><span style="color:#9999bb;font-size:0.58rem">Offline knowledge server - AI, maps, education, CyberChef</span></span>
       <span class="tk-badge ext">EXTERNAL</span>
     </a>
     <a class="toolkit-link" href="https://earthquake.usgs.gov/earthquakes/map/" target="_blank" rel="noopener noreferrer">
       <span class="tk-icon">🌍</span>
-      <span class="tk-label"><strong>USGS Earthquake Portal</strong><br><span style="color:#888;font-size:0.58rem">Real-time seismic monitoring - feeds into map live layer</span></span>
+      <span class="tk-label"><strong>USGS Earthquake Portal</strong><br><span style="color:#9999bb;font-size:0.58rem">Real-time seismic monitoring - feeds into map live layer</span></span>
       <span class="tk-badge live">LIVE</span>
     </a>
     <a class="toolkit-link" href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener noreferrer">
       <span class="tk-icon">🔥</span>
-      <span class="tk-label"><strong>NASA EONET</strong><br><span style="color:#888;font-size:0.58rem">Earth Observatory Natural Event Tracker - fires, storms, volcanic</span></span>
+      <span class="tk-label"><strong>NASA EONET</strong><br><span style="color:#9999bb;font-size:0.58rem">Earth Observatory Natural Event Tracker - fires, storms, volcanic</span></span>
       <span class="tk-badge live">LIVE</span>
     </a>
     <a class="toolkit-link" href="https://firms.modaps.eosdis.nasa.gov/map/" target="_blank" rel="noopener noreferrer">
       <span class="tk-icon">🔥</span>
-      <span class="tk-label"><strong>NASA FIRMS</strong><br><span style="color:#888;font-size:0.58rem">Active fire detection from VIIRS/MODIS satellites</span></span>
+      <span class="tk-label"><strong>NASA FIRMS</strong><br><span style="color:#9999bb;font-size:0.58rem">Active fire detection from VIIRS/MODIS satellites</span></span>
       <span class="tk-badge live">LIVE</span>
     </a>
     <a class="toolkit-link" href="https://opensky-network.org/network/explorer" target="_blank" rel="noopener noreferrer">
       <span class="tk-icon">✈️</span>
-      <span class="tk-label"><strong>OpenSky Network</strong><br><span style="color:#888;font-size:0.58rem">Crowdsourced ADS-B aircraft tracking - live positions</span></span>
+      <span class="tk-label"><strong>OpenSky Network</strong><br><span style="color:#9999bb;font-size:0.58rem">Crowdsourced ADS-B aircraft tracking - live positions</span></span>
       <span class="tk-badge live">LIVE</span>
     </a>
     <a class="toolkit-link" href="https://www.gdacs.org/" target="_blank" rel="noopener noreferrer">
       <span class="tk-icon">⚠️</span>
-      <span class="tk-label"><strong>GDACS</strong><br><span style="color:#888;font-size:0.58rem">Global Disaster Alert and Coordination System - UN/EU</span></span>
+      <span class="tk-label"><strong>GDACS</strong><br><span style="color:#9999bb;font-size:0.58rem">Global Disaster Alert and Coordination System - UN/EU</span></span>
       <span class="tk-badge live">LIVE</span>
     </a>
     <a class="toolkit-link" href="/tones/instrument" target="_blank">
       <span class="tk-icon">🎹</span>
-      <span class="tk-label"><strong>b0b Tone Lab</strong><br><span style="color:#888;font-size:0.58rem">Stackable healing frequency instrument with touch pads</span></span>
+      <span class="tk-label"><strong>b0b Tone Lab</strong><br><span style="color:#9999bb;font-size:0.58rem">Stackable healing frequency instrument with touch pads</span></span>
       <span class="tk-badge tool">TOOL</span>
     </a>
     <a class="toolkit-link" href="/tones/multipack" target="_blank">
       <span class="tk-icon">🎛️</span>
-      <span class="tk-label"><strong>b0b Multipack</strong><br><span style="color:#888;font-size:0.58rem">All-in-one healing, protective, ultrasonic countermeasures</span></span>
+      <span class="tk-label"><strong>b0b Multipack</strong><br><span style="color:#9999bb;font-size:0.58rem">All-in-one healing, protective, ultrasonic countermeasures</span></span>
       <span class="tk-badge tool">TOOL</span>
     </a>
   </div>
@@ -645,10 +645,10 @@
     <span class="sec-chev" id="researchChev">▾</span>
   </div>
   <div class="filter-section-body" id="researchBody">
-  <div class="filter-item"><a href="/api/data" target="_blank" style="color:#00ff41;text-decoration:none;font-size:0.7rem">⬇ EXPORT JSON DATA</a></div>
-  <div class="filter-item" style="margin-top:2px"><a href="/download" style="color:#ff4444;text-decoration:none;font-size:0.7rem">📦 DOWNLOAD OFFLINE BACKUP (ZIP)</a></div>
-  <div class="filter-item" style="margin-top:2px"><a href="/report#methodology" target="_blank" style="color:#00ccff;text-decoration:none;font-size:0.7rem">📋 SOURCE METHODOLOGY</a></div>
-  <div class="filter-item" style="margin-top:2px;color:#888;font-size:0.6rem">Deep Links: /map?type=X&section=Y&marker=Z</div>
+  <div class="filter-item"><a href="/api/data" target="_blank" style="color:#00E5FF;text-decoration:none;font-size:0.7rem">⬇ EXPORT JSON DATA</a></div>
+  <div class="filter-item" style="margin-top:2px"><a href="/download" style="color:#FF00E5;text-decoration:none;font-size:0.7rem">📦 DOWNLOAD OFFLINE BACKUP (ZIP)</a></div>
+  <div class="filter-item" style="margin-top:2px"><a href="/report#methodology" target="_blank" style="color:#00E5FF;text-decoration:none;font-size:0.7rem">📋 SOURCE METHODOLOGY</a></div>
+  <div class="filter-item" style="margin-top:2px;color:#9999bb;font-size:0.6rem">Deep Links: /map?type=X&section=Y&marker=Z</div>
   </div>
   </div>
 </div>
@@ -687,8 +687,8 @@
     <div class="cm-status active" id="cmCanvasStatus">ACTIVE - noise injected</div>
     <div class="cm-info">Injects imperceptible noise into canvas readback operations, defeating canvas fingerprinting - a technique that uniquely identifies browsers by rendering differences.</div>
   </div>
-  <div class="cm-panel" style="border-color:#00ff41">
-    <label class="cm-toggle"><input type="checkbox" id="cmHealing" onchange="toggleHealingTones(this.checked)"><span class="cm-label" style="color:#00ff41">🎵 HEALING TONES</span></label>
+  <div class="cm-panel" style="border-color:#00E5FF">
+    <label class="cm-toggle"><input type="checkbox" id="cmHealing" onchange="toggleHealingTones(this.checked)"><span class="cm-label" style="color:#00E5FF">🎵 HEALING TONES</span></label>
     <div class="cm-status" id="cmHealingStatus">INACTIVE</div>
     <div class="ht-freq-grid" id="htFreqGrid">
       <button class="ht-freq-btn" data-freq="174" data-name="Pain Relief" onclick="selectHealingFreq(this)">174 Hz</button>
@@ -706,8 +706,8 @@
     <div class="ht-now-playing" id="htNowPlaying"></div>
     <div class="cm-info">🌊 WATER PLANET OPTIMIZED - Solfeggio frequencies with sub-harmonic body-water resonance. Your body is ~60% water - each tone is paired with its sub-octave to create deeper cymatics patterns that resonate with the water you carry and swim through. 🐾 ANIMAL-SAFE: 174–963 Hz at gentle volume, safe for all pets.</div>
   </div>
-  <div class="cm-panel" style="border-color:#00ccff">
-    <label class="cm-toggle"><input type="checkbox" id="cmProtective" onchange="toggleProtectiveTones(this.checked)"><span class="cm-label" style="color:#00ccff">🛡️ PROTECTIVE TONES</span></label>
+  <div class="cm-panel" style="border-color:#00E5FF">
+    <label class="cm-toggle"><input type="checkbox" id="cmProtective" onchange="toggleProtectiveTones(this.checked)"><span class="cm-label" style="color:#00E5FF">🛡️ PROTECTIVE TONES</span></label>
     <div class="cm-status" id="cmProtectiveStatus">INACTIVE</div>
     <div class="pt-freq-grid" id="ptFreqGrid">
       <button class="pt-freq-btn active" data-freq="7.83" data-name="Schumann Resonance" data-type="binaural" onclick="selectProtectiveFreq(this)">7.83 Hz</button>
@@ -728,15 +728,15 @@
 <div class="legend">
   <div class="legend-header" onclick="document.getElementById('legendBody').classList.toggle('collapsed'); this.querySelector('.chevron').classList.toggle('collapsed');">
     <h3 data-i18n="map.markerColors">MARKER COLORS</h3>
-    <span class="chevron" style="color:#555;font-size:0.7rem;transition:transform 0.2s;">▾</span>
+    <span class="chevron" style="color:#8888aa;font-size:0.7rem;transition:transform 0.2s;">▾</span>
   </div>
   <div class="legend-body" id="legendBody">
-  <div class="legend-item"><div class="legend-dot" style="background:#ff4444"></div> Military / Intelligence</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#ffcc00"></div> Financial / Banking</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#ff6600"></div> Underground / D.U.M.B.</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#00ccff"></div> Surveillance / Smart City</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FF00E5"></div> Military / Intelligence</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FF8800"></div> Financial / Banking</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FF8800"></div> Underground / D.U.M.B.</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00E5FF"></div> Surveillance / Smart City</div>
   <div class="legend-item"><div class="legend-dot" style="background:#cc88ff"></div> Enclave / Private Island</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#00ff41"></div> Archaeological / Ancient</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00E5FF"></div> Archaeological / Ancient</div>
   <div class="legend-item"><div class="legend-dot" style="background:#ff0066"></div> Conflict Zone</div>
   <div class="legend-item"><div class="legend-dot" style="background:#ffffff"></div> Governance / Policy Org</div>
   <div class="legend-item"><div class="legend-dot" style="background:#ff8800"></div> Black Site / Rendition</div>
@@ -751,33 +751,33 @@
   <div class="legend-item"><div class="legend-dot" style="background:#00e676"></div> Crypto / Tech Park</div>
   <div class="legend-item"><div class="legend-dot" style="background:#64ffda"></div> Technology / Research</div>
   <div class="legend-item"><div class="legend-dot" style="background:#ffd740"></div> Sports / Gambling</div>
-  <div class="legend-item"><div style="width:24px;height:0;border-top:3px dashed #ff6600;margin-right:8px;flex-shrink:0"></div> Tunnel Path</div>
+  <div class="legend-item"><div style="width:24px;height:0;border-top:3px dashed #FF8800;margin-right:8px;flex-shrink:0"></div> Tunnel Path</div>
   <div class="legend-item"><div style="width:24px;height:0;border-top:3px dashed #cc00ff;margin-right:8px;flex-shrink:0"></div> Inner-Earth / Deep Route</div>
-  <h3 style="margin-top:10px;color:#ff4444;font-size:0.7rem">LIVE FEEDS</h3>
+  <h3 style="margin-top:10px;color:#FF00E5;font-size:0.7rem">LIVE FEEDS</h3>
   <div class="legend-item"><div class="legend-dot" style="background:#ff2200;border:2px solid #ff6644;width:10px;height:10px;border-radius:50%"></div> Earthquake (M5+)</div>
   <div class="legend-item"><div class="legend-dot" style="background:#ff6644;border:2px solid #ff8866;width:8px;height:8px;border-radius:50%"></div> Earthquake (M3–5)</div>
   <div class="legend-item"><div class="legend-dot" style="background:#ffaa44;width:6px;height:6px;border-radius:50%"></div> Earthquake (M&lt;3)</div>
   <div class="legend-item"><div class="legend-dot" style="background:#ff4400"></div> 🔥 Wildfire</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#ff0000"></div> 🌋 Volcano</div>
-  <div class="legend-item"><div class="legend-dot" style="background:#00ccff"></div> 🌀 Severe Storm</div>
-  <h3 style="margin-top:10px;color:#00ccff;font-size:0.7rem">CONNECTION LINE COLORS</h3>
-  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #ff4444;margin-right:8px;flex-shrink:0"></div> Military / Intelligence</div>
-  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #ffcc00;margin-right:8px;flex-shrink:0"></div> Financial / Banking</div>
-  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #00ccff;margin-right:8px;flex-shrink:0"></div> Surveillance / IC</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#FF00E5"></div> 🌋 Volcano</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00E5FF"></div> 🌀 Severe Storm</div>
+  <h3 style="margin-top:10px;color:#00E5FF;font-size:0.7rem">CONNECTION LINE COLORS</h3>
+  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #FF00E5;margin-right:8px;flex-shrink:0"></div> Military / Intelligence</div>
+  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #FF8800;margin-right:8px;flex-shrink:0"></div> Financial / Banking</div>
+  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #00E5FF;margin-right:8px;flex-shrink:0"></div> Surveillance / IC</div>
   <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #cc88ff;margin-right:8px;flex-shrink:0"></div> Entertainment / Enclaves</div>
   <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #ff00ff;margin-right:8px;flex-shrink:0"></div> Crime / Trafficking</div>
   <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #ff9100;margin-right:8px;flex-shrink:0"></div> Mining / Resources</div>
   <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #ff7043;margin-right:8px;flex-shrink:0"></div> Corporate</div>
-  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #00ff41;margin-right:8px;flex-shrink:0"></div> Knowledge / Academic</div>
+  <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #00E5FF;margin-right:8px;flex-shrink:0"></div> Knowledge / Academic</div>
   <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #00e676;margin-right:8px;flex-shrink:0"></div> Crypto / Digital</div>
   <div class="legend-item"><div style="width:24px;height:0;border-top:2px solid #ffffff;margin-right:8px;flex-shrink:0"></div> Governance / Power</div>
   <h3 style="margin-top:10px;color:#ff9100;font-size:0.7rem">COLOR ANALYSIS - WEALTH SIGNALS</h3>
   <div class="legend-item" style="flex-direction:column;align-items:flex-start;gap:2px">
-    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#ffffff;border:1px solid #555"></div> <span style="color:#aaa;font-size:0.6rem">WHITE - Wealth (expensive pigments: lead white, titanium dioxide)</span></div>
-    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#808080"></div> <span style="color:#aaa;font-size:0.6rem">GREY - Stone/masonry (natural material of power)</span></div>
-    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#cc4444"></div> <span style="color:#aaa;font-size:0.6rem">RED - Cheap (ferric oxide / Falu red, imitated brick)</span></div>
-    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#4488ff"></div> <span style="color:#aaa;font-size:0.6rem">BLUE - Authority (government, military, institutional)</span></div>
-    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:linear-gradient(90deg,#ff0000,#ff9900,#ffff00,#00ff00,#0099ff,#9900ff);border:none"></div> <span style="color:#aaa;font-size:0.6rem">RAINBOW - Ideological signaling</span></div>
+    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#ffffff;border:1px solid #8888aa"></div> <span style="color:#aaaacc;font-size:0.6rem">WHITE - Wealth (expensive pigments: lead white, titanium dioxide)</span></div>
+    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#808080"></div> <span style="color:#aaaacc;font-size:0.6rem">GREY - Stone/masonry (natural material of power)</span></div>
+    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#cc4444"></div> <span style="color:#aaaacc;font-size:0.6rem">RED - Cheap (ferric oxide / Falu red, imitated brick)</span></div>
+    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:#4488ff"></div> <span style="color:#aaaacc;font-size:0.6rem">BLUE - Authority (government, military, institutional)</span></div>
+    <div style="display:flex;align-items:center"><div class="legend-dot" style="background:linear-gradient(90deg,#FF00E5,#ff9900,#ffff00,#00E5FF,#0099ff,#9900ff);border:none"></div> <span style="color:#aaaacc;font-size:0.6rem">RAINBOW - Ideological signaling</span></div>
   </div>
   </div>
 </div>
@@ -791,9 +791,9 @@
   <div class="timeline-body" id="timelineBody">
     <canvas id="timelineCanvas"></canvas>
     <div class="timeline-legend-bar">
-      <span style="color:#00ccff">■ AERIAL PARTICULATES</span>
-      <span style="color:#ff4444">■ NEUROLOGICAL ANOMALIES</span>
-      <span style="color:#ffcc00">■ DIRECTED ENERGY / NEUROTECH</span>
+      <span style="color:#00E5FF">■ AERIAL PARTICULATES</span>
+      <span style="color:#FF00E5">■ NEUROLOGICAL ANOMALIES</span>
+      <span style="color:#FF8800">■ DIRECTED ENERGY / NEUROTECH</span>
     </div>
     <div class="timeline-tooltip" id="timelineTooltip"></div>
   </div>
@@ -975,7 +975,7 @@ function showTileFailoverNotice(label) {
   if (failoverActive) return;
   failoverActive = true;
   var notice = document.createElement('div');
-  notice.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:9999;background:#1a0a00;border:1px solid #ff6600;color:#ff6600;padding:8px 16px;font-family:Courier New,monospace;font-size:0.7rem;letter-spacing:1px;border-radius:2px;pointer-events:none;opacity:1;transition:opacity 1s';
+  notice.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:9999;background:#1a0a00;border:1px solid #FF8800;color:#FF8800;padding:8px 16px;font-family:system-ui,sans-serif;font-size:0.7rem;letter-spacing:1px;border-radius: 8px;pointer-events:none;opacity:1;transition:opacity 1s';
   notice.textContent = '⚡ ' + label + ' TILE SOURCE SWITCHED TO FALLBACK';
   document.body.appendChild(notice);
   setTimeout(function() { notice.style.opacity = '0'; }, 4000);
@@ -1100,12 +1100,12 @@ function switchMapStyle(style) {
 
 // ===================== COLOR MAP =====================
 var colorMap = {
-  financial: '#ffcc00',
-  military: '#ff4444',
-  underground: '#ff6600',
-  surveillance: '#00ccff',
+  financial: '#FF8800',
+  military: '#FF00E5',
+  underground: '#FF8800',
+  surveillance: '#00E5FF',
   enclave: '#cc88ff',
-  archaeological: '#00ff41',
+  archaeological: '#00E5FF',
   conflict: '#ff0066',
   governance: '#ffffff',
   blacksite: '#ff8800',
@@ -2038,7 +2038,7 @@ var markerLayer = L.layerGroup(); // starts hidden in Terra Nullius mode
 
 // Create markers
 locations.forEach(function(loc) {
-  var color = colorMap[loc.type] || '#888';
+  var color = colorMap[loc.type] || '#9999bb';
   var marker = L.marker([loc.lat, loc.lng], { icon: makeIcon(color, 10) });
 
   var sectionLabel = 'Section ' + loc.section;
@@ -2054,7 +2054,7 @@ locations.forEach(function(loc) {
     '<a class="popup-link" href="#" onclick="isolateSection(\'' + loc.section + '\');return false" style="font-size:0.65rem">⊕ Section ' + loc.section + '</a>' +
     '<a class="popup-link" href="#" onclick="showConnected(' + loc.lat + ',' + loc.lng + ');return false" style="font-size:0.65rem">⊕ Connected</a>' +
     '</div>' +
-    '<hr style="border-color:#333;margin:6px 0">' +
+    '<hr style="border-color:#1e1e3a;margin:6px 0">' +
     '<div class="popup-context">' + loc.ctx + '</div>',
     { maxWidth: 350, minWidth: 250, maxHeight: 300 }
   );
@@ -2302,15 +2302,15 @@ function updateStats(shown) {
   shown = shown !== undefined ? shown : allMarkers.length;
   document.getElementById('statsBar').textContent =
     'LOCATIONS: ' + shown + ' / ' + allMarkers.length +
-    ' | SECTIONS: 16 | DATA SOURCE: b0b.dev/report';
+    ' | SECTIONS: 16 | DATA SOURCE: cbay.ing/report';
 }
 
 // ===================== CONNECTION LINES =====================
 // Draw lines between related locations
 var connectionLines = [
   // Jekyll Island → Federal Reserve → CFR chain
-  [[31.065,-81.420],[38.893,-77.046],'#ffcc00','Jekyll Island → Federal Reserve'],
-  [[38.893,-77.046],[40.769,-73.968],'#ffcc00','Federal Reserve → CFR'],
+  [[31.065,-81.420],[38.893,-77.046],'#FF8800','Jekyll Island → Federal Reserve'],
+  [[38.893,-77.046],[40.769,-73.968],'#FF8800','Federal Reserve → CFR'],
   // Three Obelisks
   [[41.902,12.454],[51.509,-0.117],'#e6c200','Vatican Obelisk ↔ London Obelisk'],
   [[51.509,-0.117],[48.866,2.321],'#e6c200','London Obelisk ↔ Paris Obelisk'],
@@ -2322,34 +2322,34 @@ var connectionLines = [
   [[44.362,28.487],[54.748,25.316],'#ff8800','Romania → Lithuania black sites'],
   [[11.547,43.146],[-7.320,72.423],'#ff8800','Djibouti → Diego Garcia rendition'],
   // ECHELON network
-  [[54.002,-1.687],[-23.798,133.737],'#ff4444','Menwith Hill ↔ Pine Gap'],
-  [[-23.798,133.737],[-41.800,173.617],'#ff4444','Pine Gap ↔ Waihopai'],
-  [[54.002,-1.687],[40.703,141.369],'#ff4444','Menwith Hill ↔ Misawa'],
+  [[54.002,-1.687],[-23.798,133.737],'#FF00E5','Menwith Hill ↔ Pine Gap'],
+  [[-23.798,133.737],[-41.800,173.617],'#FF00E5','Pine Gap ↔ Waihopai'],
+  [[54.002,-1.687],[40.703,141.369],'#FF00E5','Menwith Hill ↔ Misawa'],
   // Enclave → Tech Stack
   [[25.851,-80.159],[37.422,-122.084],'#cc88ff','Indian Creek → Google HQ'],
   [[25.851,-80.159],[47.622,-122.336],'#cc88ff','Indian Creek → Amazon HQ'],
   [[25.851,-80.159],[37.453,-122.182],'#cc88ff','Indian Creek → Meta HQ'],
   // Handler network: training pipelines → manufactured leaders
-  [[32.354,-84.965],[-33.449,-70.669],'#ff6600','School of Americas → Santiago (Pinochet)'],
-  [[32.354,-84.965],[14.635,-90.507],'#ff6600','School of Americas → Guatemala City (Armas)'],
-  [[32.354,-84.965],[-4.325,15.322],'#ff6600','School of Americas → Kinshasa pattern'],
-  [[40.203,-77.189],[30.044,31.236],'#ff6600','Carlisle (Army War College) → Cairo (Sisi → NAC)'],
-  [[51.348,-0.769],[31.951,35.934],'#ff6600','Sandhurst → Amman (Abdullah II)'],
-  [[38.864,-77.016],[35.689,51.389],'#ff6600','CIA/NDU → Tehran (1953 Ajax)'],
-  [[38.864,-77.016],[-6.175,106.865],'#ff6600','CIA → Jakarta (1965 kill lists)'],
+  [[32.354,-84.965],[-33.449,-70.669],'#FF8800','School of Americas → Santiago (Pinochet)'],
+  [[32.354,-84.965],[14.635,-90.507],'#FF8800','School of Americas → Guatemala City (Armas)'],
+  [[32.354,-84.965],[-4.325,15.322],'#FF8800','School of Americas → Kinshasa pattern'],
+  [[40.203,-77.189],[30.044,31.236],'#FF8800','Carlisle (Army War College) → Cairo (Sisi → NAC)'],
+  [[51.348,-0.769],[31.951,35.934],'#FF8800','Sandhurst → Amman (Abdullah II)'],
+  [[38.864,-77.016],[35.689,51.389],'#FF8800','CIA/NDU → Tehran (1953 Ajax)'],
+  [[38.864,-77.016],[-6.175,106.865],'#FF8800','CIA → Jakarta (1965 kill lists)'],
   // Congress for Cultural Freedom network
   [[48.861,2.338],[38.864,-77.016],'#cc88ff','CCF Paris HQ ↔ CIA Langley'],
   // ISA / Task Force Orange connections
-  [[38.712,-77.145],[38.880,-77.106],'#ff6600','Fort Belvoir (ISA HQ) ↔ Arlington (original ISA HQ)'],
-  [[38.712,-77.145],[14.072,-87.192],'#ff6600','ISA → Honduras (Operation Queens Hunter)'],
-  [[14.072,-87.192],[32.354,-84.965],'#ff6600','Honduras ops ↔ School of Americas (same theater)'],
-  [[38.712,-77.145],[6.248,-75.566],'#ff6600','ISA → Medellín (CENTRA SPIKE / Escobar hunt)'],
+  [[38.712,-77.145],[38.880,-77.106],'#FF8800','Fort Belvoir (ISA HQ) ↔ Arlington (original ISA HQ)'],
+  [[38.712,-77.145],[14.072,-87.192],'#FF8800','ISA → Honduras (Operation Queens Hunter)'],
+  [[14.072,-87.192],[32.354,-84.965],'#FF8800','Honduras ops ↔ School of Americas (same theater)'],
+  [[38.712,-77.145],[6.248,-75.566],'#FF8800','ISA → Medellín (CENTRA SPIKE / Escobar hunt)'],
   // Mondaloy Triangle - strategic personnel disappearances
-  [[39.826,-84.048],[34.201,-118.171],'#ff0000','Wright-Patterson (Hardwick/AFRL) → JPL (Reza)'],
-  [[39.826,-84.048],[35.211,-106.451],'#ff0000','Wright-Patterson (Hardwick) → Sandia (McCasland)'],
-  [[34.201,-118.171],[35.211,-106.451],'#ff0000','JPL (Reza) ↔ Sandia (McCasland)'],
-  [[34.905,-117.884],[34.350,-117.963],'#ffcc00','Edwards AFB → Reza LKP (65 mi)'],
-  [[34.201,-118.171],[34.350,-117.963],'#ffcc00','JPL → Angeles Natl Forest (Reza LKP)'],
+  [[39.826,-84.048],[34.201,-118.171],'#FF00E5','Wright-Patterson (Hardwick/AFRL) → JPL (Reza)'],
+  [[39.826,-84.048],[35.211,-106.451],'#FF00E5','Wright-Patterson (Hardwick) → Sandia (McCasland)'],
+  [[34.201,-118.171],[35.211,-106.451],'#FF00E5','JPL (Reza) ↔ Sandia (McCasland)'],
+  [[34.905,-117.884],[34.350,-117.963],'#FF8800','Edwards AFB → Reza LKP (65 mi)'],
+  [[34.201,-118.171],[34.350,-117.963],'#FF8800','JPL → Angeles Natl Forest (Reza LKP)'],
   // Organized Crime - Cartel-Intelligence-Banking nexus
   [[34.586,-94.239],[13.700,-89.120],'#ff00ff','Mena, AR ↔ Ilopango (CIA cocaine pipeline)'],
   [[13.700,-89.120],[12.115,-86.236],'#ff00ff','Ilopango → Managua (Contra supply)'],
@@ -2392,36 +2392,36 @@ var connectionLines = [
   [[41.185,-72.189],[40.871,-72.887],'#ff8800','Plum Island ↔ Brookhaven National Lab'],
   [[41.071,-71.857],[40.789,-73.135],'#00e5ff','Montauk ↔ Long Island (submarine cable landing)'],
   // Hollywood-military corridor
-  [[34.181,-118.309],[34.201,-118.171],'#ffcc00','Burbank (Skunk Works) ↔ Pasadena (JPL)'],
+  [[34.181,-118.309],[34.201,-118.171],'#FF8800','Burbank (Skunk Works) ↔ Pasadena (JPL)'],
   [[34.093,-118.329],[34.181,-118.309],'#cc88ff','Hollywood ↔ Burbank (entertainment-defense)'],
   // Philip K. Dick network
   [[33.870,-117.924],[34.093,-118.329],'#cc88ff','PKD (Fullerton) ↔ Hollywood (works → $1B+ blockbusters)'],
-  [[33.870,-117.924],[36.131,-121.630],'#00ccff','PKD (VALIS) ↔ Esalen (ECCO) - consciousness pipeline'],
+  [[33.870,-117.924],[36.131,-121.630],'#00E5FF','PKD (VALIS) ↔ Esalen (ECCO) - consciousness pipeline'],
   [[33.870,-117.924],[34.108,-118.369],'#cc88ff','PKD ↔ Laurel Canyon (entertainment-intelligence nexus)'],
-  [[33.870,-117.924],[33.953,-84.550],'#00ccff','PKD (VALIS downloads) ↔ Vivex/Taylor (patent downloads)'],
+  [[33.870,-117.924],[33.953,-84.550],'#00E5FF','PKD (VALIS downloads) ↔ Vivex/Taylor (patent downloads)'],
   // Dulce → nuclear labs
-  [[36.934,-106.999],[35.880,-106.299],'#ff6600','Dulce ↔ Los Alamos National Lab'],
-  [[36.934,-106.999],[35.211,-106.451],'#ff6600','Dulce ↔ Sandia National Labs'],
+  [[36.934,-106.999],[35.880,-106.299],'#FF8800','Dulce ↔ Los Alamos National Lab'],
+  [[36.934,-106.999],[35.211,-106.451],'#FF8800','Dulce ↔ Sandia National Labs'],
   // Alaska chain
-  [[62.391,-145.150],[63.995,-145.737],'#ff4444','HAARP ↔ Fort Greely (Alaska corridor)'],
-  [[64.295,-149.195],[61.253,-149.807],'#ff4444','Clear SFS ↔ Elmendorf-Richardson'],
+  [[62.391,-145.150],[63.995,-145.737],'#FF00E5','HAARP ↔ Fort Greely (Alaska corridor)'],
+  [[64.295,-149.195],[61.253,-149.807],'#FF00E5','Clear SFS ↔ Elmendorf-Richardson'],
   // Antarctic stations
   [[-77.846,166.668],[-89.983,0.000],'#ffffff','McMurdo ↔ South Pole Station'],
   [[-78.464,106.837],[-75.100,123.350],'#ffffff','Vostok ↔ Concordia'],
   // Deep earth connection
-  [[69.396,33.344],[-78.464,106.837],'#ff6600','Kola Superdeep (12.2km) ↔ Vostok (4km ice drill)'],
+  [[69.396,33.344],[-78.464,106.837],'#FF8800','Kola Superdeep (12.2km) ↔ Vostok (4km ice drill)'],
   // Global basing network connections
-  [[49.437,7.600],[49.391,7.542],'#ff4444','Ramstein ↔ Landstuhl (evacuation corridor)'],
-  [[49.437,7.600],[48.691,9.118],'#ff4444','Ramstein ↔ Stuttgart AFRICOM/EUCOM'],
-  [[25.117,51.315],[26.236,50.565],'#ff4444','Al Udeid (Qatar) ↔ NSA Bahrain (Fifth Fleet)'],
-  [[36.963,127.031],[37.091,127.030],'#ff4444','Camp Humphreys ↔ Osan (Korea defense axis)'],
-  [[26.352,127.768],[26.274,127.755],'#ff4444','Kadena ↔ Futenma (Okinawa concentration)'],
-  [[35.283,139.654],[26.352,127.768],'#ff4444','Yokosuka ↔ Kadena (Japan-Okinawa chain)'],
-  [[35.749,139.349],[35.283,139.654],'#ff4444','Yokota ↔ Yokosuka (Tokyo-harbor axis)'],
+  [[49.437,7.600],[49.391,7.542],'#FF00E5','Ramstein ↔ Landstuhl (evacuation corridor)'],
+  [[49.437,7.600],[48.691,9.118],'#FF00E5','Ramstein ↔ Stuttgart AFRICOM/EUCOM'],
+  [[25.117,51.315],[26.236,50.565],'#FF00E5','Al Udeid (Qatar) ↔ NSA Bahrain (Fifth Fleet)'],
+  [[36.963,127.031],[37.091,127.030],'#FF00E5','Camp Humphreys ↔ Osan (Korea defense axis)'],
+  [[26.352,127.768],[26.274,127.755],'#FF00E5','Kadena ↔ Futenma (Okinawa concentration)'],
+  [[35.283,139.654],[26.352,127.768],'#FF00E5','Yokosuka ↔ Kadena (Japan-Okinawa chain)'],
+  [[35.749,139.349],[35.283,139.654],'#FF00E5','Yokota ↔ Yokosuka (Tokyo-harbor axis)'],
   [[11.547,43.146],[11.593,43.058],'#ff0066','Camp Lemonnier ↔ Chinese Base Djibouti (competing powers, 2 km)'],
-  [[34.890,35.887],[35.413,35.946],'#ff4444','Tartus ↔ Khmeimim (Russian Syria axis)'],
-  [[37.002,35.426],[44.034,24.339],'#ff4444','Incirlik ↔ Deveselu (Turkey-Romania BMD axis)'],
-  [[19.902,-75.096],[14.382,-87.621],'#ff4444','Guantanamo ↔ Soto Cano (Caribbean corridor)'],
+  [[34.890,35.887],[35.413,35.946],'#FF00E5','Tartus ↔ Khmeimim (Russian Syria axis)'],
+  [[37.002,35.426],[44.034,24.339],'#FF00E5','Incirlik ↔ Deveselu (Turkey-Romania BMD axis)'],
+  [[19.902,-75.096],[14.382,-87.621],'#FF00E5','Guantanamo ↔ Soto Cano (Caribbean corridor)'],
   // DIA suspicious corridor
   [[39.856,-104.674],[39.717,-104.752],'#ff3366','DIA ↔ Buckley SFB (NRO satellite ops, 10 mi)'],
   [[39.717,-104.752],[38.745,-104.847],'#ff3366','Buckley SFB ↔ Cheyenne Mountain (NORAD, 70 mi)'],
@@ -2429,74 +2429,74 @@ var connectionLines = [
   [[38.953,-77.457],[52.702,-8.925],'#ff3366','Dulles ↔ Shannon (rendition transit route)'],
   [[52.702,-8.925],[39.552,2.739],'#ff3366','Shannon ↔ Palma (rendition transit route)'],
   // Russia - Nuclear/Military/Intelligence Network
-  [[55.760,37.628],[54.935,43.324],'#ff4444','Lubyanka (FSB HQ) → Sarov/Arzamas-16 (nuclear weapons design)'],
-  [[54.935,43.324],[55.713,60.705],'#ff4444','Sarov → Mayak/Chelyabinsk-40 (plutonium production)'],
-  [[55.713,60.705],[56.250,93.533],'#ff4444','Mayak → Krasnoyarsk-26 (underground plutonium/satellite)'],
-  [[55.713,60.705],[56.923,60.054],'#ff4444','Mayak → Uralvagonzavod (Ural military-industrial belt)'],
-  [[56.923,60.054],[54.250,58.100],'#ff4444','Uralvagonzavod → Yamantau Mountain (underground command)'],
-  [[68.959,33.083],[64.564,39.830],'#ff4444','Murmansk (Northern Fleet) → Severodvinsk/Sevmash (submarine construction)'],
-  [[64.564,39.830],[62.927,40.578],'#ff4444','Sevmash → Plesetsk Cosmodrome (Arctic military axis)'],
-  [[68.959,33.083],[73.350,54.983],'#ff4444','Murmansk → Novaya Zemlya (Northern Fleet nuclear test corridor)'],
-  [[59.996,29.771],[54.710,20.452],'#ff4444','Kronstadt (Baltic) ↔ Kaliningrad (Baltic Fleet axis)'],
+  [[55.760,37.628],[54.935,43.324],'#FF00E5','Lubyanka (FSB HQ) → Sarov/Arzamas-16 (nuclear weapons design)'],
+  [[54.935,43.324],[55.713,60.705],'#FF00E5','Sarov → Mayak/Chelyabinsk-40 (plutonium production)'],
+  [[55.713,60.705],[56.250,93.533],'#FF00E5','Mayak → Krasnoyarsk-26 (underground plutonium/satellite)'],
+  [[55.713,60.705],[56.923,60.054],'#FF00E5','Mayak → Uralvagonzavod (Ural military-industrial belt)'],
+  [[56.923,60.054],[54.250,58.100],'#FF00E5','Uralvagonzavod → Yamantau Mountain (underground command)'],
+  [[68.959,33.083],[64.564,39.830],'#FF00E5','Murmansk (Northern Fleet) → Severodvinsk/Sevmash (submarine construction)'],
+  [[64.564,39.830],[62.927,40.578],'#FF00E5','Sevmash → Plesetsk Cosmodrome (Arctic military axis)'],
+  [[68.959,33.083],[73.350,54.983],'#FF00E5','Murmansk → Novaya Zemlya (Northern Fleet nuclear test corridor)'],
+  [[59.996,29.771],[54.710,20.452],'#FF00E5','Kronstadt (Baltic) ↔ Kaliningrad (Baltic Fleet axis)'],
   [[55.760,37.628],[59.996,29.771],'#cc88ff','Moscow → Kronstadt/St. Petersburg (power axis)'],
   [[55.760,37.628],[68.959,33.083],'#cc88ff','Moscow → Murmansk (nuclear submarine command)'],
-  [[42.900,132.730],[54.853,83.094],'#ff4444','Vladivostok (Pacific Fleet) ↔ Novosibirsk/Akademgorodok (Trans-Siberian)'],
+  [[42.900,132.730],[54.853,83.094],'#FF00E5','Vladivostok (Pacific Fleet) ↔ Novosibirsk/Akademgorodok (Trans-Siberian)'],
   [[69.354,88.203],[56.250,93.533],'#ff9100','Norilsk (minerals) → Krasnoyarsk-26 (Siberian extraction corridor)'],
-  [[54.935,43.324],[50.070,78.430],'#ff4444','Sarov → Semipalatinsk (nuclear weapons design → testing pipeline)'],
-  [[59.568,150.808],[67.497,64.060],'#ff0000','Magadan (Kolyma Gulag) ↔ Vorkuta (Arctic Gulag) - forced labor axis'],
-  [[44.617,33.525],[44.499,33.597],'#ff4444','Sevastopol (Black Sea Fleet) ↔ Balaklava (underground submarine base)'],
+  [[54.935,43.324],[50.070,78.430],'#FF00E5','Sarov → Semipalatinsk (nuclear weapons design → testing pipeline)'],
+  [[59.568,150.808],[67.497,64.060],'#FF00E5','Magadan (Kolyma Gulag) ↔ Vorkuta (Arctic Gulag) - forced labor axis'],
+  [[44.617,33.525],[44.499,33.597],'#FF00E5','Sevastopol (Black Sea Fleet) ↔ Balaklava (underground submarine base)'],
 
   // ===== CONTINUITY-OF-GOVERNMENT CHAIN =====
-  [[38.871,-77.056],[39.737,-77.425],'#ff4444','Pentagon → Raven Rock (Site R) - COG chain'],
-  [[39.737,-77.425],[39.648,-77.465],'#ff4444','Raven Rock → Camp David - underground corridor (6 mi)'],
-  [[39.648,-77.465],[39.094,-77.887],'#ff4444','Camp David → Mount Weather - COG chain'],
-  [[39.094,-77.887],[37.788,-80.302],'#ff4444','Mount Weather → Greenbrier - Congressional bunker axis'],
-  [[38.745,-104.847],[38.806,-104.529],'#ff4444','Cheyenne Mountain (NORAD) → Schriever (Space Command)'],
-  [[31.001,35.145],[31.768,35.214],'#ff4444','Dimona (nuclear) → Jerusalem Underground Command'],
-  [[49.018,2.203],[45.874,4.778],'#ff4444','COFAS Taverny → Mont Verdun - French nuclear command chain'],
-  [[59.483,58.967],[55.752,37.618],'#ff4444','Kosvinsky Kamen (Dead Hand) → Moscow Metro-2/D-6'],
-  [[54.935,43.324],[73.350,54.983],'#ff4444','Sarov (weapons design) → Novaya Zemlya (Tsar Bomba testing)'],
+  [[38.871,-77.056],[39.737,-77.425],'#FF00E5','Pentagon → Raven Rock (Site R) - COG chain'],
+  [[39.737,-77.425],[39.648,-77.465],'#FF00E5','Raven Rock → Camp David - underground corridor (6 mi)'],
+  [[39.648,-77.465],[39.094,-77.887],'#FF00E5','Camp David → Mount Weather - COG chain'],
+  [[39.094,-77.887],[37.788,-80.302],'#FF00E5','Mount Weather → Greenbrier - Congressional bunker axis'],
+  [[38.745,-104.847],[38.806,-104.529],'#FF00E5','Cheyenne Mountain (NORAD) → Schriever (Space Command)'],
+  [[31.001,35.145],[31.768,35.214],'#FF00E5','Dimona (nuclear) → Jerusalem Underground Command'],
+  [[49.018,2.203],[45.874,4.778],'#FF00E5','COFAS Taverny → Mont Verdun - French nuclear command chain'],
+  [[59.483,58.967],[55.752,37.618],'#FF00E5','Kosvinsky Kamen (Dead Hand) → Moscow Metro-2/D-6'],
+  [[54.935,43.324],[73.350,54.983],'#FF00E5','Sarov (weapons design) → Novaya Zemlya (Tsar Bomba testing)'],
 
   // ===== FINANCIAL FLOWS - BANKING HIERARCHY =====
-  [[47.548,7.589],[38.893,-77.046],'#ffcc00','BIS Basel → Federal Reserve (central bank of central banks)'],
-  [[47.548,7.589],[51.516,-0.092],'#ffcc00','BIS Basel → City of London (financial axis)'],
-  [[31.065,-81.420],[40.757,-73.975],'#ffcc00','Jekyll Island → JP Morgan HQ (meeting organizer)'],
-  [[31.065,-81.420],[40.707,-74.011],'#ffcc00','Jekyll Island → Kuhn Loeb (Warburg/Fed architect)'],
-  [[53.551,9.994],[40.707,-74.011],'#ffcc00','Hamburg Warburg → NYC Kuhn Loeb (family banking axis)'],
-  [[53.551,9.994],[47.548,7.589],'#ffcc00','Hamburg Warburg → BIS Basel (German banking)'],
-  [[40.706,-74.009],[40.754,-73.972],'#ffcc00','Chase/Rockefeller → Trilateral Commission (founded by Rockefeller)'],
-  [[40.754,-73.972],[40.769,-73.968],'#ffcc00','Trilateral Commission → CFR (Rockefeller governance)'],
+  [[47.548,7.589],[38.893,-77.046],'#FF8800','BIS Basel → Federal Reserve (central bank of central banks)'],
+  [[47.548,7.589],[51.516,-0.092],'#FF8800','BIS Basel → City of London (financial axis)'],
+  [[31.065,-81.420],[40.757,-73.975],'#FF8800','Jekyll Island → JP Morgan HQ (meeting organizer)'],
+  [[31.065,-81.420],[40.707,-74.011],'#FF8800','Jekyll Island → Kuhn Loeb (Warburg/Fed architect)'],
+  [[53.551,9.994],[40.707,-74.011],'#FF8800','Hamburg Warburg → NYC Kuhn Loeb (family banking axis)'],
+  [[53.551,9.994],[47.548,7.589],'#FF8800','Hamburg Warburg → BIS Basel (German banking)'],
+  [[40.706,-74.009],[40.754,-73.972],'#FF8800','Chase/Rockefeller → Trilateral Commission (founded by Rockefeller)'],
+  [[40.754,-73.972],[40.769,-73.968],'#FF8800','Trilateral Commission → CFR (Rockefeller governance)'],
   // Big Three circular ownership
-  [[40.761,-73.978],[40.043,-75.515],'#ffcc00','BlackRock ↔ Vanguard (circular ownership)'],
-  [[40.043,-75.515],[42.356,-71.057],'#ffcc00','Vanguard ↔ State Street (Big Three)'],
-  [[42.356,-71.057],[40.761,-73.978],'#ffcc00','State Street ↔ BlackRock (Big Three triangle)'],
-  [[40.761,-73.978],[38.893,-77.046],'#ffcc00','BlackRock → Federal Reserve (advisory relationship)'],
+  [[40.761,-73.978],[40.043,-75.515],'#FF8800','BlackRock ↔ Vanguard (circular ownership)'],
+  [[40.043,-75.515],[42.356,-71.057],'#FF8800','Vanguard ↔ State Street (Big Three)'],
+  [[42.356,-71.057],[40.761,-73.978],'#FF8800','State Street ↔ BlackRock (Big Three triangle)'],
+  [[40.761,-73.978],[38.893,-77.046],'#FF8800','BlackRock → Federal Reserve (advisory relationship)'],
   // Bilderberg → governance elite
-  [[51.987,5.840],[40.769,-73.968],'#ffcc00','Bilderberg → CFR (overlapping membership)'],
-  [[51.987,5.840],[40.754,-73.972],'#ffcc00','Bilderberg → Trilateral Commission (Rockefeller trifecta)'],
+  [[51.987,5.840],[40.769,-73.968],'#FF8800','Bilderberg → CFR (overlapping membership)'],
+  [[51.987,5.840],[40.754,-73.972],'#FF8800','Bilderberg → Trilateral Commission (Rockefeller trifecta)'],
   // City of London chain
-  [[51.516,-0.092],[51.493,-0.018],'#ffcc00','City of London → Isle of Dogs (slave docks → banking towers)'],
-  [[51.516,-0.092],[51.513,-0.083],'#ffcc00','City of London → East India Company (corporate sovereignty)'],
+  [[51.516,-0.092],[51.493,-0.018],'#FF8800','City of London → Isle of Dogs (slave docks → banking towers)'],
+  [[51.516,-0.092],[51.513,-0.083],'#FF8800','City of London → East India Company (corporate sovereignty)'],
   // BCCI → Vatican/Banco Ambrosiano
-  [[49.612,6.130],[41.902,12.454],'#ffcc00','BCCI Luxembourg → Vatican Bank (laundering axis)'],
-  [[49.612,6.130],[45.464,9.190],'#ffcc00','BCCI Luxembourg → Banco Ambrosiano (P2/CIA pipeline)'],
+  [[49.612,6.130],[41.902,12.454],'#FF8800','BCCI Luxembourg → Vatican Bank (laundering axis)'],
+  [[49.612,6.130],[45.464,9.190],'#FF8800','BCCI Luxembourg → Banco Ambrosiano (P2/CIA pipeline)'],
   // Revolving door
-  [[41.888,-87.627],[38.893,-77.046],'#ffcc00','Citadel (Bernanke) → Federal Reserve (revolving door)'],
-  [[38.905,-77.042],[38.953,-77.348],'#ffcc00','Carlyle Group → General Dynamics (defense private equity)'],
-  [[38.905,-77.042],[38.871,-77.056],'#ffcc00','Carlyle Group → Pentagon (revolving door corridor)'],
+  [[41.888,-87.627],[38.893,-77.046],'#FF8800','Citadel (Bernanke) → Federal Reserve (revolving door)'],
+  [[38.905,-77.042],[38.953,-77.348],'#FF8800','Carlyle Group → General Dynamics (defense private equity)'],
+  [[38.905,-77.042],[38.871,-77.056],'#FF8800','Carlyle Group → Pentagon (revolving door corridor)'],
 
   // ===== SURVEILLANCE TECH - FIVE EYES GAPS =====
-  [[39.751,-104.999],[39.856,-104.674],'#00ccff','Palantir Denver → DIA (same metro)'],
-  [[39.751,-104.999],[38.924,-77.177],'#00ccff','Palantir → Booz Allen (intelligence contractor axis)'],
-  [[39.751,-104.999],[37.422,-122.084],'#00ccff','Palantir → Google (Project Maven / military AI)'],
-  [[38.512,-79.283],[54.002,-1.687],'#00ccff','Sugar Grove (NSA) → Menwith Hill (NSA/UK Five Eyes)'],
-  [[46.682,-120.529],[-23.798,133.737],'#00ccff','Yakima (NSA Pacific NW) → Pine Gap (Five Eyes)'],
-  [[54.002,-1.687],[50.831,-4.543],'#00ccff','Menwith Hill → GCHQ Bude (UK intelligence)'],
-  [[82.502,-62.348],[45.341,-75.630],'#00ccff','CFS Alert (Arctic SIGINT) → CFS Leitrim (Ottawa Five Eyes)'],
-  [[45.341,-75.630],[54.002,-1.687],'#00ccff','CFS Leitrim (Canada) → Menwith Hill (UK) - Five Eyes'],
-  [[52.712,174.112],[40.703,141.369],'#00ccff','Eareckson AFS (Cobra Dane) → Misawa (Pacific SIGINT arc)'],
-  [[22.543,114.058],[52.205,0.122],'#00ccff','Shenzhen (hardware) → Cambridge/ARM (chip design)'],
-  [[38.924,-77.177],[38.871,-77.056],'#00ccff','Booz Allen → Pentagon (99% gov contracts)'],
+  [[39.751,-104.999],[39.856,-104.674],'#00E5FF','Palantir Denver → DIA (same metro)'],
+  [[39.751,-104.999],[38.924,-77.177],'#00E5FF','Palantir → Booz Allen (intelligence contractor axis)'],
+  [[39.751,-104.999],[37.422,-122.084],'#00E5FF','Palantir → Google (Project Maven / military AI)'],
+  [[38.512,-79.283],[54.002,-1.687],'#00E5FF','Sugar Grove (NSA) → Menwith Hill (NSA/UK Five Eyes)'],
+  [[46.682,-120.529],[-23.798,133.737],'#00E5FF','Yakima (NSA Pacific NW) → Pine Gap (Five Eyes)'],
+  [[54.002,-1.687],[50.831,-4.543],'#00E5FF','Menwith Hill → GCHQ Bude (UK intelligence)'],
+  [[82.502,-62.348],[45.341,-75.630],'#00E5FF','CFS Alert (Arctic SIGINT) → CFS Leitrim (Ottawa Five Eyes)'],
+  [[45.341,-75.630],[54.002,-1.687],'#00E5FF','CFS Leitrim (Canada) → Menwith Hill (UK) - Five Eyes'],
+  [[52.712,174.112],[40.703,141.369],'#00E5FF','Eareckson AFS (Cobra Dane) → Misawa (Pacific SIGINT arc)'],
+  [[22.543,114.058],[52.205,0.122],'#00E5FF','Shenzhen (hardware) → Cambridge/ARM (chip design)'],
+  [[38.924,-77.177],[38.871,-77.056],'#00E5FF','Booz Allen → Pentagon (99% gov contracts)'],
 
   // ===== EPSTEIN NETWORK =====
   [[18.300,-64.825],[18.313,-64.850],'#cc88ff','Little Saint James ↔ Great Saint James (Epstein islands)'],
@@ -2516,25 +2516,25 @@ var connectionLines = [
   [[34.586,-94.239],[14.061,-87.217],'#ff00ff','Mena AR → Toncontin Honduras (CIA narco flight path)'],
 
   // ===== MILITARY BASING CHAINS - EUROPEAN THEATER =====
-  [[46.032,12.597],[40.815,14.282],'#ff4444','Aviano → NSA Naples (Italian basing chain)'],
-  [[40.815,14.282],[37.402,14.922],'#ff4444','Naples (Sixth Fleet) → Sigonella (Med ISR hub)'],
-  [[52.409,0.561],[49.437,7.600],'#ff4444','RAF Lakenheath → Ramstein (European air corridor)'],
-  [[36.638,-6.350],[37.402,14.922],'#ff4444','Rota (Atlantic) → Sigonella (Med) - Mediterranean arc'],
-  [[35.488,24.119],[37.002,35.426],'#ff4444','Souda Bay → Incirlik (Eastern Med corridor)'],
-  [[42.359,21.247],[44.034,24.339],'#ff4444','Camp Bondsteel → Aegis Deveselu (Balkans-Romania axis)'],
-  [[49.690,11.932],[49.437,7.600],'#ff4444','Grafenwöhr → Ramstein (Germany backbone)'],
-  [[54.478,17.100],[54.710,20.452],'#ff4444','Aegis Poland → Kaliningrad (facing Russian exclave)'],
-  [[76.531,-68.703],[82.502,-62.348],'#ff4444','Thule → CFS Alert (Arctic early warning arc)'],
+  [[46.032,12.597],[40.815,14.282],'#FF00E5','Aviano → NSA Naples (Italian basing chain)'],
+  [[40.815,14.282],[37.402,14.922],'#FF00E5','Naples (Sixth Fleet) → Sigonella (Med ISR hub)'],
+  [[52.409,0.561],[49.437,7.600],'#FF00E5','RAF Lakenheath → Ramstein (European air corridor)'],
+  [[36.638,-6.350],[37.402,14.922],'#FF00E5','Rota (Atlantic) → Sigonella (Med) - Mediterranean arc'],
+  [[35.488,24.119],[37.002,35.426],'#FF00E5','Souda Bay → Incirlik (Eastern Med corridor)'],
+  [[42.359,21.247],[44.034,24.339],'#FF00E5','Camp Bondsteel → Aegis Deveselu (Balkans-Romania axis)'],
+  [[49.690,11.932],[49.437,7.600],'#FF00E5','Grafenwöhr → Ramstein (Germany backbone)'],
+  [[54.478,17.100],[54.710,20.452],'#FF00E5','Aegis Poland → Kaliningrad (facing Russian exclave)'],
+  [[76.531,-68.703],[82.502,-62.348],'#FF00E5','Thule → CFS Alert (Arctic early warning arc)'],
   // Middle East cluster
-  [[29.182,48.082],[25.117,51.315],'#ff4444','Camp Arifjan (Kuwait) → Al Udeid (Qatar)'],
-  [[24.248,54.548],[26.236,50.565],'#ff4444','Al Dhafra (UAE) → NSA Bahrain (Gulf cluster)'],
-  [[24.248,54.548],[25.117,51.315],'#ff4444','Al Dhafra → Al Udeid (Gulf air power triangle)'],
+  [[29.182,48.082],[25.117,51.315],'#FF00E5','Camp Arifjan (Kuwait) → Al Udeid (Qatar)'],
+  [[24.248,54.548],[26.236,50.565],'#FF00E5','Al Dhafra (UAE) → NSA Bahrain (Gulf cluster)'],
+  [[24.248,54.548],[25.117,51.315],'#FF00E5','Al Dhafra → Al Udeid (Gulf air power triangle)'],
   // Pacific chain
-  [[13.584,144.924],[26.352,127.768],'#ff4444','Andersen (Guam) → Kadena (Okinawa) - Pacific bomber arc'],
-  [[13.584,144.924],[35.283,139.654],'#ff4444','Andersen (Guam) → Yokosuka (Seventh Fleet chain)'],
+  [[13.584,144.924],[26.352,127.768],'#FF00E5','Andersen (Guam) → Kadena (Okinawa) - Pacific bomber arc'],
+  [[13.584,144.924],[35.283,139.654],'#FF00E5','Andersen (Guam) → Yokosuka (Seventh Fleet chain)'],
   // Chinese military chain
-  [[9.550,112.890],[18.220,109.550],'#ff4444','Fiery Cross Reef → Yulin (Hainan sub base)'],
-  [[18.220,109.550],[36.040,120.670],'#ff4444','Yulin (Hainan) → Jianggezhuang (Qingdao subs)'],
+  [[9.550,112.890],[18.220,109.550],'#FF00E5','Fiery Cross Reef → Yulin (Hainan sub base)'],
+  [[18.220,109.550],[36.040,120.670],'#FF00E5','Yulin (Hainan) → Jianggezhuang (Qingdao subs)'],
 
   // ===== MINING/EXTRACTION → TECH SUPPLY CHAIN =====
   [[-10.717,25.467],[22.543,114.058],'#ff9100','Kolwezi cobalt → Shenzhen (battery manufacturing)'],
@@ -2567,19 +2567,19 @@ var connectionLines = [
   [[37.422,-122.084],[38.953,-77.348],'#ff7043','Google (Project Maven) → General Dynamics (tech→weapons)'],
 
   // ===== KNOWLEDGE DESTRUCTION CHAIN =====
-  [[31.200,29.919],[33.341,44.401],'#00ff41','Alexandria → Baghdad (library destruction pattern)'],
-  [[33.341,44.401],[25.136,85.443],'#00ff41','Baghdad → Nalanda (9M manuscripts each)'],
+  [[31.200,29.919],[33.341,44.401],'#00E5FF','Alexandria → Baghdad (library destruction pattern)'],
+  [[33.341,44.401],[25.136,85.443],'#00E5FF','Baghdad → Nalanda (9M manuscripts each)'],
 
   // ===== CRYPTO / FINTECH =====
   [[47.166,8.516],[47.548,7.589],'#00e676','Zug Crypto Valley ↔ BIS Basel (60 km apart)'],
 
   // ===== TIMOTHY TAYLOR / ECCO / CONSCIOUSNESS NETWORK =====
-  [[33.953,-84.550],[28.392,-80.608],'#00ccff','Vivex/Taylor ↔ Cape Canaveral (NASA rocket launches)'],
-  [[33.953,-84.550],[35.053,-78.878],'#00ccff','Vivex/Taylor ↔ Fayetteville/Bledsoe (IC pipeline)'],
+  [[33.953,-84.550],[28.392,-80.608],'#00E5FF','Vivex/Taylor ↔ Cape Canaveral (NASA rocket launches)'],
+  [[33.953,-84.550],[35.053,-78.878],'#00E5FF','Vivex/Taylor ↔ Fayetteville/Bledsoe (IC pipeline)'],
   [[36.131,-121.630],[34.093,-118.329],'#cc88ff','Esalen ↔ Hollywood (consciousness → entertainment)'],
-  [[36.131,-121.630],[45.509,-73.591],'#00ccff','Esalen/Lilly ↔ Allan Memorial/MKUltra (program lineage)'],
-  [[33.953,-84.550],[34.201,-118.171],'#00ccff','Tyler D./Taylor ↔ JPL (aerospace-biotech nexus)'],
-  [[35.053,-78.878],[28.392,-80.608],'#00ccff','Fayetteville/Bledsoe ↔ Cape Canaveral (NASA investigation)'],
+  [[36.131,-121.630],[45.509,-73.591],'#00E5FF','Esalen/Lilly ↔ Allan Memorial/MKUltra (program lineage)'],
+  [[33.953,-84.550],[34.201,-118.171],'#00E5FF','Tyler D./Taylor ↔ JPL (aerospace-biotech nexus)'],
+  [[35.053,-78.878],[28.392,-80.608],'#00E5FF','Fayetteville/Bledsoe ↔ Cape Canaveral (NASA investigation)'],
 
   // ===== GLOBAL MEDIA / CULTURAL MANUFACTURING =====
   [[34.083,-118.320],[51.548,-0.534],'#cc88ff','Hollywood ↔ Pinewood (Anglo-American entertainment axis)'],
@@ -2588,7 +2588,7 @@ var connectionLines = [
   [[51.548,-0.534],[51.656,-0.294],'#cc88ff','Pinewood ↔ Elstree (UK studio corridor)'],
   [[52.388,13.058],[55.716,37.529],'#cc88ff','Babelsberg ↔ Mosfilm (propaganda studio axis)'],
   [[37.514,127.104],[39.981,116.466],'#cc88ff','Korean studios ↔ China Film Group (East Asian cultural contest)'],
-  [[34.083,-118.320],[39.981,116.466],'#ffcc00','Hollywood ↔ China Film Group (self-censorship for market access)'],
+  [[34.083,-118.320],[39.981,116.466],'#FF8800','Hollywood ↔ China Film Group (self-censorship for market access)'],
   [[34.083,-118.320],[-33.892,151.219],'#cc88ff','Hollywood ↔ Fox Studios Australia (Five Eyes entertainment)'],
   [[-33.892,151.219],[-41.301,174.772],'#cc88ff','Fox Sydney ↔ Weta NZ (Five Eyes production corridor)'],
   [[34.083,-118.320],[6.524,3.379],'#cc88ff','Hollywood ↔ Nollywood (volume competition)'],
@@ -2597,59 +2597,59 @@ var connectionLines = [
   [[35.632,139.610],[37.514,127.104],'#cc88ff','Toho Tokyo ↔ Korean studios (East Asian cultural export)'],
 
   // ===== PSYCHIATRIC / MKUltra INSTITUTIONAL NETWORK =====
-  [[45.509,-73.591],[40.841,-73.942],'#00ccff','Allan Memorial ↔ NY Psychiatric Institute (MKUltra network)'],
-  [[40.841,-73.942],[40.745,-73.731],'#00ccff','NY Psychiatric Institute ↔ Creedmoor (Hoch experiments)'],
-  [[40.841,-73.942],[40.808,-73.963],'#00ccff','NY Psychiatric Institute ↔ Columbia University (affiliation)'],
-  [[45.509,-73.591],[-33.771,151.138],'#00ccff','Allan Memorial (Cameron) ↔ Chelmsford (Bailey) - techniques traveled'],
-  [[51.381,-0.063],[-33.771,151.138],'#00ccff','Bedlam/Sargant ↔ Chelmsford/Bailey (Five Eyes psychiatry)'],
-  [[45.509,-73.591],[49.255,-122.847],'#00ccff','Allan Memorial ↔ Riverview BC (Canadian MKUltra network)'],
-  [[45.509,-73.591],[44.758,-79.938],'#00ccff','Allan Memorial ↔ Oak Ridge/Penetanguishene (psychic driving transfer)'],
-  [[39.272,-76.736],[38.849,-76.974],'#00ccff','Spring Grove MD ↔ St. Elizabeths DC (psychiatric corridor)'],
-  [[42.987,-85.071],[38.358,-121.971],'#00ccff','Ionia MI ↔ Vacaville CA (Hamilton prison experiments)'],
-  [[55.726,37.600],[59.972,30.322],'#ff4444','Serbsky Center ↔ Pavlov Institute (Soviet psychiatry-conditioning axis)'],
-  [[39.930,116.400],[39.999,116.327],'#ff4444','Ankang facilities ↔ Tsinghua (state apparatus)'],
-  [[39.043,-95.698],[42.377,-71.117],'#00ccff','Topeka/Menninger ↔ Harvard (CIA psychiatric training pipeline)'],
+  [[45.509,-73.591],[40.841,-73.942],'#00E5FF','Allan Memorial ↔ NY Psychiatric Institute (MKUltra network)'],
+  [[40.841,-73.942],[40.745,-73.731],'#00E5FF','NY Psychiatric Institute ↔ Creedmoor (Hoch experiments)'],
+  [[40.841,-73.942],[40.808,-73.963],'#00E5FF','NY Psychiatric Institute ↔ Columbia University (affiliation)'],
+  [[45.509,-73.591],[-33.771,151.138],'#00E5FF','Allan Memorial (Cameron) ↔ Chelmsford (Bailey) - techniques traveled'],
+  [[51.381,-0.063],[-33.771,151.138],'#00E5FF','Bedlam/Sargant ↔ Chelmsford/Bailey (Five Eyes psychiatry)'],
+  [[45.509,-73.591],[49.255,-122.847],'#00E5FF','Allan Memorial ↔ Riverview BC (Canadian MKUltra network)'],
+  [[45.509,-73.591],[44.758,-79.938],'#00E5FF','Allan Memorial ↔ Oak Ridge/Penetanguishene (psychic driving transfer)'],
+  [[39.272,-76.736],[38.849,-76.974],'#00E5FF','Spring Grove MD ↔ St. Elizabeths DC (psychiatric corridor)'],
+  [[42.987,-85.071],[38.358,-121.971],'#00E5FF','Ionia MI ↔ Vacaville CA (Hamilton prison experiments)'],
+  [[55.726,37.600],[59.972,30.322],'#FF00E5','Serbsky Center ↔ Pavlov Institute (Soviet psychiatry-conditioning axis)'],
+  [[39.930,116.400],[39.999,116.327],'#FF00E5','Ankang facilities ↔ Tsinghua (state apparatus)'],
+  [[39.043,-95.698],[42.377,-71.117],'#00E5FF','Topeka/Menninger ↔ Harvard (CIA psychiatric training pipeline)'],
 
   // ===== ACADEMIC / INTELLIGENCE PIPELINE =====
-  [[42.360,-71.094],[42.377,-71.117],'#00ff41','MIT ↔ Harvard (Cambridge intelligence corridor)'],
-  [[37.428,-122.170],[34.138,-118.125],'#00ff41','Stanford/SRI ↔ Caltech/JPL (California defense research axis)'],
-  [[37.428,-122.170],[37.872,-122.259],'#00ff41','Stanford ↔ UC Berkeley (Bay Area nuclear-tech corridor)'],
-  [[41.316,-72.922],[42.377,-71.117],'#00ff41','Yale (Skull & Bones) ↔ Harvard (Ivy League IC pipeline)'],
-  [[40.808,-73.963],[39.952,-75.193],'#00ff41','Columbia ↔ UPenn (Northeast research corridor)'],
-  [[41.789,-87.599],[35.880,-106.306],'#ff4444','U Chicago (Stagg Field) ↔ Los Alamos (Manhattan Project)'],
-  [[37.872,-122.259],[37.682,-121.768],'#ff4444','UC Berkeley ↔ Lawrence Livermore (nuclear weapons management)'],
-  [[37.872,-122.259],[35.880,-106.306],'#ff4444','UC Berkeley ↔ Los Alamos (UC nuclear lab system)'],
-  [[34.138,-118.125],[34.201,-118.171],'#00ff41','Caltech ↔ JPL (campus-to-lab pipeline, 12 miles)'],
-  [[51.525,-0.128],[45.509,-73.591],'#00ccff','Tavistock ↔ Allan Memorial (Anglo-American psyop research)'],
-  [[32.778,35.024],[34.093,-118.329],'#00ff41','Technion/Unit 8200 ↔ Hollywood (surveillance → entertainment tech)'],
-  [[55.703,37.531],[59.972,30.322],'#ff4444','Moscow State ↔ Pavlov Institute (Russian state science axis)'],
-  [[39.999,116.327],[39.930,116.400],'#ff4444','Tsinghua ↔ Ankang (university → state security pipeline)'],
+  [[42.360,-71.094],[42.377,-71.117],'#00E5FF','MIT ↔ Harvard (Cambridge intelligence corridor)'],
+  [[37.428,-122.170],[34.138,-118.125],'#00E5FF','Stanford/SRI ↔ Caltech/JPL (California defense research axis)'],
+  [[37.428,-122.170],[37.872,-122.259],'#00E5FF','Stanford ↔ UC Berkeley (Bay Area nuclear-tech corridor)'],
+  [[41.316,-72.922],[42.377,-71.117],'#00E5FF','Yale (Skull & Bones) ↔ Harvard (Ivy League IC pipeline)'],
+  [[40.808,-73.963],[39.952,-75.193],'#00E5FF','Columbia ↔ UPenn (Northeast research corridor)'],
+  [[41.789,-87.599],[35.880,-106.306],'#FF00E5','U Chicago (Stagg Field) ↔ Los Alamos (Manhattan Project)'],
+  [[37.872,-122.259],[37.682,-121.768],'#FF00E5','UC Berkeley ↔ Lawrence Livermore (nuclear weapons management)'],
+  [[37.872,-122.259],[35.880,-106.306],'#FF00E5','UC Berkeley ↔ Los Alamos (UC nuclear lab system)'],
+  [[34.138,-118.125],[34.201,-118.171],'#00E5FF','Caltech ↔ JPL (campus-to-lab pipeline, 12 miles)'],
+  [[51.525,-0.128],[45.509,-73.591],'#00E5FF','Tavistock ↔ Allan Memorial (Anglo-American psyop research)'],
+  [[32.778,35.024],[34.093,-118.329],'#00E5FF','Technion/Unit 8200 ↔ Hollywood (surveillance → entertainment tech)'],
+  [[55.703,37.531],[59.972,30.322],'#FF00E5','Moscow State ↔ Pavlov Institute (Russian state science axis)'],
+  [[39.999,116.327],[39.930,116.400],'#FF00E5','Tsinghua ↔ Ankang (university → state security pipeline)'],
 
   // ===== JASON ADVISORY GROUP NETWORK =====
-  [[38.934,-77.177],[40.343,-74.651],'#00ff41','JASON/MITRE McLean ↔ Princeton/IDA (advisory administration)'],
-  [[32.833,-117.271],[37.428,-122.170],'#00ff41','JASON La Jolla ↔ Stanford (summer study recruitment)'],
-  [[32.833,-117.271],[34.138,-118.125],'#00ff41','JASON La Jolla ↔ Caltech (physics recruitment)'],
-  [[38.934,-77.177],[42.486,-71.276],'#00ff41','JASON/MITRE McLean ↔ MITRE Bedford (dual campus)'],
-  [[42.486,-71.276],[42.360,-71.094],'#00ff41','MITRE Bedford ↔ MIT Lincoln Lab (FFRDC origin)'],
-  [[40.343,-74.651],[35.880,-106.306],'#00ff41','Princeton/IDA ↔ Los Alamos (JASON → weapons lab)'],
-  [[40.343,-74.651],[37.682,-121.768],'#00ff41','Princeton/IDA ↔ Lawrence Livermore (JASON → weapons lab)'],
-  [[32.833,-117.271],[37.682,-121.768],'#00ff41','JASON La Jolla ↔ Livermore (classified summer → classified lab)'],
+  [[38.934,-77.177],[40.343,-74.651],'#00E5FF','JASON/MITRE McLean ↔ Princeton/IDA (advisory administration)'],
+  [[32.833,-117.271],[37.428,-122.170],'#00E5FF','JASON La Jolla ↔ Stanford (summer study recruitment)'],
+  [[32.833,-117.271],[34.138,-118.125],'#00E5FF','JASON La Jolla ↔ Caltech (physics recruitment)'],
+  [[38.934,-77.177],[42.486,-71.276],'#00E5FF','JASON/MITRE McLean ↔ MITRE Bedford (dual campus)'],
+  [[42.486,-71.276],[42.360,-71.094],'#00E5FF','MITRE Bedford ↔ MIT Lincoln Lab (FFRDC origin)'],
+  [[40.343,-74.651],[35.880,-106.306],'#00E5FF','Princeton/IDA ↔ Los Alamos (JASON → weapons lab)'],
+  [[40.343,-74.651],[37.682,-121.768],'#00E5FF','Princeton/IDA ↔ Lawrence Livermore (JASON → weapons lab)'],
+  [[32.833,-117.271],[37.682,-121.768],'#00E5FF','JASON La Jolla ↔ Livermore (classified summer → classified lab)'],
 
   // ===== BILDERBERG CORRIDOR - OOSTERBEEK / WOLFHEZE =====
   [[51.987,5.840],[52.004,5.786],'#ffffff','Bilderberg Hotel → Pro Persona/Wolfheze (1.3km through connected woodland)'],
-  [[51.987,5.840],[52.061,5.873],'#ff4444','Bilderberg Hotel → Deelen Air Base (WWII Luftwaffe command, shared railway corridor)'],
-  [[51.987,5.840],[51.988,5.833],'#ff4444','Bilderberg Hotel → Hotel Hartenstein (600m on same Utrechtseweg, Battle of Arnhem HQ)'],
+  [[51.987,5.840],[52.061,5.873],'#FF00E5','Bilderberg Hotel → Deelen Air Base (WWII Luftwaffe command, shared railway corridor)'],
+  [[51.987,5.840],[51.988,5.833],'#FF00E5','Bilderberg Hotel → Hotel Hartenstein (600m on same Utrechtseweg, Battle of Arnhem HQ)'],
   [[51.987,5.840],[51.988,5.815],'#ff7043','Bilderberg Hotel → Firm of the Future BV (Utrechtseweg 263, white cottage, 11 dead URLs)'],
   [[51.987,5.840],[51.988,5.800],'#ffffff','Bilderberg Hotel → Laag Wolfheze Estate (same Utrechtseweg corridor, Rijksmonument)'],
   [[51.987,5.840],[51.988,5.814],'#ffffff','Bilderberg Hotel → Bilderberg Estate Boundary Post (landgoed marker)'],
   [[51.987,5.840],[51.963,5.794],'#ffffff','Bilderberg Hotel → Kasteel Doorwerth (800 years of power architecture, same municipality)'],
-  [[52.004,5.786],[52.061,5.873],'#ff4444','Pro Persona/Wolfheze → Deelen Air Base (dedicated military railway through hospital grounds)'],
-  [[52.004,5.786],[51.988,5.833],'#ff4444','Pro Persona/Wolfheze → Hotel Hartenstein (glider landing on hospital grounds, Sept 1944)'],
+  [[52.004,5.786],[52.061,5.873],'#FF00E5','Pro Persona/Wolfheze → Deelen Air Base (dedicated military railway through hospital grounds)'],
+  [[52.004,5.786],[51.988,5.833],'#FF00E5','Pro Persona/Wolfheze → Hotel Hartenstein (glider landing on hospital grounds, Sept 1944)'],
 
   // ===== HOWARD LUTNICK CONNECTIONS =====
   [[40.713,-74.013],[18.300,-64.825],'#ff00ff','Lutnick → Epstein Little Saint James (visited Dec 2012, adjacent Manhattan properties)'],
-  [[40.713,-74.013],[40.769,-73.968],'#ffcc00','Lutnick / Cantor Fitzgerald → CFR (NYC financial-governance axis)'],
-  [[40.713,-74.013],[38.893,-77.046],'#ffcc00','Lutnick → Commerce Dept (41st Secretary of Commerce, Feb 2025)'],
+  [[40.713,-74.013],[40.769,-73.968],'#FF8800','Lutnick / Cantor Fitzgerald → CFR (NYC financial-governance axis)'],
+  [[40.713,-74.013],[38.893,-77.046],'#FF8800','Lutnick → Commerce Dept (41st Secretary of Commerce, Feb 2025)'],
 
   // ===== 404 DEAD ZONE CONNECTIONS =====
   [[34.555,69.208],[51.990,5.820],'#ff8800','Kabul NDC ↔ Bilderberg Corridor (similar reduced information footprint, 5000km apart)'],
@@ -2661,59 +2661,59 @@ var connectionLines = [
   [[51.988,5.815],[51.989,5.815],'#ff7043','FotF → NI-academy (sub-brand, same address Utrechtseweg 263, same phone)'],
   [[51.988,5.815],[51.988,5.815],'#ff7043','FotF → Biomimicry Centre (sub-brand, same address, same phone, /over-ons/ 404)'],
   [[51.988,5.815],[51.978,5.733],'#ff7043','FotF → Marije Groen in \'t Wout (HIDDEN third person, ex-PwC, Renkum)'],
-  [[51.978,5.733],[52.071,4.301],'#ffcc00','Marije Groen in \'t Wout → PwC Netherlands (ex-chartered accountant, Big Four pipeline)'],
+  [[51.978,5.733],[52.071,4.301],'#FF8800','Marije Groen in \'t Wout → PwC Netherlands (ex-chartered accountant, Big Four pipeline)'],
   [[51.988,5.815],[51.685,5.300],'#ffffff','FotF / Els Martijn → BrabantWonen (supervisory board + audit committee chair)'],
-  [[51.988,5.815],[52.083,5.833],'#00ff41','FotF / Biomimicry Centre → Hoge Veluwe (teaching location, Els Martijn nature guide)'],
+  [[51.988,5.815],[52.083,5.833],'#00E5FF','FotF / Biomimicry Centre → Hoge Veluwe (teaching location, Els Martijn nature guide)'],
   [[51.988,5.815],[52.309,4.762],'#ff7043','FotF → SADC N.V. Schiphol (client, CO2-Pilot Klimaat Quagga Island game)'],
   [[51.978,5.733],[51.989,5.815],'#ff7043','Marije (hidden, ex-PwC) → NI-academy (co-teacher with Els Martijn)'],
   [[51.978,5.733],[51.988,5.815],'#ff7043','Marije (hidden, ex-PwC) → Biomimicry Centre (co-professional, email @biomimicry-centre.com)'],
   [[51.990,5.820],[51.988,5.815],'#ff8800','404 Dead Zone → Biomimicry Centre /over-ons/ (same hidden About pattern as parent FotF)'],
 
   // ===== NRO SENTIENT ECOSYSTEM - GROUND STATION TRIAD + COMMERCIAL FEED =====
-  // Surveillance blue (#00ccff) for NRO-to-ground-station links
+  // Surveillance blue (#00E5FF) for NRO-to-ground-station links
   // Corporate orange (#ff7043) for commercial provider feed lines
-  // Military red (#ff4444) for MILNET/Starshield military mesh
-  [[38.882,-77.451],[39.717,-104.752],'#00ccff','NRO HQ → ADF-C / Buckley SFB (primary ground station, Space Delta 20, Sentient ingestion)'],
-  [[38.882,-77.451],[38.736,-77.158],'#00ccff','NRO HQ → ADF-E / Area 58, Fort Belvoir (KH-11 imagery, Lacrosse radar, 15 mi)'],
-  [[38.882,-77.451],[32.502,-106.611],'#00ccff','NRO HQ → ADF-SW / White Sands (redundant ground station, continuity node)'],
-  [[39.717,-104.752],[38.736,-77.158],'#00ccff','ADF-C ↔ ADF-E (ground station triad - cross-continental redundancy)'],
-  [[39.717,-104.752],[32.502,-106.611],'#00ccff','ADF-C ↔ ADF-SW (ground station triad - Colorado to New Mexico)'],
-  [[38.736,-77.158],[32.502,-106.611],'#00ccff','ADF-E ↔ ADF-SW (ground station triad - East Coast to Southwest)'],
+  // Military red (#FF00E5) for MILNET/Starshield military mesh
+  [[38.882,-77.451],[39.717,-104.752],'#00E5FF','NRO HQ → ADF-C / Buckley SFB (primary ground station, Space Delta 20, Sentient ingestion)'],
+  [[38.882,-77.451],[38.736,-77.158],'#00E5FF','NRO HQ → ADF-E / Area 58, Fort Belvoir (KH-11 imagery, Lacrosse radar, 15 mi)'],
+  [[38.882,-77.451],[32.502,-106.611],'#00E5FF','NRO HQ → ADF-SW / White Sands (redundant ground station, continuity node)'],
+  [[39.717,-104.752],[38.736,-77.158],'#00E5FF','ADF-C ↔ ADF-E (ground station triad - cross-continental redundancy)'],
+  [[39.717,-104.752],[32.502,-106.611],'#00E5FF','ADF-C ↔ ADF-SW (ground station triad - Colorado to New Mexico)'],
+  [[38.736,-77.158],[32.502,-106.611],'#00E5FF','ADF-E ↔ ADF-SW (ground station triad - East Coast to Southwest)'],
   [[38.882,-77.451],[38.956,-77.406],'#ff7043','NRO HQ → BlackSky, Herndon (commercial GEOINT feed, 10 mi, 100M+ mobile devices)'],
   [[38.882,-77.451],[39.915,-105.028],'#ff7043','NRO HQ → Maxar/Vantor, Westminster CO (90% of foundational GEOINT)'],
   [[38.882,-77.451],[37.782,-122.396],'#ff7043','NRO HQ → Planet Labs, San Francisco (daily global scan, 200 Dove satellites)'],
-  [[38.882,-77.451],[33.921,-118.328],'#ff4444','NRO HQ → SpaceX/Starshield HQ, Hawthorne (480+ MILNET satellites, mesh network)'],
-  [[33.921,-118.328],[39.717,-104.752],'#ff4444','Starshield/MILNET → ADF-C Buckley (military mesh feeds ground station)'],
-  [[33.921,-118.328],[28.392,-80.608],'#ff4444','SpaceX Starshield HQ → Cape Canaveral (MILNET launch facility)'],
-  [[33.921,-118.328],[34.742,-120.572],'#ff4444','SpaceX Starshield HQ → Vandenberg SFB (MILNET polar orbit launches)'],
+  [[38.882,-77.451],[33.921,-118.328],'#FF00E5','NRO HQ → SpaceX/Starshield HQ, Hawthorne (480+ MILNET satellites, mesh network)'],
+  [[33.921,-118.328],[39.717,-104.752],'#FF00E5','Starshield/MILNET → ADF-C Buckley (military mesh feeds ground station)'],
+  [[33.921,-118.328],[28.392,-80.608],'#FF00E5','SpaceX Starshield HQ → Cape Canaveral (MILNET launch facility)'],
+  [[33.921,-118.328],[34.742,-120.572],'#FF00E5','SpaceX Starshield HQ → Vandenberg SFB (MILNET polar orbit launches)'],
   [[39.915,-105.028],[39.717,-104.752],'#ff7043','Maxar/Vantor → ADF-C Buckley (30 mi, same Colorado corridor - builds the satellites, processes next door)'],
-  [[38.956,-77.406],[38.736,-77.158],'#00ccff','BlackSky → ADF-E Fort Belvoir (Herndon to Belvoir, 20 mi - commercial feed to ground station)'],
+  [[38.956,-77.406],[38.736,-77.158],'#00E5FF','BlackSky → ADF-E Fort Belvoir (Herndon to Belvoir, 20 mi - commercial feed to ground station)'],
   // ===================== BLACK WALL STREET - ALL PATTERN LOCKS =====================
   // Financial destruction pattern - the banking architecture that excluded and destroyed Black wealth
-  [[36.1570,-95.9903],[31.0654,-81.4201],'#ffcc00','Black Wall Street → Jekyll Island (1910 secret meeting → 1913 Fed → excluded Black banks → Greenwood unprotected)'],
-  [[36.1570,-95.9903],[38.8927,-77.0455],'#ffcc00','Black Wall Street → Federal Reserve (system excluded Black banks - $32M Black wealth destroyed outside Fed protection)'],
-  [[36.1570,-95.9903],[40.7069,-74.0089],'#ffcc00','Black Wall Street → Wall Street (built by enslaved labor - destroyed when Black version competed)'],
-  [[36.1570,-95.9903],[40.7057,-74.0088],'#ffcc00','Black Wall Street → Rockefeller/Chase (Standard Oil Oklahoma corridor - controlled the oil Greenwood prospered from)'],
-  [[36.1570,-95.9903],[40.7074,-74.0113],'#ffcc00','Black Wall Street → Kuhn Loeb (banking syndicate - financial architecture that gatekept Black institutions)'],
+  [[36.1570,-95.9903],[31.0654,-81.4201],'#FF8800','Black Wall Street → Jekyll Island (1910 secret meeting → 1913 Fed → excluded Black banks → Greenwood unprotected)'],
+  [[36.1570,-95.9903],[38.8927,-77.0455],'#FF8800','Black Wall Street → Federal Reserve (system excluded Black banks - $32M Black wealth destroyed outside Fed protection)'],
+  [[36.1570,-95.9903],[40.7069,-74.0089],'#FF8800','Black Wall Street → Wall Street (built by enslaved labor - destroyed when Black version competed)'],
+  [[36.1570,-95.9903],[40.7057,-74.0088],'#FF8800','Black Wall Street → Rockefeller/Chase (Standard Oil Oklahoma corridor - controlled the oil Greenwood prospered from)'],
+  [[36.1570,-95.9903],[40.7074,-74.0113],'#FF8800','Black Wall Street → Kuhn Loeb (banking syndicate - financial architecture that gatekept Black institutions)'],
   // Oil extraction corridor - the wealth that made Greenwood a target
   [[36.1570,-95.9903],[31.9500,-102.1700],'#ff9100','Black Wall Street → Permian Basin (Oklahoma-Texas oil corridor - extraction wealth made Greenwood a target)'],
   [[36.1570,-95.9903],[4.8156,6.4457],'#ff9100','Black Wall Street → Niger Delta (pattern - oil extraction destroys local communities, wealth flows out)'],
   // Knowledge and culture destruction cycle - burning what others built
-  [[36.1570,-95.9903],[31.2001,29.9187],'#00ff41','Black Wall Street → Alexandria (deliberate burning of accumulated knowledge and wealth - pattern repeats across millennia)'],
-  [[36.1570,-95.9903],[33.3405,44.4009],'#00ff41','Black Wall Street → House of Wisdom Baghdad (libraries, schools, hospitals burned - same playbook, different century)'],
-  [[36.1570,-95.9903],[25.1357,85.4428],'#00ff41','Black Wall Street → Nalanda (destroy the knowledge center, destroy the people - 35 blocks burned like an ancient university)'],
-  [[36.1570,-95.9903],[38.8881,-77.0259],'#00ff41','Black Wall Street → Smithsonian (official narrative - Tulsa erased from history textbooks for 75+ years)'],
+  [[36.1570,-95.9903],[31.2001,29.9187],'#00E5FF','Black Wall Street → Alexandria (deliberate burning of accumulated knowledge and wealth - pattern repeats across millennia)'],
+  [[36.1570,-95.9903],[33.3405,44.4009],'#00E5FF','Black Wall Street → House of Wisdom Baghdad (libraries, schools, hospitals burned - same playbook, different century)'],
+  [[36.1570,-95.9903],[25.1357,85.4428],'#00E5FF','Black Wall Street → Nalanda (destroy the knowledge center, destroy the people - 35 blocks burned like an ancient university)'],
+  [[36.1570,-95.9903],[38.8881,-77.0259],'#00E5FF','Black Wall Street → Smithsonian (official narrative - Tulsa erased from history textbooks for 75+ years)'],
   // Systematic destruction of minority prosperity on U.S. soil
-  [[36.1570,-95.9903],[43.1000,-102.5500],'#00ff41','Black Wall Street → Pine Ridge (US soil - destruction of minority prosperity and self-governance, same government)'],
+  [[36.1570,-95.9903],[43.1000,-102.5500],'#00E5FF','Black Wall Street → Pine Ridge (US soil - destruction of minority prosperity and self-governance, same government)'],
   // State violence against civilians - military deployed to destroy, not protect
-  [[36.1558,-95.9919],[39.3553,-94.9217],'#ff4444','Tulsa Detention Camp → Fort Leavenworth (National Guard command chain - 200 mi, troops used against American citizens)'],
-  [[36.1570,-95.9903],[14.6349,-90.5069],'#ff4444','Black Wall Street → Guatemala 1954 (pattern - US apparatus destroys self-determined prosperity)'],
-  [[36.1570,-95.9903],[-4.3250,15.3222],'#ff4444','Black Wall Street → Congo/Lumumba (destroy Black economic and political independence - domestic and foreign)'],
-  [[36.1570,-95.9903],[-33.4489,-70.6693],'#ff4444','Black Wall Street → Chile 1973 (destroy economic self-determination - install control, same doctrine)'],
-  [[36.1570,-95.9903],[19.3529,-99.1042],'#ff4444','Black Wall Street → Tlatelolco 1968 (state massacre of civilians, official cover-up, bodies hidden)'],
-  [[36.1570,-95.9903],[32.8872,13.1913],'#ff4444','Black Wall Street → Libya 2011 (most prosperous African nation destroyed - pattern of eliminating Black prosperity)'],
+  [[36.1558,-95.9919],[39.3553,-94.9217],'#FF00E5','Tulsa Detention Camp → Fort Leavenworth (National Guard command chain - 200 mi, troops used against American citizens)'],
+  [[36.1570,-95.9903],[14.6349,-90.5069],'#FF00E5','Black Wall Street → Guatemala 1954 (pattern - US apparatus destroys self-determined prosperity)'],
+  [[36.1570,-95.9903],[-4.3250,15.3222],'#FF00E5','Black Wall Street → Congo/Lumumba (destroy Black economic and political independence - domestic and foreign)'],
+  [[36.1570,-95.9903],[-33.4489,-70.6693],'#FF00E5','Black Wall Street → Chile 1973 (destroy economic self-determination - install control, same doctrine)'],
+  [[36.1570,-95.9903],[19.3529,-99.1042],'#FF00E5','Black Wall Street → Tlatelolco 1968 (state massacre of civilians, official cover-up, bodies hidden)'],
+  [[36.1570,-95.9903],[32.8872,13.1913],'#FF00E5','Black Wall Street → Libya 2011 (most prosperous African nation destroyed - pattern of eliminating Black prosperity)'],
   // Mass graves and erasure pattern
-  [[36.1485,-95.9834],[50.7116,-120.3250],'#00ff41','Tulsa Mass Graves → Kamloops (hidden mass graves, erased from history, bodies found 100 years later - same pattern)'],
+  [[36.1485,-95.9834],[50.7116,-120.3250],'#00E5FF','Tulsa Mass Graves → Kamloops (hidden mass graves, erased from history, bodies found 100 years later - same pattern)'],
   // Governance and policy architecture - who decides what history records
   [[36.1570,-95.9903],[40.7686,-73.9679],'#cc88ff','Black Wall Street → CFR (Council on Foreign Relations FOUNDED 1921 - same year as massacre, policy shapes memory)'],
   [[36.1570,-95.9903],[40.2026,-77.1886],'#cc88ff','Black Wall Street → Carlisle Indian School (institutional destruction of non-white communities - school to massacre, same playbook)'],
@@ -2753,7 +2753,7 @@ var connectionLines = [
   [[38.8907,-77.0044],[40.7610,-73.9747],'#ffffff','Supreme Court Murphy v. NCAA → NBA HQ (SCOTUS opened floodgates - same court as Citizens United, $10B+ annual sports betting revenue)'],
   [[38.8907,-77.0044],[40.7589,-73.9680],'#ffffff','Supreme Court → NFL HQ (Murphy v. NCAA enabled NFL gambling partnerships - league that suspended players for betting now profits from it)'],
   // Crash cross-references
-  [[34.1369,-118.6917],[41.1865,-73.1332],'#ff4444','Calabasas crash → Sikorsky/Lockheed Martin (crash aircraft manufacturer = DARPA ALIAS autonomous flight contractor)'],
+  [[34.1369,-118.6917],[41.1865,-73.1332],'#FF00E5','Calabasas crash → Sikorsky/Lockheed Martin (crash aircraft manufacturer = DARPA ALIAS autonomous flight contractor)'],
   [[34.1369,-118.6917],[33.8178,-118.1513],'#ffd740','Calabasas crash → Island Express (crash site → operator who removed CVR, lacked IFR certification, claimed act of God)'],
   [[34.1369,-118.6917],[39.9607,-75.6057],'#ffd740','Calabasas crash → Donaghy (Bryant 20-year NBA career spanning Donaghy era - observational access to referee gambling patterns)'],
   // Ancient to modern spectacle pattern
@@ -2839,7 +2839,7 @@ function highlightConnections(lat, lng) {
     });
     if (isEndpoint && m._icon) {
       m._icon.style.transition = 'filter 0.3s';
-      m._icon.style.filter = 'drop-shadow(0 0 6px #00ff41) drop-shadow(0 0 12px #00ff41)';
+      m._icon.style.filter = 'drop-shadow(0 0 6px #00E5FF) drop-shadow(0 0 12px #00E5FF)';
     }
   });
 }
@@ -2867,54 +2867,54 @@ map.on('popupclose', function() {
 // ===================== TUNNEL PATHS =====================
 var tunnelPaths = [
   // Confirmed underground corridors
-  {path:[[39.6484,-77.4650],[39.7365,-77.4247]], color:'#ff6600', label:'Camp David ↔ Raven Rock (Site R) - confirmed corridor, 6 miles'},
-  {path:[[38.8977,-77.0365],[38.8899,-77.0091]], color:'#ff6600', label:'White House ↔ U.S. Capitol - documented tunnel system'},
-  {path:[[38.8977,-77.0365],[38.8711,-77.0562]], color:'#ff6600', label:'White House area ↔ Pentagon - alleged underground link'},
-  {path:[[41.9022,12.4539],[41.9031,12.4663]], color:'#ff6600', label:'Vatican ↔ Castel Sant\'Angelo - Passetto di Borgo (confirmed, built 1277)'},
+  {path:[[39.6484,-77.4650],[39.7365,-77.4247]], color:'#FF8800', label:'Camp David ↔ Raven Rock (Site R) - confirmed corridor, 6 miles'},
+  {path:[[38.8977,-77.0365],[38.8899,-77.0091]], color:'#FF8800', label:'White House ↔ U.S. Capitol - documented tunnel system'},
+  {path:[[38.8977,-77.0365],[38.8711,-77.0562]], color:'#FF8800', label:'White House area ↔ Pentagon - alleged underground link'},
+  {path:[[41.9022,12.4539],[41.9031,12.4663]], color:'#FF8800', label:'Vatican ↔ Castel Sant\'Angelo - Passetto di Borgo (confirmed, built 1277)'},
   // DIA / Colorado underground corridor (alleged)
-  {path:[[39.8561,-104.6737],[39.7170,-104.7520]], color:'#ff6600', label:'DIA ↔ Buckley SFB - alleged underground tunnel (10 mi)'},
-  {path:[[39.7170,-104.7520],[38.8058,-104.5286]], color:'#ff6600', label:'Buckley SFB ↔ Schriever SFB - alleged underground corridor'},
-  {path:[[38.8058,-104.5286],[38.7446,-104.8467]], color:'#ff6600', label:'Schriever SFB ↔ Cheyenne Mountain (NORAD) - alleged corridor'},
+  {path:[[39.8561,-104.6737],[39.7170,-104.7520]], color:'#FF8800', label:'DIA ↔ Buckley SFB - alleged underground tunnel (10 mi)'},
+  {path:[[39.7170,-104.7520],[38.8058,-104.5286]], color:'#FF8800', label:'Buckley SFB ↔ Schriever SFB - alleged underground corridor'},
+  {path:[[38.8058,-104.5286],[38.7446,-104.8467]], color:'#FF8800', label:'Schriever SFB ↔ Cheyenne Mountain (NORAD) - alleged corridor'},
   // Moscow Metro-2 / D-6
-  {path:[[55.7520,37.6175],[55.7394,37.6150]], color:'#ff6600', label:'Kremlin ↔ Ministry of Defense - Metro-2 (alleged parallel metro)'},
-  {path:[[55.7520,37.6175],[55.7603,37.6285]], color:'#ff6600', label:'Kremlin ↔ Lubyanka (FSB HQ) - Metro-2'},
-  {path:[[55.7520,37.6175],[55.5956,37.2617]], color:'#ff6600', label:'Kremlin ↔ Vnukovo-2 Airport - Metro-2 (~30 km deep tunnel)'},
+  {path:[[55.7520,37.6175],[55.7394,37.6150]], color:'#FF8800', label:'Kremlin ↔ Ministry of Defense - Metro-2 (alleged parallel metro)'},
+  {path:[[55.7520,37.6175],[55.7603,37.6285]], color:'#FF8800', label:'Kremlin ↔ Lubyanka (FSB HQ) - Metro-2'},
+  {path:[[55.7520,37.6175],[55.5956,37.2617]], color:'#FF8800', label:'Kremlin ↔ Vnukovo-2 Airport - Metro-2 (~30 km deep tunnel)'},
   // Beijing Underground City
-  {path:[[39.9042,116.4074],[39.8800,116.3900]], color:'#ff6600', label:'Beijing Underground City - southern network (300,000 capacity)'},
-  {path:[[39.9042,116.4074],[39.9200,116.4300]], color:'#ff6600', label:'Beijing Underground City - eastern extension'},
+  {path:[[39.9042,116.4074],[39.8800,116.3900]], color:'#FF8800', label:'Beijing Underground City - southern network (300,000 capacity)'},
+  {path:[[39.9042,116.4074],[39.9200,116.4300]], color:'#FF8800', label:'Beijing Underground City - eastern extension'},
   // Cross-border drug tunnels
   {path:[[32.5547,-116.9386],[32.5409,-117.0201]], color:'#ff00ff', label:'Otay Mesa ↔ Tijuana - cartel tunnel corridor (rail, ventilation, electricity)'},
   // London government tunnels
-  {path:[[51.5023,-0.1264],[51.5074,-0.1278]], color:'#ff6600', label:'Whitehall ↔ MoD Main Building - confirmed WWII tunnel network'},
-  {path:[[51.5023,-0.1264],[51.4995,-0.1248]], color:'#ff6600', label:'Downing Street ↔ Parliament - underground passage'},
+  {path:[[51.5023,-0.1264],[51.5074,-0.1278]], color:'#FF8800', label:'Whitehall ↔ MoD Main Building - confirmed WWII tunnel network'},
+  {path:[[51.5023,-0.1264],[51.4995,-0.1248]], color:'#FF8800', label:'Downing Street ↔ Parliament - underground passage'},
   // Cappadocia underground cities (confirmed)
-  {path:[[38.3740,34.7345],[38.3920,34.7100]], color:'#ff6600', label:'Derinkuyu ↔ Kaymakli underground cities - confirmed tunnel (~8 km)'},
+  {path:[[38.3740,34.7345],[38.3920,34.7100]], color:'#FF8800', label:'Derinkuyu ↔ Kaymakli underground cities - confirmed tunnel (~8 km)'},
   // Swiss National Redoubt
-  {path:[[46.9481,7.4474],[46.8000,8.2275]], color:'#ff6600', label:'Bern ↔ Gotthard region - Swiss National Redoubt military tunnel system'},
+  {path:[[46.9481,7.4474],[46.8000,8.2275]], color:'#FF8800', label:'Bern ↔ Gotthard region - Swiss National Redoubt military tunnel system'},
   // Israel underground command
-  {path:[[31.7683,35.2137],[31.7800,35.2300]], color:'#ff6600', label:'Jerusalem underground command center - tunnel network'},
+  {path:[[31.7683,35.2137],[31.7800,35.2300]], color:'#FF8800', label:'Jerusalem underground command center - tunnel network'},
   // Dulce alleged connectors
-  {path:[[36.9336,-106.9989],[35.8800,-106.2990]], color:'#ff6600', label:'Dulce (Archuleta Mesa) ↔ Los Alamos - alleged underground connector'},
+  {path:[[36.9336,-106.9989],[35.8800,-106.2990]], color:'#FF8800', label:'Dulce (Archuleta Mesa) ↔ Los Alamos - alleged underground connector'},
   // Thule / Project Iceworm
-  {path:[[76.5312,-68.7031],[77.1667,-61.1333]], color:'#ff6600', label:'Thule ↔ Camp Century - Project Iceworm nuclear missile tunnels under ice'},
+  {path:[[76.5312,-68.7031],[77.1667,-61.1333]], color:'#FF8800', label:'Thule ↔ Camp Century - Project Iceworm nuclear missile tunnels under ice'},
   // Greenbriar tunnel
-  {path:[[37.7880,-80.3016],[38.8977,-77.0365]], color:'#ff6600', label:'Greenbrier bunker ↔ Washington D.C. - alleged continuity corridor'},
+  {path:[[37.7880,-80.3016],[38.8977,-77.0365]], color:'#FF8800', label:'Greenbrier bunker ↔ Washington D.C. - alleged continuity corridor'},
   // Raven Rock ↔ Mount Weather
-  {path:[[39.7365,-77.4247],[39.0938,-77.8872]], color:'#ff6600', label:'Raven Rock (Site R) ↔ Mount Weather - continuity-of-government axis'},
+  {path:[[39.7365,-77.4247],[39.0938,-77.8872]], color:'#FF8800', label:'Raven Rock (Site R) ↔ Mount Weather - continuity-of-government axis'},
 
   // ===== TORA BORA / AFGHAN TUNNEL CORRIDORS =====
-  {path:[[34.0972,70.5744],[34.0583,71.0956]], color:'#ff6600', label:'Tora Bora → Khyber Pass - mujahideen escape corridor (CIA-funded 1980s)'},
-  {path:[[34.0972,70.5744],[33.3000,69.7000]], color:'#ff6600', label:'Tora Bora ↔ Zhawar Kili - mountain tunnel network (Pakistan border)'},
-  {path:[[33.3000,69.7000],[33.5000,69.5000]], color:'#ff6600', label:'Zhawar Kili ↔ K-G Pass - logistics corridor through Paktia Province'},
+  {path:[[34.0972,70.5744],[34.0583,71.0956]], color:'#FF8800', label:'Tora Bora → Khyber Pass - mujahideen escape corridor (CIA-funded 1980s)'},
+  {path:[[34.0972,70.5744],[33.3000,69.7000]], color:'#FF8800', label:'Tora Bora ↔ Zhawar Kili - mountain tunnel network (Pakistan border)'},
+  {path:[[33.3000,69.7000],[33.5000,69.5000]], color:'#FF8800', label:'Zhawar Kili ↔ K-G Pass - logistics corridor through Paktia Province'},
 
   // ===== VIETNAM TUNNEL NETWORKS =====
-  {path:[[11.1415,106.4635],[10.8231,106.6297]], color:'#ff6600', label:'Củ Chi Tunnels → Saigon (Ho Chi Minh City) - 250 km network reached the capital'},
+  {path:[[11.1415,106.4635],[10.8231,106.6297]], color:'#FF8800', label:'Củ Chi Tunnels → Saigon (Ho Chi Minh City) - 250 km network reached the capital'},
 
   // ===== EUROPEAN MEGA-TUNNELS =====
-  {path:[[46.2360,6.0456],[46.2044,6.1432]], color:'#ff6600', label:'CERN LHC - 27 km ring, 100m underground (Geneva, crosses FR-CH border 4x)'},
-  {path:[[46.8300,8.6500],[46.3000,8.9200]], color:'#ff6600', label:'Gotthard Base Tunnel - 57 km (world\'s longest railway tunnel, through Swiss Alps)'},
-  {path:[[51.0125,1.4861],[50.9225,1.7833]], color:'#ff6600', label:'Channel Tunnel - 50 km underwater (UK ↔ France)'},
-  {path:[[46.8000,8.2275],[46.8300,8.6500]], color:'#ff6600', label:'Swiss National Redoubt ↔ Gotthard - military-civil infrastructure convergence'},
+  {path:[[46.2360,6.0456],[46.2044,6.1432]], color:'#FF8800', label:'CERN LHC - 27 km ring, 100m underground (Geneva, crosses FR-CH border 4x)'},
+  {path:[[46.8300,8.6500],[46.3000,8.9200]], color:'#FF8800', label:'Gotthard Base Tunnel - 57 km (world\'s longest railway tunnel, through Swiss Alps)'},
+  {path:[[51.0125,1.4861],[50.9225,1.7833]], color:'#FF8800', label:'Channel Tunnel - 50 km underwater (UK ↔ France)'},
+  {path:[[46.8000,8.2275],[46.8300,8.6500]], color:'#FF8800', label:'Swiss National Redoubt ↔ Gotthard - military-civil infrastructure convergence'},
 
   // ===== NARCO TUNNELS (EXPANDED U.S.-MEXICO BORDER) =====
   {path:[[31.3400,-110.9400],[31.3100,-110.9400]], color:'#ff00ff', label:'Nogales AZ ↔ Nogales Sonora - 130+ tunnels discovered since 1990'},
@@ -2922,22 +2922,22 @@ var tunnelPaths = [
   {path:[[24.8091,-107.3940],[32.5547,-116.9386]], color:'#ff00ff', label:'Culiacán ↔ Otay Mesa - main Sinaloa corridor (1,200 km overland + tunnel)'},
 
   // ===== GAZA / LEBANON / KOREA - CONFLICT TUNNELS =====
-  {path:[[31.2475,34.2522],[31.2800,34.2300]], color:'#ff6600', label:'Rafah tunnel network - 1,300+ tunnels under Gaza-Egypt border'},
-  {path:[[33.2774,35.2037],[33.0833,35.2000]], color:'#ff6600', label:'Hezbollah cross-border tunnels - Lebanon → Israel (discovered 2018-19)'},
-  {path:[[37.9500,126.9500],[37.9200,126.9500]], color:'#ff6600', label:'DMZ infiltration tunnels - NK → SK (4 discovered, capacity 30,000 troops/hr)'},
+  {path:[[31.2475,34.2522],[31.2800,34.2300]], color:'#FF8800', label:'Rafah tunnel network - 1,300+ tunnels under Gaza-Egypt border'},
+  {path:[[33.2774,35.2037],[33.0833,35.2000]], color:'#FF8800', label:'Hezbollah cross-border tunnels - Lebanon → Israel (discovered 2018-19)'},
+  {path:[[37.9500,126.9500],[37.9200,126.9500]], color:'#FF8800', label:'DMZ infiltration tunnels - NK → SK (4 discovered, capacity 30,000 troops/hr)'},
 
   // ===== SUBMARINE BASE TUNNELS =====
-  {path:[[44.4986,33.5970],[44.6167,33.5254]], color:'#ff6600', label:'Balaklava submarine tunnel ↔ Sevastopol - mountain-penetrating sub base'},
-  {path:[[18.2200,109.5500],[18.2500,109.6000]], color:'#ff6600', label:'Yulin Naval Base - underground submarine tunnel (Hainan, China)'},
+  {path:[[44.4986,33.5970],[44.6167,33.5254]], color:'#FF8800', label:'Balaklava submarine tunnel ↔ Sevastopol - mountain-penetrating sub base'},
+  {path:[[18.2200,109.5500],[18.2500,109.6000]], color:'#FF8800', label:'Yulin Naval Base - underground submarine tunnel (Hainan, China)'},
 
   // ===== RUSSIA DEEP INFRASTRUCTURE =====
-  {path:[[55.7520,37.6175],[55.7130,60.7050]], color:'#ff6600', label:'Moscow ↔ Chelyabinsk-40 (Mayak) - nuclear logistics corridor (Urals, ~1,700 km)'},
-  {path:[[56.2500,93.5333],[55.7130,60.7050]], color:'#ff6600', label:'Krasnoyarsk-26 ↔ Chelyabinsk-40 - closed-city nuclear corridor'},
-  {path:[[54.2500,58.1000],[59.4833,58.9667]], color:'#ff6600', label:'Mount Yamantau ↔ Kosvinsky Kamen - Ural mountain nuclear command axis'},
+  {path:[[55.7520,37.6175],[55.7130,60.7050]], color:'#FF8800', label:'Moscow ↔ Chelyabinsk-40 (Mayak) - nuclear logistics corridor (Urals, ~1,700 km)'},
+  {path:[[56.2500,93.5333],[55.7130,60.7050]], color:'#FF8800', label:'Krasnoyarsk-26 ↔ Chelyabinsk-40 - closed-city nuclear corridor'},
+  {path:[[54.2500,58.1000],[59.4833,58.9667]], color:'#FF8800', label:'Mount Yamantau ↔ Kosvinsky Kamen - Ural mountain nuclear command axis'},
 
   // ===== CANADIAN UNDERGROUND CORRIDORS =====
-  {path:[[45.4215,-75.6972],[45.3510,-76.0457]], color:'#ff6600', label:'Parliament Hill tunnels ↔ Diefenbunker - Ottawa continuity axis (~35 km)'},
-  {path:[[46.3600,-79.4200],[45.4215,-75.6972]], color:'#ff6600', label:'CFB North Bay (NORAD underground) ↔ Ottawa - 350 km command corridor'},
+  {path:[[45.4215,-75.6972],[45.3510,-76.0457]], color:'#FF8800', label:'Parliament Hill tunnels ↔ Diefenbunker - Ottawa continuity axis (~35 km)'},
+  {path:[[46.3600,-79.4200],[45.4215,-75.6972]], color:'#FF8800', label:'CFB North Bay (NORAD underground) ↔ Ottawa - 350 km command corridor'},
 
   // ===== U.S. INNER-EARTH MAIN TUNNEL SYSTEM (1978 Map / W.A. South 1975) =====
   // Cascade Range - Pacific NW lava tube corridor
@@ -3098,11 +3098,11 @@ function fetchEarthquakes() {
           opacity: 0.8
         });
         circle.bindPopup(
-          '<div style="font-family:Courier New,monospace;font-size:0.75rem;color:#ddd;background:#111;padding:8px;border:1px solid #333;min-width:200px">' +
-          '<div style="color:#ff4444;font-weight:bold;margin-bottom:4px">⚡ EARTHQUAKE - M' + mag.toFixed(1) + '</div>' +
-          '<div style="color:#aaa;margin-bottom:2px">📍 ' + place + '</div>' +
-          '<div style="color:#888;margin-bottom:2px">Depth: ' + depth.toFixed(1) + ' km</div>' +
-          '<div style="color:#888">🕐 ' + time.toLocaleString() + '</div>' +
+          '<div style="font-family:system-ui,sans-serif;font-size:0.75rem;color:#ddddee;background:#12121e;padding:8px;border:1px solid #1e1e3a;min-width:200px">' +
+          '<div style="color:#FF00E5;font-weight:bold;margin-bottom:4px">⚡ EARTHQUAKE - M' + mag.toFixed(1) + '</div>' +
+          '<div style="color:#aaaacc;margin-bottom:2px">📍 ' + place + '</div>' +
+          '<div style="color:#9999bb;margin-bottom:2px">Depth: ' + depth.toFixed(1) + ' km</div>' +
+          '<div style="color:#9999bb">🕐 ' + time.toLocaleString() + '</div>' +
           '</div>',
           {className: 'dark-popup'}
         );
@@ -3125,8 +3125,8 @@ function fetchEONET() {
       var count = 0;
       var iconMap = {
         'wildfires': { color: '#ff4400', emoji: '🔥', label: 'WILDFIRE' },
-        'volcanoes': { color: '#ff0000', emoji: '🌋', label: 'VOLCANO' },
-        'severeStorms': { color: '#00ccff', emoji: '🌀', label: 'SEVERE STORM' },
+        'volcanoes': { color: '#FF00E5', emoji: '🌋', label: 'VOLCANO' },
+        'severeStorms': { color: '#00E5FF', emoji: '🌀', label: 'SEVERE STORM' },
         'floods': { color: '#0066ff', emoji: '🌊', label: 'FLOOD' },
         'landslides': { color: '#996633', emoji: '⛰️', label: 'LANDSLIDE' },
         'seaLakeIce': { color: '#aaddff', emoji: '🧊', label: 'SEA/LAKE ICE' },
@@ -3149,11 +3149,11 @@ function fetchEONET() {
             });
             var date = geo.date ? new Date(geo.date).toLocaleDateString() : '';
             marker.bindPopup(
-              '<div style="font-family:Courier New,monospace;font-size:0.75rem;color:#ddd;background:#111;padding:8px;border:1px solid #333;min-width:200px">' +
+              '<div style="font-family:system-ui,sans-serif;font-size:0.75rem;color:#ddddee;background:#12121e;padding:8px;border:1px solid #1e1e3a;min-width:200px">' +
               '<div style="color:' + info.color + ';font-weight:bold;margin-bottom:4px">' + info.emoji + ' ' + info.label + '</div>' +
-              '<div style="color:#ccc;margin-bottom:2px">' + (ev.title || 'Unknown') + '</div>' +
-              (date ? '<div style="color:#888">🕐 ' + date + '</div>' : '') +
-              (ev.sources && ev.sources[0] ? '<div style="margin-top:4px"><a href="' + ev.sources[0].url + '" target="_blank" rel="noopener" style="color:#00ccff;font-size:0.65rem">Source →</a></div>' : '') +
+              '<div style="color:#ccccdd;margin-bottom:2px">' + (ev.title || 'Unknown') + '</div>' +
+              (date ? '<div style="color:#9999bb">🕐 ' + date + '</div>' : '') +
+              (ev.sources && ev.sources[0] ? '<div style="margin-top:4px"><a href="' + ev.sources[0].url + '" target="_blank" rel="noopener" style="color:#00E5FF;font-size:0.65rem">Source →</a></div>' : '') +
               '</div>',
               {className: 'dark-popup'}
             );
@@ -3196,7 +3196,7 @@ function fetchFIRMS() {
         var acqTime = p.acq_time || '';
         var radius = frp < 10 ? 3 : frp < 50 ? 5 : frp < 200 ? 7 : 10;
         var opacity = frp < 10 ? 0.35 : frp < 50 ? 0.5 : 0.7;
-        var color = brightness > 400 ? '#ff2200' : brightness > 350 ? '#ff6600' : '#ffaa00';
+        var color = brightness > 400 ? '#ff2200' : brightness > 350 ? '#FF8800' : '#ffaa00';
         var circle = L.circleMarker([lat, lng], {
           radius: radius,
           fillColor: color,
@@ -3206,11 +3206,11 @@ function fetchFIRMS() {
           opacity: 0.6
         });
         circle.bindPopup(
-          '<div style="font-family:Courier New,monospace;font-size:0.75rem;color:#ddd;background:#111;padding:8px;border:1px solid #333;min-width:180px">' +
+          '<div style="font-family:system-ui,sans-serif;font-size:0.75rem;color:#ddddee;background:#12121e;padding:8px;border:1px solid #1e1e3a;min-width:180px">' +
           '<div style="color:#ff4400;font-weight:bold;margin-bottom:4px">🔥 ACTIVE FIRE</div>' +
-          '<div style="color:#aaa;margin-bottom:2px">FRP: ' + frp.toFixed(1) + ' MW</div>' +
-          '<div style="color:#aaa;margin-bottom:2px">Brightness: ' + brightness.toFixed(0) + 'K</div>' +
-          '<div style="color:#888">' + (conf ? 'Confidence: ' + conf + '<br>' : '') + acqDate + ' ' + acqTime + '</div>' +
+          '<div style="color:#aaaacc;margin-bottom:2px">FRP: ' + frp.toFixed(1) + ' MW</div>' +
+          '<div style="color:#aaaacc;margin-bottom:2px">Brightness: ' + brightness.toFixed(0) + 'K</div>' +
+          '<div style="color:#9999bb">' + (conf ? 'Confidence: ' + conf + '<br>' : '') + acqDate + ' ' + acqTime + '</div>' +
           '</div>',
           {className: 'dark-popup'}
         );
@@ -3252,7 +3252,7 @@ function fetchOpenSky() {
         var altFt = (alt * 3.28084).toFixed(0);
         var speedKnots = (velocity * 1.94384).toFixed(0);
         var isMilitary = /^RCH|^DUKE|^EVAC|^NAV|^AIR|^RFF|^TOPG|^VIPER|^COBRA/.test(callsign);
-        var color = onGround ? '#666' : isMilitary ? '#ff4444' : alt > 10000 ? '#00ccff' : '#44ff44';
+        var color = onGround ? '#8888aa' : isMilitary ? '#FF00E5' : alt > 10000 ? '#00E5FF' : '#44ff44';
         var marker = L.circleMarker([lat, lng], {
           radius: isMilitary ? 5 : 4,
           fillColor: color,
@@ -3262,13 +3262,13 @@ function fetchOpenSky() {
           opacity: 0.9
         });
         marker.bindPopup(
-          '<div style="font-family:Courier New,monospace;font-size:0.75rem;color:#ddd;background:#111;padding:8px;border:1px solid #333;min-width:180px">' +
+          '<div style="font-family:system-ui,sans-serif;font-size:0.75rem;color:#ddddee;background:#12121e;padding:8px;border:1px solid #1e1e3a;min-width:180px">' +
           '<div style="color:' + color + ';font-weight:bold;margin-bottom:4px">✈️ ' + (callsign || 'NO CALLSIGN') + '</div>' +
-          '<div style="color:#aaa;margin-bottom:2px">🏳️ ' + country + '</div>' +
-          '<div style="color:#aaa;margin-bottom:2px">Alt: ' + altFt + ' ft (' + alt.toFixed(0) + 'm)</div>' +
-          '<div style="color:#aaa;margin-bottom:2px">Speed: ' + speedKnots + ' kts (' + velocity.toFixed(0) + ' m/s)</div>' +
-          '<div style="color:#888">Heading: ' + heading.toFixed(0) + ' - ' + (onGround ? 'ON GROUND' : 'AIRBORNE') + '</div>' +
-          (isMilitary ? '<div style="color:#ff4444;margin-top:4px;font-weight:bold">MILITARY/GOV PATTERN</div>' : '') +
+          '<div style="color:#aaaacc;margin-bottom:2px">🏳️ ' + country + '</div>' +
+          '<div style="color:#aaaacc;margin-bottom:2px">Alt: ' + altFt + ' ft (' + alt.toFixed(0) + 'm)</div>' +
+          '<div style="color:#aaaacc;margin-bottom:2px">Speed: ' + speedKnots + ' kts (' + velocity.toFixed(0) + ' m/s)</div>' +
+          '<div style="color:#9999bb">Heading: ' + heading.toFixed(0) + ' - ' + (onGround ? 'ON GROUND' : 'AIRBORNE') + '</div>' +
+          (isMilitary ? '<div style="color:#FF00E5;margin-top:4px;font-weight:bold">MILITARY/GOV PATTERN</div>' : '') +
           '</div>',
           {className: 'dark-popup'}
         );
@@ -3295,26 +3295,26 @@ function fetchISS() {
       var vis = data.visibility;
       var issIcon = L.divIcon({
         className: 'iss-icon',
-        html: '<div style="font-size:24px;text-shadow:0 0 12px #00ff41,0 0 24px rgba(0,255,65,0.4);animation:issPulse 2s infinite">🛰️</div>',
+        html: '<div style="font-size:24px;text-shadow:0 0 12px #00E5FF,0 0 24px rgba(0,255,65,0.4);animation:issPulse 2s infinite">🛰️</div>',
         iconSize: [28, 28],
         iconAnchor: [14, 14]
       });
       issMarker = L.marker([lat, lng], { icon: issIcon, zIndexOffset: 9999 });
       issMarker.bindPopup(
-        '<div style="font-family:Courier New,monospace;font-size:0.75rem;color:#ddd;background:#111;padding:8px;border:1px solid #333;min-width:200px">' +
-        '<div style="color:#00ff41;font-weight:bold;margin-bottom:4px">🛰️ INTERNATIONAL SPACE STATION</div>' +
-        '<div style="color:#aaa;margin-bottom:2px">Lat: ' + lat.toFixed(4) + ' / Lng: ' + lng.toFixed(4) + '</div>' +
-        '<div style="color:#aaa;margin-bottom:2px">Altitude: ' + alt.toFixed(1) + ' km</div>' +
-        '<div style="color:#aaa;margin-bottom:2px">Velocity: ' + vel.toFixed(1) + ' km/h</div>' +
-        '<div style="color:#888">Visibility: ' + vis + '</div>' +
+        '<div style="font-family:system-ui,sans-serif;font-size:0.75rem;color:#ddddee;background:#12121e;padding:8px;border:1px solid #1e1e3a;min-width:200px">' +
+        '<div style="color:#00E5FF;font-weight:bold;margin-bottom:4px">🛰️ INTERNATIONAL SPACE STATION</div>' +
+        '<div style="color:#aaaacc;margin-bottom:2px">Lat: ' + lat.toFixed(4) + ' / Lng: ' + lng.toFixed(4) + '</div>' +
+        '<div style="color:#aaaacc;margin-bottom:2px">Altitude: ' + alt.toFixed(1) + ' km</div>' +
+        '<div style="color:#aaaacc;margin-bottom:2px">Velocity: ' + vel.toFixed(1) + ' km/h</div>' +
+        '<div style="color:#9999bb">Visibility: ' + vis + '</div>' +
         '</div>',
         {className: 'dark-popup'}
       );
       issMarker.addTo(issLayer);
       var footprint = L.circle([lat, lng], {
         radius: 2200000,
-        color: '#00ff41',
-        fillColor: '#00ff41',
+        color: '#00E5FF',
+        fillColor: '#00E5FF',
         fillOpacity: 0.03,
         weight: 1,
         opacity: 0.3,
@@ -3338,9 +3338,9 @@ function fetchGDACS() {
       var count = 0;
       var typeMap = {
         'EQ': { color: '#ff6644', emoji: '⚡', label: 'EARTHQUAKE' },
-        'TC': { color: '#00ccff', emoji: '🌀', label: 'TROPICAL CYCLONE' },
+        'TC': { color: '#00E5FF', emoji: '🌀', label: 'TROPICAL CYCLONE' },
         'FL': { color: '#0066ff', emoji: '🌊', label: 'FLOOD' },
-        'VO': { color: '#ff0000', emoji: '🌋', label: 'VOLCANO' },
+        'VO': { color: '#FF00E5', emoji: '🌋', label: 'VOLCANO' },
         'DR': { color: '#cc8800', emoji: '☀️', label: 'DROUGHT' },
         'WF': { color: '#ff4400', emoji: '🔥', label: 'WILDFIRE' }
       };
@@ -3368,12 +3368,12 @@ function fetchGDACS() {
         var name = props.name || props.eventname || 'Unknown';
         var severity = props.severity ? props.severity.severity_text || '' : '';
         circle.bindPopup(
-          '<div style="font-family:Courier New,monospace;font-size:0.75rem;color:#ddd;background:#111;padding:8px;border:1px solid #333;min-width:200px">' +
+          '<div style="font-family:system-ui,sans-serif;font-size:0.75rem;color:#ddddee;background:#12121e;padding:8px;border:1px solid #1e1e3a;min-width:200px">' +
           '<div style="color:' + borderColor + ';font-weight:bold;margin-bottom:4px">' + info.emoji + ' GDACS ' + info.label + '</div>' +
-          '<div style="color:#ccc;margin-bottom:2px">' + name + '</div>' +
+          '<div style="color:#ccccdd;margin-bottom:2px">' + name + '</div>' +
           '<div style="color:' + borderColor + ';margin-bottom:2px">Alert: ' + alert.toUpperCase() + '</div>' +
-          (severity ? '<div style="color:#888;margin-bottom:2px">' + severity + '</div>' : '') +
-          (props.url ? '<div style="margin-top:4px"><a href="' + props.url + '" target="_blank" rel="noopener" style="color:#00ccff;font-size:0.65rem">GDACS Detail -></a></div>' : '') +
+          (severity ? '<div style="color:#9999bb;margin-bottom:2px">' + severity + '</div>' : '') +
+          (props.url ? '<div style="margin-top:4px"><a href="' + props.url + '" target="_blank" rel="noopener" style="color:#00E5FF;font-size:0.65rem">GDACS Detail -></a></div>' : '') +
           '</div>',
           {className: 'dark-popup'}
         );
@@ -3482,9 +3482,9 @@ function fetchGDACS() {
   var canvas = document.getElementById('timelineCanvas');
   var ctx, tooltip = document.getElementById('timelineTooltip');
   var allData = [
-    {data: aerialData, color: '#00ccff', label: 'Aerial Particulates'},
-    {data: neuroData, color: '#ff4444', label: 'Neurological Anomalies'},
-    {data: deTechData, color: '#ffcc00', label: 'Directed Energy / Neurotech'}
+    {data: aerialData, color: '#00E5FF', label: 'Aerial Particulates'},
+    {data: neuroData, color: '#FF00E5', label: 'Neurological Anomalies'},
+    {data: deTechData, color: '#FF8800', label: 'Directed Energy / Neurotech'}
   ];
   var startYear = 1945, endYear = 2026;
   var PAD_L = 48, PAD_R = 16, PAD_T = 16, PAD_B = 32;
@@ -3509,13 +3509,13 @@ function fetchGDACS() {
     ctx.clearRect(0, 0, W, H);
 
     // Grid lines
-    ctx.strokeStyle = '#222';
+    ctx.strokeStyle = '#1e1e3a';
     ctx.lineWidth = 0.5;
     for (var yr = 1950; yr <= 2025; yr += 10) {
       var x = xForYear(yr);
       ctx.beginPath(); ctx.moveTo(x, PAD_T); ctx.lineTo(x, H - PAD_B); ctx.stroke();
-      ctx.fillStyle = '#555';
-      ctx.font = '10px Courier New';
+      ctx.fillStyle = '#8888aa';
+      ctx.font = '10px system-ui';
       ctx.textAlign = 'center';
       ctx.fillText(yr, x, H - PAD_B + 14);
     }
@@ -3524,7 +3524,7 @@ function fetchGDACS() {
     for (var v = 0; v <= 1; v += 0.25) {
       var yy = yForVal(v);
       ctx.beginPath(); ctx.moveTo(PAD_L, yy); ctx.lineTo(W - PAD_R, yy); ctx.stroke();
-      ctx.fillStyle = '#444';
+      ctx.fillStyle = '#2a2a4a';
       ctx.fillText(Math.round(v * 100) + '%', PAD_L - 6, yy + 3);
     }
 
@@ -3709,9 +3709,9 @@ function fetchGDACS() {
   var btn = document.createElement('button');
   btn.id = 'shareLinkBtn';
   btn.textContent = '🔗 Share Link';
-  btn.style.cssText = 'position:fixed;bottom:48px;right:12px;z-index:1100;background:#0a0a0a;color:#00ff41;border:1px solid #00ff41;padding:6px 12px;font-family:Courier New,monospace;font-size:0.75rem;cursor:pointer;letter-spacing:1px';
-  btn.addEventListener('mouseenter', function() { btn.style.background = '#00ff41'; btn.style.color = '#0a0a0a'; });
-  btn.addEventListener('mouseleave', function() { btn.style.background = '#0a0a0a'; btn.style.color = '#00ff41'; });
+  btn.style.cssText = 'position:fixed;bottom:48px;right:12px;z-index:1100;background:#0a0a14;color:#00E5FF;border:1px solid #00E5FF;padding:6px 12px;font-family:system-ui,sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:1px';
+  btn.addEventListener('mouseenter', function() { btn.style.background = '#00E5FF'; btn.style.color = '#0a0a14'; });
+  btn.addEventListener('mouseleave', function() { btn.style.background = '#0a0a14'; btn.style.color = '#00E5FF'; });
   btn.addEventListener('click', function() {
     var p = [];
     var search = document.getElementById('searchInput').value;
@@ -4373,7 +4373,7 @@ function setProtectiveVolume(val) {
 
   function showWatchdogAlert(label) {
     var alert = document.createElement('div');
-    alert.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:10000;background:#1a0000;border:1px solid #ff0000;color:#ff0000;padding:10px 20px;font-family:Courier New,monospace;font-size:0.75rem;letter-spacing:1px;border-radius:2px;pointer-events:none;opacity:1;transition:opacity 2s;text-align:center';
+    alert.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:10000;background:#1a0000;border:1px solid #FF00E5;color:#FF00E5;padding:10px 20px;font-family:system-ui,sans-serif;font-size:0.75rem;letter-spacing:1px;border-radius: 8px;pointer-events:none;opacity:1;transition:opacity 2s;text-align:center';
     alert.innerHTML = '⚠ DOM INTEGRITY VIOLATION<br><span style="font-size:0.6rem;color:#ff6666">' + label + ' - content altered after load</span>';
     document.body.appendChild(alert);
     setTimeout(function() { alert.style.opacity = '0'; }, 8000);
@@ -4454,7 +4454,7 @@ function setProtectiveVolume(val) {
         if (lock) {
           lock.textContent = '🔓';
           lock.title = 'Content integrity FAILED - ' + violations.join(', ') + ' modified';
-          lock.style.color = '#ff0000';
+          lock.style.color = '#FF00E5';
         }
       }
     }, 30000);
@@ -4468,7 +4468,7 @@ function setProtectiveVolume(val) {
     lock.id = 'integrityLock';
     lock.textContent = '🔒';
     lock.title = 'Content integrity OK';
-    lock.style.cssText = 'margin-left:8px;font-size:0.7rem;cursor:help;vertical-align:middle;color:#00ff41';
+    lock.style.cssText = 'margin-left:8px;font-size:0.7rem;cursor:help;vertical-align:middle;color:#00E5FF';
     h1.after(lock);
   }
 })();
@@ -4541,7 +4541,7 @@ function setProtectiveVolume(val) {
       // Show subtle indicator
       var indicator = document.createElement('div');
       indicator.id = 'canaryIndicator';
-      indicator.style.cssText = 'position:fixed;bottom:48px;left:12px;z-index:1100;background:#1a0a00;border:1px solid #ff6600;color:#ff6600;padding:4px 10px;font-family:Courier New,monospace;font-size:0.6rem;letter-spacing:1px;border-radius:2px;cursor:help;opacity:0.8';
+      indicator.style.cssText = 'position:fixed;bottom:48px;left:12px;z-index:1100;background:#1a0a00;border:1px solid #FF8800;color:#FF8800;padding:4px 10px;font-family:system-ui,sans-serif;font-size:0.6rem;letter-spacing:1px;border-radius: 8px;cursor:help;opacity:0.8';
       indicator.textContent = '⚠ ' + blockedCount + '/' + total + ' CDN BLOCKED';
       indicator.title = 'Blocked: ' + blockedNames.join(', ') + '\nThis indicates targeted blocking, not a general outage.';
       document.body.appendChild(indicator);
@@ -4632,8 +4632,8 @@ function fetchIndigenousTerritories() {
                 lyr.bindPopup(
                   '<div style="font-family:serif;max-width:280px">' +
                   '<strong style="color:#ff9;font-size:1.1em">' + name + '</strong>' +
-                  (desc ? '<br><span style="color:#ccc;font-size:0.85em">' + desc + '</span>' : '') +
-                  '<br><span style="color:#888;font-size:0.7em;margin-top:4px;display:block">Source: Native Land Digital</span>' +
+                  (desc ? '<br><span style="color:#ccccdd;font-size:0.85em">' + desc + '</span>' : '') +
+                  '<br><span style="color:#9999bb;font-size:0.7em;margin-top:4px;display:block">Source: Native Land Digital</span>' +
                   '</div>'
                 );
                 lyr.bindTooltip(name, { sticky: true, className: 'indigenous-tooltip' });
@@ -4808,9 +4808,9 @@ function loadEmbeddedIndigenousTerritories() {
     poly.bindPopup(
       '<div style="font-family:serif;max-width:300px">' +
       '<strong style="color:#ff9;font-size:1.1em">' + t.name + '</strong>' +
-      '<br><span style="color:#aaa;font-size:0.75em">' + t.region + '</span>' +
-      '<br><span style="color:#ddd;font-size:0.85em;margin-top:6px;display:block">' + t.desc + '</span>' +
-      '<br><span style="color:#666;font-size:0.7em;margin-top:4px;display:block">The land had names before the colonizers arrived.</span>' +
+      '<br><span style="color:#aaaacc;font-size:0.75em">' + t.region + '</span>' +
+      '<br><span style="color:#ddddee;font-size:0.85em;margin-top:6px;display:block">' + t.desc + '</span>' +
+      '<br><span style="color:#8888aa;font-size:0.7em;margin-top:4px;display:block">The land had names before the colonizers arrived.</span>' +
       '</div>'
     );
     poly.bindTooltip(t.name, { sticky: true, className: 'indigenous-tooltip' });

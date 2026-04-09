@@ -5,51 +5,51 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/favicon.png">
-<title>ARC Shield Field Guide - b0b.dev</title>
+<title>ARC Shield Field Guide - cbay.ing</title>
 <meta name="description" content="Complete field guide for the ARC Shield acoustic resonance countermeasure - setup, deployment, old phone conversion, amplification, FOIA research">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0a0a14">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0a;color:#c8c8c8;font-family:"Courier New",monospace;line-height:1.7;padding:0 16px env(safe-area-inset-bottom)}
+body{background:#0a0a14;color:#c8c8c8;font-family:system-ui,sans-serif;line-height:1.7;padding:0 16px env(safe-area-inset-bottom)}
 .wrap{max-width:720px;margin:0 auto;padding:20px 0 60px}
-h1{color:#ff4444;font-size:1.1rem;letter-spacing:3px;text-align:center;margin-bottom:4px}
-.subtitle{color:#555;font-size:0.6rem;text-align:center;letter-spacing:1px;margin-bottom:4px}
-.scripture{color:#daa520;font-size:0.65rem;text-align:center;font-style:italic;margin-bottom:20px;line-height:1.5}
-h2{color:#ff4444;font-size:0.85rem;letter-spacing:2px;margin:28px 0 12px;padding-bottom:4px;border-bottom:1px solid #222}
-h3{color:#00ccff;font-size:0.75rem;letter-spacing:1px;margin:18px 0 8px}
-h4{color:#daa520;font-size:0.7rem;margin:14px 0 6px}
-p{margin:8px 0;font-size:0.7rem;color:#aaa}
-ul,ol{margin:8px 0 8px 20px;font-size:0.7rem;color:#aaa}
+h1{color:#FF00E5;font-size:1.1rem;letter-spacing:3px;text-align:center;margin-bottom:4px}
+.subtitle{color:#8888aa;font-size:0.6rem;text-align:center;letter-spacing:1px;margin-bottom:4px}
+.scripture{color:#FF8800;font-size:0.65rem;text-align:center;font-style:italic;margin-bottom:20px;line-height:1.5}
+h2{color:#FF00E5;font-size:0.85rem;letter-spacing:2px;margin:28px 0 12px;padding-bottom:4px;border-bottom:1px solid #1e1e3a}
+h3{color:#00E5FF;font-size:0.75rem;letter-spacing:1px;margin:18px 0 8px}
+h4{color:#FF8800;font-size:0.7rem;margin:14px 0 6px}
+p{margin:8px 0;font-size:0.7rem;color:#aaaacc}
+ul,ol{margin:8px 0 8px 20px;font-size:0.7rem;color:#aaaacc}
 li{margin:4px 0}
-li strong{color:#d4d4d4}
-code{background:#111;border:1px solid #222;padding:1px 5px;font-size:0.65rem;color:#00ff41;border-radius:2px}
-pre{background:#0d0d0d;border:1px solid #1a1a1a;padding:12px;margin:8px 0;font-size:0.6rem;color:#888;overflow-x:auto;border-radius:4px;line-height:1.5}
-.card{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:4px;padding:14px 16px;margin:10px 0}
-.card.alert{border-color:#ff4444}
-.card.gold{border-color:#daa520}
-.card.cyan{border-color:#00ccff}
-.card.green{border-color:#00ff41}
+li strong{color:#e8e8f0}
+code{background:#12121e;border:1px solid #1e1e3a;padding:1px 5px;font-size:0.65rem;color:#00E5FF;border-radius: 8px}
+pre{background:#0a0a14;border:1px solid #16162a;padding:12px;margin:8px 0;font-size:0.6rem;color:#9999bb;overflow-x:auto;border-radius: 8px;line-height:1.5}
+.card{background:#0a0a14;border:1px solid #16162a;border-radius: 8px;padding:14px 16px;margin:10px 0}
+.card.alert{border-color:#FF00E5}
+.card.gold{border-color:#FF8800}
+.card.cyan{border-color:#00E5FF}
+.card.green{border-color:#00E5FF}
 .card h4{margin-top:0}
-.diagram{background:#060606;border:1px solid #1a1a1a;padding:16px;margin:10px 0;font-size:0.6rem;color:#555;text-align:center;border-radius:4px;line-height:1.8;overflow-x:auto;white-space:pre}
+.diagram{background:#0a0a14;border:1px solid #16162a;padding:16px;margin:10px 0;font-size:0.6rem;color:#8888aa;text-align:center;border-radius: 8px;line-height:1.8;overflow-x:auto;white-space:pre}
 .tag{display:inline-block;font-size:0.5rem;padding:2px 6px;border-radius:8px;border:1px solid;margin:2px;vertical-align:middle}
-.tag.red{border-color:#ff4444;color:#ff4444}
-.tag.cyan{border-color:#00ccff;color:#00ccff}
-.tag.gold{border-color:#daa520;color:#daa520}
-.tag.green{border-color:#00ff41;color:#00ff41}
-.toc{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:4px;padding:14px 16px;margin:16px 0}
-.toc a{color:#00ccff;text-decoration:none;font-size:0.65rem;display:block;padding:3px 0}
-.toc a:hover{color:#ff4444}
-.toc .indent{padding-left:16px;color:#888}
-a{color:#ff4444;text-decoration:none}
+.tag.red{border-color:#FF00E5;color:#FF00E5}
+.tag.cyan{border-color:#00E5FF;color:#00E5FF}
+.tag.gold{border-color:#FF8800;color:#FF8800}
+.tag.green{border-color:#00E5FF;color:#00E5FF}
+.toc{background:#0a0a14;border:1px solid #16162a;border-radius: 8px;padding:14px 16px;margin:16px 0}
+.toc a{color:#00E5FF;text-decoration:none;font-size:0.65rem;display:block;padding:3px 0}
+.toc a:hover{color:#FF00E5}
+.toc .indent{padding-left:16px;color:#9999bb}
+a{color:#FF00E5;text-decoration:none}
 a:hover{text-decoration:underline}
-.nav-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a1a;margin-bottom:16px;font-size:0.6rem}
-.nav-bar a{color:#ff4444;text-decoration:none}
-.print-btn{background:transparent;border:1px solid #555;color:#555;font-family:inherit;font-size:0.6rem;padding:4px 12px;cursor:pointer;border-radius:3px}
-.print-btn:hover{border-color:#ff4444;color:#ff4444}
-.ref{font-size:0.6rem;color:#666;margin:4px 0;padding-left:12px;border-left:2px solid #222}
-.footer{text-align:center;margin-top:40px;padding-top:16px;border-top:1px solid #1a1a1a;color:#333;font-size:0.5rem}
-.footer a{color:#555}
-@media print{body{background:#fff;color:#222}h1,h2{color:#c00}h3{color:#006}h4{color:#960}.card,.toc{border-color:#ccc;background:#f9f9f9}.diagram{background:#f0f0f0;color:#333}code{background:#eee;color:#060}pre{background:#f5f5f5;color:#333}.nav-bar,.print-btn{display:none}}
+.nav-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #16162a;margin-bottom:16px;font-size:0.6rem}
+.nav-bar a{color:#FF00E5;text-decoration:none}
+.print-btn{background:transparent;border:1px solid #8888aa;color:#8888aa;font-family:inherit;font-size:0.6rem;padding:4px 12px;cursor:pointer;border-radius: 8px}
+.print-btn:hover{border-color:#FF00E5;color:#FF00E5}
+.ref{font-size:0.6rem;color:#8888aa;margin:4px 0;padding-left:12px;border-left:2px solid #1e1e3a}
+.footer{text-align:center;margin-top:40px;padding-top:16px;border-top:1px solid #16162a;color:#1e1e3a;font-size:0.5rem}
+.footer a{color:#8888aa}
+@media print{body{background:#fff;color:#1e1e3a}h1,h2{color:#c00}h3{color:#006}h4{color:#960}.card,.toc{border-color:#ccccdd;background:#f9f9f9}.diagram{background:#f0f0f0;color:#1e1e3a}code{background:#e8e8f0;color:#060}pre{background:#f5f5f5;color:#1e1e3a}.nav-bar,.print-btn{display:none}}
 </style>
 </head>
 <body>
@@ -65,7 +65,7 @@ a:hover{text-decoration:underline}
 <div class="scripture">"No weapon formed against thee shall prosper, and every tongue that shall rise against thee in judgment thou shalt condemn." - Isaiah 54:17</div>
 
 <div class="toc">
-  <strong style="color:#ff4444;font-size:0.7rem">CONTENTS</strong>
+  <strong style="color:#FF00E5;font-size:0.7rem">CONTENTS</strong>
   <a href="#how-it-works">1. How The ARC Shield Works</a>
   <a class="indent" href="#detection">1.1 Detection Engine</a>
   <a class="indent" href="#phase-cancel">1.2 Active Phase Cancellation</a>
@@ -174,7 +174,7 @@ a:hover{text-decoration:underline}
 
 <div class="card cyan">
 <h4>Always-Available Protection From Any Page</h4>
-<p>The <strong>Micro ARC Shield</strong> is a compact version embedded in the b0b.dev dashboard drawer. It is accessible from any page on the platform - tap the ARC status dot in the persistent drawer to expand it. This means you can monitor for acoustic threats while using the map, reading the report, or working with any other tool.</p>
+<p>The <strong>Micro ARC Shield</strong> is a compact version embedded in the cbay.ing dashboard drawer. It is accessible from any page on the platform - tap the ARC status dot in the persistent drawer to expand it. This means you can monitor for acoustic threats while using the map, reading the report, or working with any other tool.</p>
 </div>
 
 <p><strong>Capabilities:</strong></p>
@@ -235,7 +235,7 @@ a:hover{text-decoration:underline}
 <div class="card">
 <h4>Android (Chrome / Edge / Brave / Firefox)</h4>
 <ol>
-  <li>Go to <code>b0b.dev/tones/shield</code> in your browser</li>
+  <li>Go to <code>cbay.ing/tones/shield</code> in your browser</li>
   <li>Tap the <strong>three-dot menu</strong> (top right)</li>
   <li>Select <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong></li>
   <li>Confirm the installation</li>
@@ -244,7 +244,7 @@ a:hover{text-decoration:underline}
 
 <h4>iPhone / iPad (Safari)</h4>
 <ol>
-  <li>Open <code>b0b.dev/tones/shield</code> in <strong>Safari</strong> (other browsers cannot install PWAs on iOS)</li>
+  <li>Open <code>cbay.ing/tones/shield</code> in <strong>Safari</strong> (other browsers cannot install PWAs on iOS)</li>
   <li>Tap the <strong>Share button</strong> (square with arrow, bottom center)</li>
   <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
   <li>Tap <strong>"Add"</strong></li>
@@ -252,7 +252,7 @@ a:hover{text-decoration:underline}
 
 <h4>Desktop (Chrome / Edge / Brave)</h4>
 <ol>
-  <li>Navigate to <code>b0b.dev/tones/shield</code></li>
+  <li>Navigate to <code>cbay.ing/tones/shield</code></li>
   <li>Click the <strong>install icon</strong> in the address bar (or the install banner if shown)</li>
   <li>Runs as a standalone window</li>
 </ol>
@@ -269,7 +269,7 @@ a:hover{text-decoration:underline}
 <ol>
   <li><strong>Factory reset</strong> the phone (Settings > System > Reset) to clear old data and maximize performance</li>
   <li><strong>Connect to WiFi</strong> - you only need internet once to load the page</li>
-  <li><strong>Open Chrome</strong> and go to <code>b0b.dev/tones/shield</code></li>
+  <li><strong>Open Chrome</strong> and go to <code>cbay.ing/tones/shield</code></li>
   <li><strong>Install as PWA</strong> (see 3.1 above)</li>
   <li><strong>Grant microphone permission</strong> when prompted</li>
   <li><strong>Enable Developer Options</strong> (Settings > About Phone > tap Build Number 7 times):
@@ -294,7 +294,7 @@ a:hover{text-decoration:underline}
   <li><strong>Erase</strong> the iPhone (Settings > General > Transfer or Reset > Erase All Content)</li>
   <li><strong>Set up as new</strong> - skip Apple ID if you don't want cloud features</li>
   <li><strong>Connect to WiFi</strong></li>
-  <li><strong>Open Safari</strong>, go to <code>b0b.dev/tones/shield</code></li>
+  <li><strong>Open Safari</strong>, go to <code>cbay.ing/tones/shield</code></li>
   <li><strong>Add to Home Screen</strong></li>
   <li><strong>Enable Guided Access</strong> (Settings > Accessibility > Guided Access > ON):
     <ul>
@@ -373,9 +373,9 @@ EVIDENCE CHAIN:                               |
 <h4>Desktop Browsers (Chrome / Edge / Brave)</h4>
 <p>Desktop browsers enforce microphone permissions more strictly than mobile browsers. If the ARC Shield is not prompting for mic access on desktop:</p>
 <ol>
-  <li><strong>HTTPS Required:</strong> Microphone access is only available over HTTPS. Make sure you are accessing <code>b0b.dev</code>, not an insecure URL.</li>
+  <li><strong>HTTPS Required:</strong> Microphone access is only available over HTTPS. Make sure you are accessing <code>cbay.ing</code>, not an insecure URL.</li>
   <li><strong>Check Site Permissions:</strong> Click the lock/tune icon in the address bar > Site Settings > Microphone. Set to <strong>Allow</strong>.</li>
-  <li><strong>Clear Blocked State:</strong> If you previously denied mic access, the browser remembers. Go to Settings > Privacy & Security > Site Settings > Microphone. Find <code>b0b.dev</code> and remove it from the Blocked list, then reload.</li>
+  <li><strong>Clear Blocked State:</strong> If you previously denied mic access, the browser remembers. Go to Settings > Privacy & Security > Site Settings > Microphone. Find <code>cbay.ing</code> and remove it from the Blocked list, then reload.</li>
   <li><strong>Browser Permissions-Policy:</strong> The server must send the correct <code>Permissions-Policy: microphone=(self)</code> header. This was fixed in the latest deployment - if you still have issues, hard-refresh with <code>Ctrl+Shift+R</code>.</li>
   <li><strong>System Microphone:</strong> Ensure your OS allows the browser to access the microphone (Windows: Settings > Privacy > Microphone > allow desktop apps).</li>
 </ol>
@@ -386,7 +386,7 @@ EVIDENCE CHAIN:                               |
 <p>Mobile browsers (especially Chrome on Android and Safari on iOS) are generally more lenient with microphone prompting. If mic access still fails:</p>
 <ol>
   <li><strong>iOS Safari:</strong> Go to Settings > Safari > Microphone > set to <strong>Ask</strong> or <strong>Allow</strong></li>
-  <li><strong>Android Chrome:</strong> Site Settings > Microphone > ensure b0b.dev is allowed</li>
+  <li><strong>Android Chrome:</strong> Site Settings > Microphone > ensure cbay.ing is allowed</li>
   <li><strong>PWA:</strong> If installed as a PWA, microphone permission is set at install time. Uninstall and reinstall if needed.</li>
 </ol>
 </div>
@@ -702,7 +702,7 @@ EVIDENCE CHAIN:                               |
 </div>
 
 <div class="footer">
-  <p><a href="/tones/shield">ARC SHIELD</a> | <a href="/">b0b.dev</a></p>
+  <p><a href="/tones/shield">ARC SHIELD</a> | <a href="/">cbay.ing</a></p>
   <p style="margin-top:8px">"No weapon formed against thee shall prosper" - Isaiah 54:17</p>
   <p style="margin-top:4px">This tool is provided for defensive and educational purposes. Know your rights. Document everything.</p>
 </div>

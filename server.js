@@ -19,9 +19,19 @@ const PAGES = {
   '/store':    { file: 'store.html',    security: 'strict' },
   '/pay':      { file: 'pay.html',      security: 'strict' },
   '/unlock':   { file: 'unlock.html',   security: 'strict' },
-  '/spectra':  { file: 'spectra.html',  security: 'camera' },
-  '/artifact': { file: 'artifact.html', security: 'camera' },
-  '/take':     { file: 'take.html',     security: 'camera' },
+  '/spectra':        { file: 'spectra.html',        security: 'camera' },
+  '/artifact':       { file: 'artifact.html',       security: 'camera' },
+  '/take':           { file: 'take.html',           security: 'camera' },
+  '/map':            { file: 'map.html',            security: 'map' },
+  '/report':         { file: 'report.html',         security: 'strict' },
+  '/countermeasures': { file: 'countermeasures.html', security: 'camera' },
+  '/tones-healing':  { file: 'tones-healing.html',  security: 'camera' },
+  '/tones-shield':   { file: 'tones-shield.html',   security: 'camera' },
+  '/tones-instrument': { file: 'tones-instrument.html', security: 'camera' },
+  '/tones-multipack': { file: 'tones-multipack.html', security: 'camera' },
+  '/tones-protective': { file: 'tones-protective.html', security: 'camera' },
+  '/tones-shield-guide': { file: 'tones-shield-guide.html', security: 'strict' },
+  '/ai-attack-vector-analysis': { file: 'ai-attack-vector-analysis.html', security: 'strict' },
 };
 
 // Pre-load HTML templates at startup
@@ -42,6 +52,13 @@ const ALLOWED = new Set([
   ...STATIC_FILES,
   '/index.html', '/spectra.html', '/artifact.html', '/take.html',
   '/store.html', '/pay.html', '/unlock.html',
+  '/map.html', '/report.html', '/countermeasures.html',
+  '/tones-healing.html', '/tones-shield.html', '/tones-instrument.html',
+  '/tones-multipack.html', '/tones-protective.html', '/tones-shield-guide.html',
+  '/ai-attack-vector-analysis.html',
+  '/cm-engine.js', '/i18n.js', '/sw.js',
+  '/manifest-healing.json', '/manifest-instrument.json',
+  '/manifest-multipack.json', '/manifest-protective.json', '/manifest-shield.json',
 ]);
 
 // API routes bypass the static allowlist
@@ -97,6 +114,14 @@ function csp(nonce, level) {
     d.workerSrc = ["'self'", 'blob:'];
     d.childSrc = ["'self'", 'blob:'];
     d.imgSrc.push('blob:');
+  } else if (level === 'map') {
+    d.scriptSrc.push('https://unpkg.com');
+    d.styleSrc.push('https://unpkg.com');
+    d.connectSrc = ["'self'", 'https://earthquake.usgs.gov', 'https://eonet.gsfc.nasa.gov', 'https://firms.modaps.eosdis.nasa.gov', 'https://opensky-network.org', 'https://www.gdacs.org', 'https://api.wheretheiss.at', 'https://native-land.ca'];
+    d.imgSrc = ["'self'", 'data:', 'https://*.basemaps.cartocdn.com', 'https://*.tile.openstreetmap.org', 'https://server.arcgisonline.com', 'https://*.tile.opentopomap.org', 'https://tiles.stadiamaps.com'];
+    d.mediaSrc = ["'none'"];
+    d.workerSrc = ["'none'"];
+    d.childSrc = ["'none'"];
   } else {
     d.connectSrc = ["'self'"];
     d.mediaSrc = ["'none'"];
@@ -176,6 +201,16 @@ app.get('/unlock', serve('/unlock'));
 app.get('/spectra', serve('/spectra'));
 app.get('/artifact', serve('/artifact'));
 app.get('/take', serve('/take'));
+app.get('/map', serve('/map'));
+app.get('/report', serve('/report'));
+app.get('/countermeasures', serve('/countermeasures'));
+app.get('/tones-healing', serve('/tones-healing'));
+app.get('/tones-shield', serve('/tones-shield'));
+app.get('/tones-instrument', serve('/tones-instrument'));
+app.get('/tones-multipack', serve('/tones-multipack'));
+app.get('/tones-protective', serve('/tones-protective'));
+app.get('/tones-shield-guide', serve('/tones-shield-guide'));
+app.get('/ai-attack-vector-analysis', serve('/ai-attack-vector-analysis'));
 
 // ── Clean URL redirects ──
 app.get('/index.html', (_, res) => res.redirect(301, '/'));
@@ -185,6 +220,16 @@ app.get('/take.html', (_, res) => res.redirect(301, '/take'));
 app.get('/store.html', (_, res) => res.redirect(301, '/store'));
 app.get('/pay.html', (_, res) => res.redirect(301, '/pay'));
 app.get('/unlock.html', (_, res) => res.redirect(301, '/unlock'));
+app.get('/map.html', (_, res) => res.redirect(301, '/map'));
+app.get('/report.html', (_, res) => res.redirect(301, '/report'));
+app.get('/countermeasures.html', (_, res) => res.redirect(301, '/countermeasures'));
+app.get('/tones-healing.html', (_, res) => res.redirect(301, '/tones-healing'));
+app.get('/tones-shield.html', (_, res) => res.redirect(301, '/tones-shield'));
+app.get('/tones-instrument.html', (_, res) => res.redirect(301, '/tones-instrument'));
+app.get('/tones-multipack.html', (_, res) => res.redirect(301, '/tones-multipack'));
+app.get('/tones-protective.html', (_, res) => res.redirect(301, '/tones-protective'));
+app.get('/tones-shield-guide.html', (_, res) => res.redirect(301, '/tones-shield-guide'));
+app.get('/ai-attack-vector-analysis.html', (_, res) => res.redirect(301, '/ai-attack-vector-analysis'));
 
 // ── Store API ──
 app.use('/api', storeApi);

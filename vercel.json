@@ -9,6 +9,14 @@
     { "source": "/preview-spectra.svg", "destination": "/public/preview-spectra.svg" },
     { "source": "/preview-artifact.svg", "destination": "/public/preview-artifact.svg" },
     { "source": "/preview-take.svg", "destination": "/public/preview-take.svg" },
+    { "source": "/cm-engine.js", "destination": "/public/cm-engine.js" },
+    { "source": "/i18n.js", "destination": "/public/i18n.js" },
+    { "source": "/sw.js", "destination": "/public/sw.js" },
+    { "source": "/manifest-healing.json", "destination": "/public/manifest-healing.json" },
+    { "source": "/manifest-instrument.json", "destination": "/public/manifest-instrument.json" },
+    { "source": "/manifest-multipack.json", "destination": "/public/manifest-multipack.json" },
+    { "source": "/manifest-protective.json", "destination": "/public/manifest-protective.json" },
+    { "source": "/manifest-shield.json", "destination": "/public/manifest-shield.json" },
     { "source": "/(.*)", "destination": "/api/index" }
   ]
 }
