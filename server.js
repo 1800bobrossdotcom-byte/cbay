@@ -20,7 +20,6 @@ const PAGES = {
   '/apps':     { file: 'apps.html',     security: 'strict' },
   '/unlock':   { file: 'unlock.html',   security: 'strict' },
   '/spectra':  { file: 'spectra.html',  security: 'camera' },
-  '/artifact': { file: 'artifact.html', security: 'camera' },
   '/take':     { file: 'take.html',     security: 'camera' },
   '/tones':    { file: 'tones.html',    security: 'strict' },
   '/shield':   { file: 'shield.html',   security: 'camera' },
@@ -36,9 +35,9 @@ for (const [route, cfg] of Object.entries(PAGES)) {
 
 const STATIC_FILES = new Set([
   '/favicon.svg', '/favicon.png', '/icon-transparent.svg',
-  '/icon-spectra.svg', '/icon-artifact.svg', '/icon-take.svg',
+  '/icon-spectra.svg', '/icon-take.svg',
   '/icon-tones.svg', '/icon-shield.svg', '/icon-tonelab.svg',
-  '/preview-spectra.svg', '/preview-artifact.svg', '/preview-take.svg',
+  '/preview-spectra.svg', '/preview-take.svg',
   '/preview-tones.svg', '/preview-shield.svg', '/preview-tonelab.svg',
 ]);
 
@@ -46,7 +45,8 @@ const ALLOWED = new Set([
   ...Object.keys(PAGES),
   ...STATIC_FILES,
   '/pay',
-  '/index.html', '/spectra.html', '/artifact.html', '/take.html',
+  '/artifact', '/artifact.html',
+  '/index.html', '/spectra.html', '/take.html',
   '/store.html', '/pay.html', '/unlock.html', '/apps.html',
   '/tones.html', '/shield.html', '/tone-lab.html',
 ]);
@@ -182,7 +182,7 @@ app.get('/pay', (_, res) => res.redirect(302, '/store'));
 app.get('/apps', serve('/apps'));
 app.get('/unlock', serve('/unlock'));
 app.get('/spectra', serve('/spectra'));
-app.get('/artifact', serve('/artifact'));
+app.get('/artifact', (_, res) => res.redirect(301, '/spectra'));
 app.get('/take', serve('/take'));
 app.get('/tones', serve('/tones'));
 app.get('/shield', serve('/shield'));
@@ -191,7 +191,7 @@ app.get('/tone-lab', serve('/tone-lab'));
 // ── Clean URL redirects ──
 app.get('/index.html', (_, res) => res.redirect(301, '/'));
 app.get('/spectra.html', (_, res) => res.redirect(301, '/spectra'));
-app.get('/artifact.html', (_, res) => res.redirect(301, '/artifact'));
+app.get('/artifact.html', (_, res) => res.redirect(301, '/spectra'));
 app.get('/take.html', (_, res) => res.redirect(301, '/take'));
 app.get('/store.html', (_, res) => res.redirect(301, '/store'));
 app.get('/pay.html', (_, res) => res.redirect(302, '/store'));
