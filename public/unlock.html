@@ -428,10 +428,10 @@
           redeemEl.style.display = 'none';
           resultEl.className = 'result';
 
-          if (data.error) {
+          if (data.error || data.valid === false) {
             resultEl.classList.add('invalid');
             statusEl.textContent = 'invalid code';
-            detailsEl.innerHTML = '<p class="result-detail">' + data.error + '</p>';
+            detailsEl.innerHTML = '<p class="result-detail">' + (data.error || 'code not recognized') + '</p>';
             return;
           }
 
