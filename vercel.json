@@ -9,6 +9,12 @@
     { "source": "/preview-spectra.svg", "destination": "/public/preview-spectra.svg" },
     { "source": "/preview-artifact.svg", "destination": "/public/preview-artifact.svg" },
     { "source": "/preview-take.svg", "destination": "/public/preview-take.svg" },
+    { "source": "/icon-tones.svg", "destination": "/public/icon-tones.svg" },
+    { "source": "/icon-shield.svg", "destination": "/public/icon-shield.svg" },
+    { "source": "/icon-tonelab.svg", "destination": "/public/icon-tonelab.svg" },
+    { "source": "/preview-tones.svg", "destination": "/public/preview-tones.svg" },
+    { "source": "/preview-shield.svg", "destination": "/public/preview-shield.svg" },
+    { "source": "/preview-tonelab.svg", "destination": "/public/preview-tonelab.svg" },
     { "source": "/(.*)", "destination": "/api/index" }
   ]
 }

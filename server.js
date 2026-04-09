@@ -34,7 +34,9 @@ for (const [route, cfg] of Object.entries(PAGES)) {
 const STATIC_FILES = new Set([
   '/favicon.svg', '/favicon.png', '/icon-transparent.svg',
   '/icon-spectra.svg', '/icon-artifact.svg', '/icon-take.svg',
+  '/icon-tones.svg', '/icon-shield.svg', '/icon-tonelab.svg',
   '/preview-spectra.svg', '/preview-artifact.svg', '/preview-take.svg',
+  '/preview-tones.svg', '/preview-shield.svg', '/preview-tonelab.svg',
 ]);
 
 const ALLOWED = new Set([

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1a12"/>
+      <stop offset="100%" stop-color="#060e0a"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#00FF9F"/>
+      <stop offset="100%" stop-color="#00AA66"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- grid -->
+  <g stroke="#0a2a1a" stroke-width="0.5" opacity="0.3">
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+  </g>
+  <!-- sine wave -->
+  <path d="M80,256 Q160,160 240,256 Q320,352 400,256" fill="none" stroke="url(#glow)" stroke-width="3" opacity="0.9"/>
+  <path d="M80,256 Q160,190 240,256 Q320,322 400,256" fill="none" stroke="#00FF9F" stroke-width="1" opacity="0.3"/>
+  <!-- frequency bars -->
+  <g fill="#00FF9F" opacity="0.5">
+    <rect x="120" y="320" width="12" height="40" rx="2"/>
+    <rect x="148" y="300" width="12" height="60" rx="2"/>
+    <rect x="176" y="280" width="12" height="80" rx="2"/>
+    <rect x="204" y="290" width="12" height="70" rx="2"/>
+    <rect x="232" y="270" width="12" height="90" rx="2"/>
+    <rect x="260" y="260" width="12" height="100" rx="2"/>
+    <rect x="288" y="275" width="12" height="85" rx="2"/>
+    <rect x="316" y="295" width="12" height="65" rx="2"/>
+    <rect x="344" y="310" width="12" height="50" rx="2"/>
+    <rect x="372" y="325" width="12" height="35" rx="2"/>
+  </g>
+  <!-- tuning fork -->
+  <g stroke="#00FF9F" stroke-width="2.5" fill="none" opacity="0.7">
+    <path d="M240,140 L240,200"/>
+    <path d="M272,140 L272,200"/>
+    <path d="M240,200 Q256,220 272,200"/>
+    <line x1="256" y1="210" x2="256" y2="260"/>
+  </g>
+  <!-- label -->
+  <text x="256" y="420" font-family="system-ui,sans-serif" font-size="28" fill="#00FF9F" opacity="0.8" text-anchor="middle" letter-spacing="8">TONES</text>
+</svg>

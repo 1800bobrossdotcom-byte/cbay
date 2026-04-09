@@ -6,42 +6,73 @@
   <title>unlock — cbay</title>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #060610;
+      --surface: rgba(255,255,255,0.03);
+      --border: rgba(255,255,255,0.06);
+      --text: #e8e8f0;
+      --text-dim: rgba(255,255,255,0.4);
+      --text-muted: rgba(255,255,255,0.2);
+      --cyan: #00E5FF;
+      --magenta: #FF00E5;
+      --amber: #FF8800;
+      --mint: #00FF9F;
+      --red: #FF2D55;
+      --purple: #A855F7;
+      --radius: 16px;
+    }
     html, body {
-      background: #0a0a14;
-      color: #e8e8f0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     .page {
       max-width: 560px;
       margin: 0 auto;
-      padding: 6vh 32px 10vh;
+      padding: 32px 20px 60px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
-    /* ── Nav ── */
-    .nav {
+    /* ── Top bar ── */
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 48px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #1e1e3a;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
     }
-    .nav a {
-      color: #8888aa;
+    .topbar .logo {
+      font-size: 14px;
+      letter-spacing: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--cyan), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       text-decoration: none;
-      font-size: 11px;
+    }
+    .topbar-links { display: flex; gap: 6px; }
+    .topbar-links a {
+      font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      transition: color 0.3s;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
     }
-    .nav a:hover { color: #fff; }
-    .nav .brand { font-size: 16px; letter-spacing: 6px; color: #fff; font-weight: 600; }
+    .topbar-links a:hover { color: #fff; border-color: var(--border); background: rgba(255,255,255,0.04); }
+    .topbar-links a.active { color: #fff; border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); }
 
-    /* ── Content ── */
+    /* ── Main ── */
     .main {
       flex: 1;
       display: flex;
@@ -53,13 +84,13 @@
       font-size: 14px;
       letter-spacing: 5px;
       color: #fff;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       margin-bottom: 8px;
     }
     .sub {
       font-size: 11px;
-      color: #8888aa;
+      color: var(--text-dim);
       letter-spacing: 1px;
       line-height: 1.7;
       margin-bottom: 32px;
@@ -69,26 +100,27 @@
     .code-input-group {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       margin-bottom: 8px;
+      flex-wrap: wrap;
     }
     .code-prefix {
       font-size: 14px;
-      color: #555577;
+      color: var(--text-muted);
       letter-spacing: 2px;
-      font-weight: 600;
+      font-weight: 700;
     }
     .code-segment {
-      width: 80px;
+      width: 68px;
       background: rgba(255,255,255,0.04);
-      border: 1px solid #1e1e3a;
-      border-bottom: 2px solid #2a2a4a;
+      border: 1px solid var(--border);
+      border-bottom: 2px solid rgba(255,255,255,0.1);
       border-radius: 8px;
-      color: #00E5FF;
-      padding: 12px 8px;
+      color: var(--cyan);
+      padding: 12px 6px;
       font-family: inherit;
-      font-size: 16px;
-      letter-spacing: 4px;
+      font-size: 15px;
+      letter-spacing: 3px;
       text-align: center;
       text-transform: uppercase;
       outline: none;
@@ -96,27 +128,27 @@
       -webkit-appearance: none;
     }
     .code-segment:focus {
-      border-color: #00E5FF;
-      border-bottom-color: #00E5FF;
+      border-color: var(--cyan);
+      border-bottom-color: var(--cyan);
     }
     .code-sep {
-      color: #2a2a4a;
-      font-size: 16px;
+      color: var(--text-muted);
+      font-size: 14px;
     }
 
     .hint {
       font-size: 9px;
-      color: #555577;
+      color: var(--text-muted);
       letter-spacing: 1px;
       margin-bottom: 24px;
     }
 
     .btn {
       font-family: inherit;
-      font-size: 10px;
+      font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 10px 20px;
+      padding: 10px 18px;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
@@ -125,58 +157,55 @@
       align-items: center;
     }
     .btn-primary {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid #fff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
       color: #fff;
+      font-weight: 600;
     }
-    .btn-primary:hover { background: rgba(255,255,255,0.18); }
+    .btn-primary:hover { background: rgba(255,255,255,0.14); }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .btn-secondary {
       background: none;
-      border: 1px solid #2a2a4a;
-      color: #8888aa;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
     }
-    .btn-secondary:hover { border-color: #5555aa; color: #ccc; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
 
     /* ── Result ── */
     .result {
       display: none;
       margin-top: 24px;
       padding: 20px;
-      border: 1px solid #1e1e3a;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
     }
-    .result.valid {
-      border-color: #00E5FF;
-    }
-    .result.invalid {
-      border-color: #ff4466;
-    }
-    .result.redeemed {
-      border-color: #FF8800;
-    }
+    .result.valid { border-color: rgba(0,229,255,0.3); }
+    .result.invalid { border-color: rgba(255,45,85,0.3); }
+    .result.redeemed { border-color: rgba(255,136,0,0.3); }
+    .result.activated { border-color: rgba(0,255,159,0.3); }
 
     .result-status {
       font-size: 10px;
       letter-spacing: 3px;
       text-transform: uppercase;
       margin-bottom: 12px;
-      font-weight: 600;
+      font-weight: 700;
     }
-    .result.valid .result-status { color: #00E5FF; }
-    .result.invalid .result-status { color: #ff4466; }
-    .result.redeemed .result-status { color: #FF8800; }
+    .result.valid .result-status { color: var(--cyan); }
+    .result.invalid .result-status { color: var(--red); }
+    .result.redeemed .result-status { color: var(--amber); }
+    .result.activated .result-status { color: var(--mint); }
 
     .result-detail {
       font-size: 11px;
-      color: #b0b0cc;
+      color: var(--text-dim);
       line-height: 1.7;
       margin-bottom: 4px;
     }
     .result-detail .label {
-      color: #8888aa;
+      color: var(--text-muted);
       font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -189,48 +218,49 @@
     }
     .unlock-list li {
       font-size: 11px;
-      color: #e8e8f0;
+      color: var(--text);
       padding: 6px 0;
-      border-bottom: 1px solid #1e1e3a;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .unlock-list li::before {
-      content: '◆';
-      color: #00E5FF;
+      content: '\25C6';
+      color: var(--cyan);
       font-size: 6px;
     }
 
     .redeem-section {
       margin-top: 16px;
       padding-top: 16px;
-      border-top: 1px solid #1e1e3a;
+      border-top: 1px solid var(--border);
     }
     .redeem-section label {
       display: block;
       font-size: 9px;
       letter-spacing: 3px;
-      color: #8888aa;
+      color: var(--text-dim);
       text-transform: uppercase;
       margin-bottom: 8px;
     }
     .redeem-section input {
       width: 100%;
       background: rgba(255,255,255,0.04);
-      border: 1px solid #1e1e3a;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: #e8e8f0;
+      color: var(--text);
       padding: 10px;
       font-family: inherit;
       font-size: 12px;
       outline: none;
       margin-bottom: 8px;
     }
-    .redeem-section input:focus { border-color: #00E5FF; }
+    .redeem-section input:focus { border-color: rgba(255,255,255,0.25); }
+    .redeem-section input::placeholder { color: rgba(255,255,255,0.12); }
 
     .error-msg {
-      color: #ff4466;
+      color: var(--red);
       font-size: 10px;
       letter-spacing: 1px;
       margin-top: 8px;
@@ -239,52 +269,51 @@
     .buy-prompt {
       margin-top: 32px;
       padding-top: 16px;
-      border-top: 1px solid #1e1e3a;
+      border-top: 1px solid var(--border);
     }
     .buy-prompt p {
       font-size: 10px;
-      color: #555577;
-      letter-spacing: 1px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
     @media (max-width: 480px) {
-      .page { padding: 4vh 16px 8vh; }
-      .code-segment { width: 60px; font-size: 13px; }
+      .page { padding: 16px 12px 40px; }
+      .code-segment { width: 56px; font-size: 13px; padding: 10px 4px; letter-spacing: 2px; }
+      .code-input-group { gap: 3px; }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <nav class="nav">
-      <a href="/" class="brand">cbay</a>
-      <div style="display:flex;gap:16px;">
+    <div class="topbar">
+      <a href="/" class="logo">cbay</a>
+      <div class="topbar-links">
         <a href="/store">store</a>
-        <a href="/unlock">unlock</a>
+        <a href="/unlock" class="active">unlock</a>
       </div>
-    </nav>
+    </div>
 
     <div class="main">
-      <div style="border:1px solid #1e1e3a;border-radius:12px;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);">
-        <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#0a0a14;background:#fff;padding:2px 8px;border-radius:4px;">beta</span>
-        <p style="font-size:10px;color:#8888aa;letter-spacing:1px;line-height:1.6;">access codes are not yet active. all instruments are free during beta.</p>
-      </div>
-
       <h1 class="heading">enter access code</h1>
       <p class="sub">
-        Purchased from the cbay store? Enter your access code to verify and activate your apps.
+        Purchased from the cbay store? Enter your HMAC-signed access code to verify and activate your instruments.
       </p>
 
       <div class="code-input-group">
         <span class="code-prefix">CBAY</span>
-        <span class="code-sep">—</span>
-        <input class="code-segment" id="seg1" maxlength="4" placeholder="····" autocomplete="off" spellcheck="false">
-        <span class="code-sep">—</span>
-        <input class="code-segment" id="seg2" maxlength="4" placeholder="····" autocomplete="off" spellcheck="false">
-        <span class="code-sep">—</span>
-        <input class="code-segment" id="seg3" maxlength="4" placeholder="····" autocomplete="off" spellcheck="false">
+        <span class="code-sep">&mdash;</span>
+        <input class="code-segment" id="seg1" maxlength="4" placeholder="&middot;&middot;&middot;&middot;" autocomplete="off" spellcheck="false">
+        <span class="code-sep">&mdash;</span>
+        <input class="code-segment" id="seg2" maxlength="4" placeholder="&middot;&middot;&middot;&middot;" autocomplete="off" spellcheck="false">
+        <span class="code-sep">&mdash;</span>
+        <input class="code-segment" id="seg3" maxlength="4" placeholder="&middot;&middot;&middot;&middot;" autocomplete="off" spellcheck="false">
+        <span class="code-sep">&mdash;</span>
+        <input class="code-segment" id="seg4" maxlength="4" placeholder="&middot;&middot;&middot;&middot;" autocomplete="off" spellcheck="false">
       </div>
-      <p class="hint">format: CBAY-XXXX-XXXX-XXXX</p>
+      <p class="hint">format: CBAY-XXXX-XXXX-XXXX-XXXX</p>
 
       <div style="display:flex;gap:8px;">
         <button class="btn btn-primary" id="btn-verify">verify code</button>
@@ -294,7 +323,7 @@
 
       <!-- Result panel -->
       <div class="result" id="result">
-        <div class="result-status" id="result-status">—</div>
+        <div class="result-status" id="result-status">&mdash;</div>
 
         <div id="result-details"></div>
 
@@ -320,14 +349,15 @@
       var segments = [
         document.getElementById('seg1'),
         document.getElementById('seg2'),
-        document.getElementById('seg3')
+        document.getElementById('seg3'),
+        document.getElementById('seg4')
       ];
 
       // Auto-advance and format
       segments.forEach(function(seg, i) {
         seg.addEventListener('input', function() {
-          this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-          if (this.value.length === 4 && i < 2) {
+          this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g, '');
+          if (this.value.length === 4 && i < segments.length - 1) {
             segments[i + 1].focus();
           }
         });
@@ -343,17 +373,22 @@
         e.preventDefault();
         var text = (e.clipboardData || window.clipboardData).getData('text').trim().toUpperCase();
         // strip CBAY- prefix if present
-        text = text.replace(/^CBAY[-–—]/, '');
-        var parts = text.split(/[-–—]/);
-        if (parts.length === 3) {
-          for (var i = 0; i < 3; i++) {
-            segments[i].value = parts[i].substring(0, 4);
+        text = text.replace(/^CBAY[-\u2013\u2014]/, '');
+        var parts = text.split(/[-\u2013\u2014]/);
+        if (parts.length >= 4) {
+          for (var i = 0; i < 4; i++) {
+            segments[i].value = (parts[i] || '').substring(0, 4);
+          }
+        } else if (parts.length === 1 && text.length >= 16) {
+          // Pasted as continuous hex
+          for (var j = 0; j < 4; j++) {
+            segments[j].value = text.substring(j * 4, j * 4 + 4);
           }
         }
       });
 
       function getCode() {
-        return 'CBAY-' + segments[0].value + '-' + segments[1].value + '-' + segments[2].value;
+        return 'CBAY-' + segments[0].value + '-' + segments[1].value + '-' + segments[2].value + '-' + segments[3].value;
       }
 
       function showError(id, msg) {
@@ -365,8 +400,8 @@
       // Verify
       document.getElementById('btn-verify').addEventListener('click', function() {
         var code = getCode();
-        if (code.length !== 19) {
-          showError('error', 'enter all three code segments');
+        if (code.length !== 24) {
+          showError('error', 'enter all four code segments');
           return;
         }
 
@@ -410,7 +445,7 @@
           }
 
           resultEl.classList.add('valid');
-          statusEl.textContent = 'valid — ready to activate';
+          statusEl.textContent = 'valid \u2014 ready to activate';
           var html =
             '<p class="result-detail"><span class="label">product:</span> ' + data.product + '</p>' +
             '<p class="result-detail"><span class="label">unlocks:</span></p>' +
@@ -425,7 +460,7 @@
         .catch(function() {
           document.getElementById('btn-verify').disabled = false;
           document.getElementById('btn-verify').textContent = 'verify code';
-          showError('error', 'network error — try again');
+          showError('error', 'network error \u2014 try again');
         });
       });
 
@@ -457,11 +492,11 @@
           }
 
           var resultEl = document.getElementById('result');
-          resultEl.className = 'result redeemed';
+          resultEl.className = 'result activated';
           resultEl.style.display = 'block';
-          document.getElementById('result-status').textContent = 'activated ✓';
+          document.getElementById('result-status').textContent = 'activated \u2713';
           document.getElementById('result-details').innerHTML =
-            '<p class="result-detail" style="color:#6a8a5a;">Code redeemed and bound to your device. Full access granted.</p>' +
+            '<p class="result-detail" style="color:var(--mint);">Code redeemed and bound to your device. Full access granted.</p>' +
             '<ul class="unlock-list">' +
             data.unlocks.map(function(u) { return '<li>' + u + '</li>'; }).join('') +
             '</ul>';
@@ -470,7 +505,7 @@
         .catch(function() {
           document.getElementById('btn-redeem').disabled = false;
           document.getElementById('btn-redeem').textContent = 'redeem & activate';
-          showError('redeem-error', 'network error — try again');
+          showError('redeem-error', 'network error \u2014 try again');
         });
       });
     })();

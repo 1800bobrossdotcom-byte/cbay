@@ -6,109 +6,137 @@
   <title>pay — cbay</title>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #060610;
+      --surface: rgba(255,255,255,0.03);
+      --border: rgba(255,255,255,0.06);
+      --text: #e8e8f0;
+      --text-dim: rgba(255,255,255,0.4);
+      --text-muted: rgba(255,255,255,0.2);
+      --cyan: #00E5FF;
+      --magenta: #FF00E5;
+      --amber: #FF8800;
+      --mint: #00FF9F;
+      --red: #FF2D55;
+      --purple: #A855F7;
+      --radius: 16px;
+    }
     html, body {
-      background: #0a0a14;
-      color: #e8e8f0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     .page {
       max-width: 640px;
       margin: 0 auto;
-      padding: 6vh 32px 10vh;
+      padding: 32px 20px 60px;
       min-height: 100vh;
     }
 
-    /* ── Nav ── */
-    .nav {
+    /* ── Top bar ── */
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 48px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #1e1e3a;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
     }
-    .nav a {
-      color: #8888aa;
+    .topbar .logo {
+      font-size: 14px;
+      letter-spacing: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--cyan), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       text-decoration: none;
-      font-size: 11px;
+    }
+    .topbar-links { display: flex; gap: 6px; }
+    .topbar-links a {
+      font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      transition: color 0.3s;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
     }
-    .nav a:hover { color: #fff; }
-    .nav .brand { font-size: 16px; letter-spacing: 6px; color: #fff; font-weight: 600; }
+    .topbar-links a:hover { color: #fff; border-color: var(--border); background: rgba(255,255,255,0.04); }
 
     /* ── Steps ── */
-    .step-indicator {
+    .step-bar {
       display: flex;
-      gap: 4px;
-      margin-bottom: 32px;
+      gap: 6px;
+      margin-bottom: 28px;
     }
-    .step-dot {
-      width: 8px; height: 8px;
-      border: 1px solid #2a2a4a;
-      border-radius: 50%;
-      transition: all 0.3s;
+    .step-seg {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
     }
-    .step-dot.active { background: #fff; border-color: #fff; }
-    .step-dot.done { background: #00E5FF; border-color: #00E5FF; }
+    .step-seg.active { background: rgba(255,255,255,0.3); }
+    .step-seg.done { background: var(--cyan); }
 
     /* ── Sections ── */
     .section { display: none; }
     .section.active { display: block; }
 
     .section-title {
-      font-size: 10px;
+      font-size: 9px;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: #8888aa;
-      margin-bottom: 20px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
     }
 
     /* ── Product summary ── */
     .product-summary {
-      border: 1px solid #1e1e3a;
-      border-radius: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 20px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       gap: 16px;
-      background: rgba(255,255,255,0.03);
+      background: var(--surface);
     }
     .product-summary .icon {
       width: 48px; height: 48px;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #1e1e3a;
+      border: 1px solid var(--border);
       flex-shrink: 0;
     }
     .product-summary .icon img { width: 100%; height: 100%; display: block; }
     .product-summary .info { flex: 1; }
     .product-summary .name {
-      font-size: 14px;
+      font-size: 16px;
       letter-spacing: 4px;
-      color: #fff;
+      font-weight: 700;
       margin-bottom: 2px;
-      font-weight: 600;
     }
     .product-summary .tagline {
       font-size: 10px;
-      color: #8888aa;
+      color: var(--text-dim);
       letter-spacing: 1px;
     }
-    .product-summary .price {
-      text-align: right;
-    }
+    .product-summary .price { text-align: right; }
     .product-summary .amount {
-      font-size: 16px;
+      font-size: 18px;
       color: #fff;
-      font-weight: 600;
+      font-weight: 700;
     }
     .product-summary .coin-name {
       font-size: 9px;
-      color: #8888aa;
+      color: var(--text-dim);
       letter-spacing: 2px;
     }
 
@@ -120,10 +148,10 @@
     }
     .coin-opt {
       flex: 1;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid #1e1e3a;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: #8888aa;
+      color: var(--text-dim);
       padding: 10px 12px;
       font-family: inherit;
       font-size: 11px;
@@ -133,34 +161,35 @@
       transition: all 0.2s;
     }
     .coin-opt.active {
-      border-color: #fff;
+      border-color: rgba(255,255,255,0.25);
       color: #fff;
       background: rgba(255,255,255,0.08);
     }
+    .coin-opt:hover:not(.active) { border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
 
     /* ── Wallet display ── */
     .wallet-box {
-      border: 1px solid #1e1e3a;
-      border-radius: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 20px;
       margin-bottom: 16px;
-      background: rgba(255,255,255,0.03);
+      background: var(--surface);
     }
     .wallet-label {
       font-size: 9px;
       letter-spacing: 3px;
-      color: #8888aa;
+      color: var(--text-dim);
       margin-bottom: 8px;
       text-transform: uppercase;
     }
     .wallet-addr {
       font-size: 11px;
-      color: #e8e8f0;
+      color: var(--text);
       word-break: break-all;
       line-height: 1.6;
       padding: 12px;
       background: rgba(255,255,255,0.04);
-      border: 1px solid #1e1e3a;
+      border: 1px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
       position: relative;
@@ -168,26 +197,24 @@
     .wallet-addr:hover::after {
       content: 'click to copy';
       position: absolute;
-      top: -20px;
-      right: 0;
+      top: -20px; right: 0;
       font-size: 8px;
-      color: #00E5FF;
+      color: var(--cyan);
       letter-spacing: 2px;
     }
     .wallet-addr.copied::after {
-      content: 'copied ✓';
+      content: 'copied \2713';
       position: absolute;
-      top: -20px;
-      right: 0;
+      top: -20px; right: 0;
       font-size: 8px;
-      color: #00E5FF;
+      color: var(--cyan);
       letter-spacing: 2px;
     }
 
     .send-amount {
       text-align: center;
-      padding: 16px;
-      border: 1px dashed #2a2a4a;
+      padding: 20px;
+      border: 1px dashed rgba(255,255,255,0.1);
       border-radius: 12px;
       margin-bottom: 24px;
       background: rgba(255,255,255,0.02);
@@ -195,40 +222,38 @@
     .send-amount .label {
       font-size: 9px;
       letter-spacing: 3px;
-      color: #8888aa;
+      color: var(--text-muted);
       text-transform: uppercase;
       margin-bottom: 6px;
     }
     .send-amount .value {
-      font-size: 22px;
+      font-size: 24px;
       color: #fff;
       letter-spacing: 2px;
-      font-weight: 600;
+      font-weight: 700;
     }
     .send-amount .sub {
       font-size: 9px;
-      color: #555577;
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
-    /* ── Input ── */
-    .field {
-      margin-bottom: 20px;
-    }
+    /* ── Fields ── */
+    .field { margin-bottom: 20px; }
     .field label {
       display: block;
       font-size: 9px;
       letter-spacing: 3px;
-      color: #8888aa;
+      color: var(--text-dim);
       text-transform: uppercase;
       margin-bottom: 8px;
     }
     .field input {
       width: 100%;
       background: rgba(255,255,255,0.04);
-      border: 1px solid #1e1e3a;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: #e8e8f0;
+      color: var(--text);
       padding: 12px;
       font-family: inherit;
       font-size: 12px;
@@ -236,24 +261,20 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .field input:focus {
-      border-color: #fff;
-    }
-    .field input::placeholder {
-      color: #3a3a5a;
-    }
+    .field input:focus { border-color: rgba(255,255,255,0.25); }
+    .field input::placeholder { color: rgba(255,255,255,0.12); }
     .field .hint {
       font-size: 9px;
-      color: #555577;
+      color: var(--text-muted);
       margin-top: 6px;
     }
 
     .btn {
       font-family: inherit;
-      font-size: 10px;
+      font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 10px 20px;
+      padding: 10px 18px;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
@@ -262,27 +283,25 @@
       align-items: center;
     }
     .btn-primary {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid #fff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
       color: #fff;
+      font-weight: 600;
     }
-    .btn-primary:hover { background: rgba(255,255,255,0.18); }
-    .btn-primary:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
+    .btn-primary:hover { background: rgba(255,255,255,0.14); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-secondary {
       background: none;
-      border: 1px solid #2a2a4a;
-      color: #8888aa;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
     }
-    .btn-secondary:hover { border-color: #5555aa; color: #ccc; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
 
-    /* ── Success ── */
+    /* ── Code display ── */
     .code-display {
-      border: 2px solid #00E5FF;
-      border-radius: 16px;
-      padding: 24px;
+      border: 1px solid rgba(0,229,255,0.3);
+      border-radius: var(--radius);
+      padding: 28px;
       text-align: center;
       margin: 24px 0;
       background: rgba(0,229,255,0.04);
@@ -290,34 +309,35 @@
     .code-display .label {
       font-size: 9px;
       letter-spacing: 3px;
-      color: #8888aa;
+      color: var(--text-dim);
       text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .code-display .code {
-      font-size: 20px;
-      letter-spacing: 4px;
-      color: #00E5FF;
+      font-size: 18px;
+      letter-spacing: 3px;
+      color: var(--cyan);
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
     }
     .code-display .note {
       font-size: 9px;
-      color: #8888aa;
-      margin-top: 10px;
+      color: var(--text-muted);
+      margin-top: 12px;
       letter-spacing: 1px;
       line-height: 1.7;
     }
+    .code-display .note a { color: var(--cyan); }
 
     .error-msg {
-      color: #ff4466;
+      color: var(--red);
       font-size: 10px;
       letter-spacing: 1px;
       margin-bottom: 12px;
     }
 
     @media (max-width: 600px) {
-      .page { padding: 4vh 16px 8vh; }
+      .page { padding: 16px 12px 40px; }
       .product-summary { flex-direction: column; align-items: flex-start; }
       .product-summary .price { text-align: left; }
       .coin-select { flex-wrap: wrap; }
@@ -326,23 +346,18 @@
 </head>
 <body>
   <div class="page">
-    <nav class="nav">
-      <a href="/" class="brand">cbay</a>
-      <div style="display:flex;gap:16px;">
+    <div class="topbar">
+      <a href="/" class="logo">cbay</a>
+      <div class="topbar-links">
         <a href="/store">store</a>
         <a href="/unlock">unlock</a>
       </div>
-    </nav>
-
-    <div style="border:1px solid #1e1e3a;border-radius:12px;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);">
-      <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#0a0a14;background:#fff;padding:2px 8px;border-radius:4px;">beta</span>
-      <p style="font-size:10px;color:#8888aa;letter-spacing:1px;line-height:1.6;">payments are not yet active. all instruments are free during beta. <a href="/store" style="color:#00E5FF;">back to store</a></p>
     </div>
 
-    <div class="step-indicator">
-      <div class="step-dot active" id="dot-1"></div>
-      <div class="step-dot" id="dot-2"></div>
-      <div class="step-dot" id="dot-3"></div>
+    <div class="step-bar">
+      <div class="step-seg active" id="seg-1"></div>
+      <div class="step-seg" id="seg-2"></div>
+      <div class="step-seg" id="seg-3"></div>
     </div>
 
     <!-- STEP 1: Confirm product + select coin -->
@@ -384,7 +399,7 @@
         <div class="wallet-addr" id="wallet-addr">—</div>
       </div>
 
-      <p style="font-size:10px;color:#8888aa;margin:16px 0;letter-spacing:1px;line-height:1.7;">
+      <p style="font-size:10px;color:var(--text-dim);margin:16px 0;letter-spacing:1px;line-height:1.7;">
         Send the exact amount above to the wallet address. After sending, paste your transaction hash below.
       </p>
 
@@ -412,7 +427,7 @@
     <div class="section" id="step-3">
       <div class="section-title">3 — access code</div>
 
-      <p style="font-size:11px;color:#b0b0cc;margin-bottom:16px;line-height:1.7;">
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:16px;line-height:1.7;">
         Your order has been placed. Once payment is confirmed, your access code will activate.
         Save this code — it's your key to the full version.
       </p>
@@ -421,7 +436,7 @@
         <div class="label">your access code</div>
         <div class="code" id="access-code">—</div>
         <div class="note">
-          click to copy · use this at <a href="/unlock" style="color:#00E5FF;">/unlock</a> or in the app
+          click to copy · use this at <a href="/unlock">/unlock</a> or in the app
         </div>
       </div>
 
@@ -478,17 +493,22 @@
         }
       }
 
+      function getIconPath(id) {
+        if (id === 'cbay-suite') return '/icon-spectra.svg';
+        if (id === 'audio-suite') return '/icon-tones.svg';
+        return '/icon-' + id.replace('-', '') + '.svg';
+      }
+
       function updateDisplay() {
         if (!product) return;
-        var iconPath = product.id === 'cbay-suite' ? '/icon-spectra.svg' : '/icon-' + product.id + '.svg';
-        document.getElementById('product-icon').src = iconPath;
+        document.getElementById('product-icon').src = getIconPath(product.id);
         document.getElementById('product-name').textContent = product.name;
         document.getElementById('product-tagline').textContent = product.tagline;
-        document.getElementById('product-price').textContent = product.prices[selectedCoin] || '—';
+        document.getElementById('product-price').textContent = product.prices[selectedCoin] || '\u2014';
         document.getElementById('product-coin').textContent = selectedCoin;
 
         // Step 2
-        document.getElementById('send-amount').textContent = product.prices[selectedCoin] || '—';
+        document.getElementById('send-amount').textContent = product.prices[selectedCoin] || '\u2014';
         document.getElementById('send-coin').textContent = selectedCoin;
         document.getElementById('coin-label').textContent = selectedCoin;
         var w = wallets[selectedCoin];
@@ -499,9 +519,9 @@
       function goStep(n) {
         for (var i = 1; i <= 3; i++) {
           document.getElementById('step-' + i).classList.toggle('active', i === n);
-          var dot = document.getElementById('dot-' + i);
-          dot.classList.toggle('active', i === n);
-          dot.classList.toggle('done', i < n);
+          var seg = document.getElementById('seg-' + i);
+          seg.classList.toggle('active', i === n);
+          seg.classList.toggle('done', i < n);
         }
       }
 
@@ -556,7 +576,7 @@
           goStep(3);
         })
         .catch(function() {
-          errEl.textContent = 'network error — try again';
+          errEl.textContent = 'network error \u2014 try again';
           errEl.style.display = 'block';
           document.getElementById('btn-submit').disabled = false;
           document.getElementById('btn-submit').textContent = 'submit order';
