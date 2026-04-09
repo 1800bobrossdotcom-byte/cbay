@@ -281,6 +281,8 @@
         <button data-mode="2">THM</button>
         <button data-mode="3">EDG</button>
         <button data-mode="4">MOT</button>
+        <button data-mode="5">TEXT</button>
+        <button data-mode="6">DOTS</button>
       </div>
       <div class="slider-row hidden" id="sliderRow">
         <span class="slider-label" id="sliderLabel">GAIN</span>
@@ -309,8 +311,8 @@
       var hudMode = document.getElementById('hudMode');
       var hudFps = document.getElementById('hudFps');
 
-      var MODE_NAMES = ['NRM', 'NV', 'THM', 'EDG', 'MOT'];
-      var SLIDER_LABELS = ['', 'GAIN', 'GAIN', 'GAIN', 'SENS'];
+      var MODE_NAMES = ['NRM', 'NV', 'THM', 'EDG', 'MOT', 'TEXT', 'DOTS'];
+      var SLIDER_LABELS = ['', 'GAIN', 'GAIN', 'GAIN', 'SENS', 'GRID', 'SIZE'];
 
       var currentMode = 0;
       var gain = 0.5;
@@ -470,6 +472,87 @@
         '    motion = smoothstep(0.02, 0.15, motion);',
         '    vec3 mc = vec3(motion, motion * 0.4, motion * 0.1);',
         '    gl_FragColor = vec4(curB * 0.15 + mc, 1.0);',
+        '',
+        '  } else if (uMode == 5) {',
+        '    // ── TEXT (ASCII density — Gysin-inspired) ──',
+        '    float cs = mix(5.0, 16.0, 1.0 - uGain);',
+        '    vec2 gp = vUv * uResolution;',
+        '    vec2 cell = floor(gp / cs);',
+        '    vec2 p = (gp - cell * cs) / cs;',
+        '    vec2 cp = p - 0.5;',
+        '    vec2 cuv = adjustUv((cell + 0.5) * cs / uResolution);',
+        '    if (cuv.x < 0.0 || cuv.x > 1.0 || cuv.y < 0.0 || cuv.y > 1.0) {',
+        '      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); return;',
+        '    }',
+        '    vec3 tc = texture2D(uCamera, cuv).rgb;',
+        '    float b = lum(tc);',
+        '    float d = 1.0;',
+        '    d = min(d, length(cp) - 0.03 - b * 0.06);',
+        '    if (b > 0.15) {',
+        '      d = min(d, length(cp - vec2(0.0, 0.15)) - 0.05);',
+        '      d = min(d, length(cp + vec2(0.0, 0.15)) - 0.05);',
+        '    }',
+        '    if (b > 0.30) {',
+        '      d = min(d, min(max(abs(cp.x) - 0.04, abs(cp.y) - 0.22),',
+        '                      max(abs(cp.x) - 0.22, abs(cp.y) - 0.04)));',
+        '    }',
+        '    if (b > 0.45) {',
+        '      vec2 r45 = vec2(cp.x + cp.y, cp.x - cp.y) * 0.707;',
+        '      d = min(d, min(max(abs(r45.x) - 0.04, abs(r45.y) - 0.18),',
+        '                      max(abs(r45.x) - 0.18, abs(r45.y) - 0.04)));',
+        '    }',
+        '    if (b > 0.55) {',
+        '      d = min(d, max(abs(cp.x - 0.11) - 0.025, abs(cp.y) - 0.28));',
+        '      d = min(d, max(abs(cp.x + 0.11) - 0.025, abs(cp.y) - 0.28));',
+        '      d = min(d, max(abs(cp.x) - 0.28, abs(cp.y - 0.11) - 0.025));',
+        '      d = min(d, max(abs(cp.x) - 0.28, abs(cp.y + 0.11) - 0.025));',
+        '    }',
+        '    if (b > 0.70) {',
+        '      float sz = 0.22 + (b - 0.7) * 1.4;',
+        '      d = min(d, max(abs(cp.x) - sz, abs(cp.y) - sz));',
+        '    }',
+        '    float mask = smoothstep(0.01, -0.01, d);',
+        '    vec3 glow = vec3(0.12, 1.0, 0.38);',
+        '    gl_FragColor = vec4(glow * mask * (0.65 + b * 0.35), 1.0);',
+        '',
+        '  } else if (uMode == 6) {',
+        '    // ── DOTS (CMYK halftone) ──',
+        '    float dotSz = mix(3.0, 12.0, uGain);',
+        '    float invG = 1.0 / (0.5 + uGain * 4.5);',
+        '    vec3 boosted = pow(color.rgb, vec3(invG));',
+        '    float cC = 1.0 - boosted.r;',
+        '    float cM = 1.0 - boosted.g;',
+        '    float cY = 1.0 - boosted.b;',
+        '    float cK = min(cC, min(cM, cY));',
+        '    cC = (cC - cK) / max(1.0 - cK, 0.001);',
+        '    cM = (cM - cK) / max(1.0 - cK, 0.001);',
+        '    cY = (cY - cK) / max(1.0 - cK, 0.001);',
+        '    float a15 = 0.2618; float a75 = 1.3090;',
+        '    float a0 = 0.0; float a45 = 0.7854;',
+        '    vec2 gpd = vUv * uResolution;',
+        '    vec2 pC = vec2(gpd.x*cos(a15)+gpd.y*sin(a15), -gpd.x*sin(a15)+gpd.y*cos(a15));',
+        '    vec2 pM = vec2(gpd.x*cos(a75)+gpd.y*sin(a75), -gpd.x*sin(a75)+gpd.y*cos(a75));',
+        '    vec2 pY = vec2(gpd.x*cos(a0)+gpd.y*sin(a0), -gpd.x*sin(a0)+gpd.y*cos(a0));',
+        '    vec2 pK = vec2(gpd.x*cos(a45)+gpd.y*sin(a45), -gpd.x*sin(a45)+gpd.y*cos(a45));',
+        '    float dC = length(fract(pC / dotSz) - 0.5) * 2.0;',
+        '    float dM = length(fract(pM / dotSz) - 0.5) * 2.0;',
+        '    float dY = length(fract(pY / dotSz) - 0.5) * 2.0;',
+        '    float dK = length(fract(pK / dotSz) - 0.5) * 2.0;',
+        '    float hC = step(dC, cC);',
+        '    float hM = step(dM, cM);',
+        '    float hY = step(dY, cY);',
+        '    float hK = step(dK, cK);',
+        '    vec3 paper = vec3(0.95);',
+        '    vec3 inkC = vec3(0.0, 0.65, 0.85);',
+        '    vec3 inkM = vec3(0.85, 0.0, 0.55);',
+        '    vec3 inkY = vec3(1.0, 0.85, 0.0);',
+        '    vec3 inkK = vec3(0.05);',
+        '    vec3 result = paper;',
+        '    result = mix(result, result * inkC, hC);',
+        '    result = mix(result, result * inkM, hM);',
+        '    result = mix(result, result * inkY, hY);',
+        '    result = mix(result, inkK, hK);',
+        '    gl_FragColor = vec4(result, 1.0);',
         '  }',
         '}'
       ].join('\n');
