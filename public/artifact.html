@@ -2,17 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ARTIFACT — cbay</title>
+  <link rel="manifest" href="data:application/json,%7B%22name%22%3A%22ARTIFACT%22%2C%22short_name%22%3A%22ARTIFACT%22%2C%22start_url%22%3A%22%2Fartifact%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0a14%22%2C%22theme_color%22%3A%22%23FF00E5%22%7D">
+  <meta name="theme-color" content="#0a0a14">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #060610;
+      --surface: rgba(255,255,255,0.03);
+      --surface-hover: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(255,255,255,0.12);
+      --text: #e8e8f0;
+      --text-dim: rgba(255,255,255,0.4);
+      --text-muted: rgba(255,255,255,0.2);
+      --accent: #FF00E5;
+      --accent-dim: rgba(255,0,229,0.10);
+      --accent-border: rgba(255,0,229,0.30);
+      --accent-glow: rgba(255,0,229,0.08);
+      --radius: 12px;
+    }
 
     html, body {
       width: 100%; height: 100%;
       overflow: hidden;
-      background: #0a0a14;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      color: #d0b0e0;
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
       -webkit-user-select: none;
       user-select: none;
       touch-action: manipulation;
@@ -30,31 +47,36 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 44px;
-      padding: 0 12px;
-      background: rgba(10, 10, 20, 0.94);
-      border-bottom: 1px solid #1e1e3a;
+      height: 48px;
+      padding: 0 16px;
+      background: rgba(6,6,16,0.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
       position: relative;
       z-index: 10;
       flex-shrink: 0;
     }
 
     .topbar a {
-      color: #FF00E5;
+      color: var(--accent);
       text-decoration: none;
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 2px;
+      font-weight: 500;
+      opacity: 0.8;
+      transition: opacity 0.2s;
     }
+    .topbar a:hover { opacity: 1; }
 
     .topbar .title {
       font-size: 10px;
-      letter-spacing: 4px;
+      letter-spacing: 5px;
       text-transform: uppercase;
-      color: #8888aa;
+      color: var(--text-dim);
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .topbar .controls {
@@ -350,7 +372,7 @@
 <body>
   <div id="app">
     <div class="topbar">
-      <a href="/">&larr; cbay</a>
+      <a href="/apps">&larr; apps</a>
       <span class="title">ARTIFACT</span>
       <div class="controls">
         <button id="formatBtn" title="cycle format" style="font-size:9px;letter-spacing:1px;width:auto;padding:0 8px;">PNG</button>
