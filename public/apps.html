@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>apps — cbay</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #060610;
+      --surface: rgba(255,255,255,0.03);
+      --border: rgba(255,255,255,0.06);
+      --text: #e8e8f0;
+      --text-dim: rgba(255,255,255,0.4);
+      --text-muted: rgba(255,255,255,0.2);
+      --cyan: #00E5FF;
+      --magenta: #FF00E5;
+      --amber: #FF8800;
+      --mint: #00FF9F;
+      --red: #FF2D55;
+      --purple: #A855F7;
+      --gold: #FFD600;
+      --radius: 16px;
+    }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .topbar .logo {
+      font-size: 14px;
+      letter-spacing: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--cyan), var(--magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .topbar-links { display: flex; gap: 6px; }
+    .topbar-links a {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .topbar-links a:hover { color: #fff; border-color: var(--border); background: rgba(255,255,255,0.04); }
+    .topbar-links a.active { color: #fff; border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header h1 {
+      font-size: 11px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+    }
+
+    /* Section */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0 12px;
+    }
+    .section-head .line { flex: 1; height: 1px; background: var(--border); }
+    .section-head .label {
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* App grid */
+    .apps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .app-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .app-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: var(--radius);
+      background: radial-gradient(ellipse at 50% 30%, var(--card-glow) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .app-card:hover {
+      border-color: var(--card-accent);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px var(--card-glow);
+    }
+    .app-card:hover::before { opacity: 1; }
+
+    .app-card--spectra { --card-accent: var(--cyan); --card-border: rgba(0,229,255,0.2); --card-bg: rgba(0,229,255,0.04); --card-glow: rgba(0,229,255,0.08); }
+    .app-card--artifact { --card-accent: var(--magenta); --card-border: rgba(255,0,229,0.2); --card-bg: rgba(255,0,229,0.04); --card-glow: rgba(255,0,229,0.08); }
+    .app-card--take { --card-accent: var(--amber); --card-border: rgba(255,136,0,0.2); --card-bg: rgba(255,136,0,0.04); --card-glow: rgba(255,136,0,0.08); }
+    .app-card--tones { --card-accent: var(--mint); --card-border: rgba(0,255,159,0.2); --card-bg: rgba(0,255,159,0.04); --card-glow: rgba(0,255,159,0.08); }
+    .app-card--shield { --card-accent: var(--red); --card-border: rgba(255,45,85,0.2); --card-bg: rgba(255,45,85,0.04); --card-glow: rgba(255,45,85,0.08); }
+    .app-card--tone-lab { --card-accent: var(--purple); --card-border: rgba(168,85,247,0.2); --card-bg: rgba(168,85,247,0.04); --card-glow: rgba(168,85,247,0.08); }
+
+    .app-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .app-name {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--card-accent);
+      margin-bottom: 4px;
+      position: relative;
+    }
+    .app-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      line-height: 1.4;
+      position: relative;
+    }
+    .app-launch {
+      font-size: 8px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--card-accent);
+      margin-top: 12px;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      position: relative;
+    }
+    .app-card:hover .app-launch { opacity: 1; }
+
+    /* Full-width bundle card */
+    .bundle-card {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.02);
+      text-decoration: none;
+      color: inherit;
+    }
+    .bundle-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .bundle-count {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    /* PWA install hint */
+    .install-hint {
+      text-align: center;
+      padding: 16px;
+      margin-top: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .install-hint p {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      line-height: 1.6;
+    }
+    .install-hint strong { color: var(--text-dim); }
+
+    .footer {
+      text-align: center;
+      margin-top: 28px;
+      padding: 12px 0;
+    }
+    .footer span {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .app-card { animation: fadeUp 0.35s ease-out both; }
+    .app-card:nth-child(1) { animation-delay: 0.05s; }
+    .app-card:nth-child(2) { animation-delay: 0.1s; }
+    .app-card:nth-child(3) { animation-delay: 0.15s; }
+    .app-card:nth-child(4) { animation-delay: 0.2s; }
+    .app-card:nth-child(5) { animation-delay: 0.25s; }
+    .app-card:nth-child(6) { animation-delay: 0.3s; }
+
+    @media (max-width: 400px) {
+      .apps { grid-template-columns: 1fr; }
+      .page { padding: 16px 12px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <a href="/" class="logo">cbay</a>
+      <div class="topbar-links">
+        <a href="/apps" class="active">apps</a>
+        <a href="/store">store</a>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1>all instruments</h1>
+      <p>tap to launch &mdash; installable on any device</p>
+    </div>
+
+    <!-- Visual -->
+    <div class="section-head">
+      <span class="line"></span>
+      <span class="label">visual</span>
+      <span class="line"></span>
+    </div>
+
+    <div class="apps">
+      <a href="/spectra" class="app-card app-card--spectra">
+        <div class="app-icon">&#9672;</div>
+        <div class="app-name">SPECTRA</div>
+        <div class="app-sub">vision engine<br>5 camera modes</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+
+      <a href="/artifact" class="app-card app-card--artifact">
+        <div class="app-icon">&#9638;</div>
+        <div class="app-name">ARTIFACT</div>
+        <div class="app-sub">glitch camera<br>10 destruction modes</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+
+      <a href="/take" class="app-card app-card--take">
+        <div class="app-icon">&#9654;</div>
+        <div class="app-name">TAKE</div>
+        <div class="app-sub">short film tool<br>8 cinematic modes</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+    </div>
+
+    <!-- Audio -->
+    <div class="section-head">
+      <span class="line"></span>
+      <span class="label">audio</span>
+      <span class="line"></span>
+    </div>
+
+    <div class="apps">
+      <a href="/tones" class="app-card app-card--tones">
+        <div class="app-icon">&#9835;</div>
+        <div class="app-name">TONES</div>
+        <div class="app-sub">healing frequencies<br>6 therapeutic modes</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+
+      <a href="/shield" class="app-card app-card--shield">
+        <div class="app-icon">&#9763;</div>
+        <div class="app-name">SHIELD</div>
+        <div class="app-sub">audio defense<br>6 protection modes</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+
+      <a href="/tone-lab" class="app-card app-card--tone-lab">
+        <div class="app-icon">&#9783;</div>
+        <div class="app-name">TONE LAB</div>
+        <div class="app-sub">32-pad synth<br>sequencer + effects</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+    </div>
+
+    <div class="install-hint">
+      <p>
+        <strong>Install on phone:</strong> open any app &rarr; browser menu &rarr; &ldquo;Add to Home Screen&rdquo;<br>
+        Each app runs standalone as a PWA &mdash; no app store needed.
+      </p>
+    </div>
+
+    <div class="footer">
+      <span>cbay.ing &middot; 6 instruments</span>
+    </div>
+  </div>
+</body>
+</html>

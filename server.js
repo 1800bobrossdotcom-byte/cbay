@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 const PAGES = {
   '/':         { file: 'index.html',    security: 'strict' },
   '/store':    { file: 'store.html',    security: 'strict' },
-  '/pay':      { file: 'pay.html',      security: 'strict' },
+  '/apps':     { file: 'apps.html',     security: 'strict' },
   '/unlock':   { file: 'unlock.html',   security: 'strict' },
   '/spectra':  { file: 'spectra.html',  security: 'camera' },
   '/artifact': { file: 'artifact.html', security: 'camera' },
@@ -45,8 +45,9 @@ const STATIC_FILES = new Set([
 const ALLOWED = new Set([
   ...Object.keys(PAGES),
   ...STATIC_FILES,
+  '/pay',
   '/index.html', '/spectra.html', '/artifact.html', '/take.html',
-  '/store.html', '/pay.html', '/unlock.html',
+  '/store.html', '/pay.html', '/unlock.html', '/apps.html',
   '/tones.html', '/shield.html', '/tone-lab.html',
 ]);
 
@@ -177,7 +178,8 @@ function serve(route) {
 
 app.get('/', serve('/'));
 app.get('/store', serve('/store'));
-app.get('/pay', serve('/pay'));
+app.get('/pay', (_, res) => res.redirect(302, '/store'));
+app.get('/apps', serve('/apps'));
 app.get('/unlock', serve('/unlock'));
 app.get('/spectra', serve('/spectra'));
 app.get('/artifact', serve('/artifact'));
@@ -192,7 +194,8 @@ app.get('/spectra.html', (_, res) => res.redirect(301, '/spectra'));
 app.get('/artifact.html', (_, res) => res.redirect(301, '/artifact'));
 app.get('/take.html', (_, res) => res.redirect(301, '/take'));
 app.get('/store.html', (_, res) => res.redirect(301, '/store'));
-app.get('/pay.html', (_, res) => res.redirect(301, '/pay'));
+app.get('/pay.html', (_, res) => res.redirect(302, '/store'));
+app.get('/apps.html', (_, res) => res.redirect(301, '/apps'));
 app.get('/unlock.html', (_, res) => res.redirect(301, '/unlock'));
 app.get('/tones.html', (_, res) => res.redirect(301, '/tones'));
 app.get('/shield.html', (_, res) => res.redirect(301, '/shield'));

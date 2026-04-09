@@ -362,26 +362,8 @@
       </div>
     </div>
 
-    <div class="crypto-info">
-      <h3>crypto payments only</h3>
-      <p>Purchase an instrument &rarr; receive an HMAC-signed access code &rarr; unlock on any device. Codes are cryptographically verified.</p>
-      <div class="coins">
-        <span class="coin"><span class="sym">XMR</span> <span class="name">Monero</span></span>
-        <span class="coin"><span class="sym">LTC</span> <span class="name">Litecoin</span></span>
-        <span class="coin"><span class="sym">BTC</span> <span class="name">Bitcoin</span></span>
-        <span class="coin"><span class="sym">ETH</span> <span class="name">Ethereum</span></span>
-      </div>
-    </div>
-
     <div class="controls">
-      <span class="controls-label">prices in</span>
-      <div class="coin-bar">
-        <button class="coin-btn active" data-coin="XMR">XMR</button>
-        <button class="coin-btn" data-coin="LTC">LTC</button>
-        <button class="coin-btn" data-coin="BTC">BTC</button>
-        <button class="coin-btn" data-coin="ETH">ETH</button>
-      </div>
-      <div class="tier-btns">
+      <div class="tier-btns" style="margin-left:0">
         <button class="tier-btn active" data-tier="all">all</button>
         <button class="tier-btn" data-tier="visual">visual</button>
         <button class="tier-btn" data-tier="audio">audio</button>
@@ -391,8 +373,8 @@
     <div class="products" id="products"></div>
 
     <div class="unlock-prompt">
-      <p>already have an access code?</p>
-      <a href="/unlock" class="btn btn-buy">enter code</a>
+      <p>all apps available for testing</p>
+      <a href="/apps" class="btn btn-buy">open app player</a>
     </div>
 
     <div style="text-align:center;margin-top:32px;padding:16px 0;">
@@ -404,7 +386,6 @@
 
   <script>
     (function() {
-      var selectedCoin = 'XMR';
       var selectedTier = 'all';
       var products = [];
 
@@ -439,8 +420,6 @@
 
         for (var i = 0; i < filtered.length; i++) {
           var p = filtered[i];
-          var price = p.prices[selectedCoin] || '\u2014';
-          var isNative = p.type === 'native-app';
           var isBundle = p.type === 'bundle';
           var hasWeb = p.webPath !== null;
 
@@ -448,15 +427,16 @@
           card.className = 'card card--' + p.id;
           card.style.animationDelay = (i * 0.08) + 's';
 
-          var badges = '<span class="card-badge card-badge--type">' + p.type + '</span>';
-          if (isNative) badges += '<span class="card-badge card-badge--native">native</span>';
+          var badges = '<span class="card-badge card-badge--type">' + (isBundle ? 'bundle' : 'app') + '</span>';
           if (p.platforms) badges += '<span class="card-badge card-badge--platforms">' + p.platforms.join(' \u00B7 ') + '</span>';
 
           var actions = '';
           if (hasWeb) {
-            actions += '<a href="' + p.webPath + '" class="btn btn-try">try free</a>';
+            actions += '<a href="' + p.webPath + '" class="btn btn-try" style="background:var(--card-bg,var(--surface));border-color:var(--card-accent,var(--border));color:var(--card-accent,#fff);font-weight:600">launch</a>';
           }
-          actions += '<a href="/pay?product=' + p.id + '&coin=' + selectedCoin + '" class="btn btn-buy">buy ' + price + ' ' + selectedCoin + '</a>';
+          if (isBundle) {
+            actions += '<a href="/apps" class="btn btn-try" style="background:var(--card-bg,var(--surface));border-color:var(--card-accent,var(--border));color:var(--card-accent,#fff);font-weight:600">open player</a>';
+          }
 
           card.innerHTML =
             '<div class="card-row">' +
@@ -465,11 +445,6 @@
                 '<p class="card-tagline">' + p.tagline + '</p>' +
                 '<p class="card-desc">' + p.description + '</p>' +
                 '<p class="card-tags">' + p.tags.join(' \u00B7 ') + '</p>' +
-              '</div>' +
-              '<div class="card-price-block">' +
-                '<div class="card-price">' + price + '</div>' +
-                '<div class="card-coin">' + selectedCoin + '</div>' +
-                '<div class="card-usd">$' + p.priceUSD.toFixed(2) + '</div>' +
               '</div>' +
             '</div>' +
             '<div class="card-badges">' + badges + '</div>' +
@@ -484,16 +459,6 @@
           b.classList.toggle('active', b.getAttribute('data-tier') === selectedTier);
         });
       }
-
-      // Coin selector
-      document.querySelectorAll('.coin-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          document.querySelectorAll('.coin-btn').forEach(function(b) { b.classList.remove('active'); });
-          this.classList.add('active');
-          selectedCoin = this.getAttribute('data-coin');
-          renderProducts();
-        });
-      });
 
       // Tier selector
       document.querySelectorAll('.tier-btn').forEach(function(btn) {
