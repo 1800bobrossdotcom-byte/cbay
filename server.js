@@ -22,6 +22,9 @@ const PAGES = {
   '/spectra':  { file: 'spectra.html',  security: 'camera' },
   '/artifact': { file: 'artifact.html', security: 'camera' },
   '/take':     { file: 'take.html',     security: 'camera' },
+  '/tones':    { file: 'tones.html',    security: 'strict' },
+  '/shield':   { file: 'shield.html',   security: 'camera' },
+  '/tone-lab': { file: 'tone-lab.html', security: 'camera' },
 };
 
 // Pre-load HTML templates at startup
@@ -44,6 +47,7 @@ const ALLOWED = new Set([
   ...STATIC_FILES,
   '/index.html', '/spectra.html', '/artifact.html', '/take.html',
   '/store.html', '/pay.html', '/unlock.html',
+  '/tones.html', '/shield.html', '/tone-lab.html',
 ]);
 
 // API routes bypass the static allowlist
@@ -178,6 +182,9 @@ app.get('/unlock', serve('/unlock'));
 app.get('/spectra', serve('/spectra'));
 app.get('/artifact', serve('/artifact'));
 app.get('/take', serve('/take'));
+app.get('/tones', serve('/tones'));
+app.get('/shield', serve('/shield'));
+app.get('/tone-lab', serve('/tone-lab'));
 
 // ── Clean URL redirects ──
 app.get('/index.html', (_, res) => res.redirect(301, '/'));
@@ -187,6 +194,9 @@ app.get('/take.html', (_, res) => res.redirect(301, '/take'));
 app.get('/store.html', (_, res) => res.redirect(301, '/store'));
 app.get('/pay.html', (_, res) => res.redirect(301, '/pay'));
 app.get('/unlock.html', (_, res) => res.redirect(301, '/unlock'));
+app.get('/tones.html', (_, res) => res.redirect(301, '/tones'));
+app.get('/shield.html', (_, res) => res.redirect(301, '/shield'));
+app.get('/tone-lab.html', (_, res) => res.redirect(301, '/tone-lab'));
 
 // ── Store API ──
 app.use('/api', storeApi);

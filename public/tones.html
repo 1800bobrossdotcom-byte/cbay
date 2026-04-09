@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TONES — cbay</title>
+  <link rel="manifest" href="data:application/json,%7B%22name%22%3A%22TONES%22%2C%22short_name%22%3A%22TONES%22%2C%22start_url%22%3A%22%2Ftones%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0a14%22%2C%22theme_color%22%3A%22%2300E5FF%22%7D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0a14">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a14; font-family: system-ui, -apple-system, sans-serif; color: #b0d0e0; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+    #app { display: flex; flex-direction: column; width: 100%; height: 100%; height: 100dvh; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 12px; background: rgba(10,10,20,0.92); border-bottom: 1px solid #1e1e3a; flex-shrink: 0; z-index: 10; }
+    .topbar a { color: #00E5FF; text-decoration: none; font-size: 12px; letter-spacing: 2px; }
+    .topbar .title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: #8888aa; position: absolute; left: 50%; transform: translateX(-50%); font-weight: 600; }
+    .topbar .mode-label { font-size: 9px; letter-spacing: 2px; color: #A855F7; }
+
+    .main { flex: 1; display: flex; flex-direction: column; padding: 16px; overflow-y: auto; gap: 12px; }
+
+    /* Visualizer */
+    .viz { width: 100%; height: 120px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid #1e1e3a; flex-shrink: 0; }
+
+    /* Mode buttons */
+    .modes { display: flex; gap: 6px; flex-wrap: wrap; }
+    .modes button { font-family: inherit; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 8px 14px; border-radius: 8px; border: 1px solid #1e1e3a; background: rgba(255,255,255,0.03); color: #8888aa; cursor: pointer; transition: all 0.2s; }
+    .modes button.active { background: rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.4); color: #A855F7; }
+    .modes button:hover { border-color: rgba(168,85,247,0.3); }
+
+    /* Preset selector */
+    .presets { display: flex; flex-direction: column; gap: 4px; }
+    .presets-label { font-size: 9px; letter-spacing: 2px; color: #555; text-transform: uppercase; }
+    .preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 4px; }
+    .preset-grid button { font-family: inherit; font-size: 10px; padding: 10px 8px; border-radius: 8px; border: 1px solid #1e1e3a; background: rgba(255,255,255,0.02); color: #b0d0e0; cursor: pointer; transition: all 0.2s; text-align: left; }
+    .preset-grid button.active { background: rgba(0,229,255,0.08); border-color: rgba(0,229,255,0.3); color: #00E5FF; }
+    .preset-grid button .hz { font-size: 8px; color: #555; display: block; margin-top: 2px; }
+
+    /* Slider */
+    .slider-row { display: flex; align-items: center; gap: 12px; padding: 4px 0; }
+    .slider-label { font-size: 9px; letter-spacing: 2px; color: #555; text-transform: uppercase; width: 60px; flex-shrink: 0; }
+    .slider-row input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px; background: #1e1e3a; outline: none; }
+    .slider-row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #A855F7; cursor: pointer; }
+    .slider-val { font-size: 10px; color: #8888aa; width: 36px; text-align: right; }
+
+    /* Info */
+    .info-bar { display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 1px; color: #444; padding: 8px 0; border-top: 1px solid #1e1e3a; margin-top: auto; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="topbar" style="position:relative;">
+      <a href="/store?tier=audio">← STORE</a>
+      <span class="title">TONES</span>
+      <span class="mode-label" id="modeLabel">OFF</span>
+    </div>
+
+    <div class="main">
+      <canvas class="viz" id="viz"></canvas>
+
+      <div class="modes" id="modes">
+        <button data-mode="healing">Healing</button>
+        <button data-mode="binaural">Binaural</button>
+        <button data-mode="pink">Pink</button>
+        <button data-mode="brown">Brown</button>
+        <button data-mode="ocean">Ocean</button>
+        <button data-mode="off" class="active">Off</button>
+      </div>
+
+      <div class="presets" id="presetSection">
+        <span class="presets-label" id="presetLabel">solfeggio frequency</span>
+        <div class="preset-grid" id="presetGrid"></div>
+      </div>
+
+      <div class="slider-row">
+        <span class="slider-label">Volume</span>
+        <input type="range" id="volume" min="0" max="100" value="50">
+        <span class="slider-val" id="volVal">50</span>
+      </div>
+
+      <div class="info-bar">
+        <span id="freqInfo">528 Hz</span>
+        <span>cbay.ing/tones</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // ── Audio context (created on first user gesture) ──
+  var ctx = null, masterGain = null, analyser = null;
+  var activeNodes = [];
+  var currentMode = 'off';
+  var volume = 0.5;
+
+  // ── Solfeggio presets ──
+  var SOLFEGGIO = [
+    { hz: 174, name: 'Foundation' },
+    { hz: 285, name: 'Quantum Field' },
+    { hz: 396, name: 'Liberation' },
+    { hz: 417, name: 'Transmutation' },
+    { hz: 432, name: 'Universal' },
+    { hz: 528, name: 'DNA Repair' },
+    { hz: 639, name: 'Connection' },
+    { hz: 741, name: 'Awakening' },
+    { hz: 852, name: 'Third Eye' },
+    { hz: 963, name: 'Crown' }
+  ];
+  var selectedSolf = 5; // 528 Hz default
+
+  // ── Binaural presets ──
+  var BINAURAL = [
+    { name: 'Schumann 7.83 Hz', beat: 7.83, carrier: 200 },
+    { name: 'Alpha 10 Hz', beat: 10, carrier: 200 },
+    { name: 'Beta 14 Hz', beat: 14, carrier: 200 },
+    { name: 'Gamma 40 Hz', beat: 40, carrier: 200 },
+    { name: 'Deep Delta 2 Hz', beat: 2, carrier: 150 },
+    { name: 'Theta 6 Hz', beat: 6, carrier: 180 }
+  ];
+  var selectedBin = 0;
+
+  function ensureCtx() {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+    masterGain = ctx.createGain();
+    masterGain.gain.value = volume;
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 2048;
+    masterGain.connect(analyser);
+    analyser.connect(ctx.destination);
+    drawViz();
+  }
+
+  function stopAll() {
+    activeNodes.forEach(function(n) {
+      try { n.stop ? n.stop() : n.disconnect(); } catch(e) {}
+    });
+    activeNodes = [];
+  }
+
+  function setMode(mode) {
+    ensureCtx();
+    stopAll();
+    currentMode = mode;
+    document.getElementById('modeLabel').textContent = mode.toUpperCase();
+    document.querySelectorAll('.modes button').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+    updatePresets();
+    if (mode === 'off') return;
+    if (mode === 'healing') startHealing();
+    else if (mode === 'binaural') startBinaural();
+    else if (mode === 'pink') startPinkNoise();
+    else if (mode === 'brown') startBrownNoise();
+    else if (mode === 'ocean') startOcean();
+  }
+
+  // ── Healing: sine + sub-harmonic ──
+  function startHealing() {
+    var hz = SOLFEGGIO[selectedSolf].hz;
+    document.getElementById('freqInfo').textContent = hz + ' Hz — ' + SOLFEGGIO[selectedSolf].name;
+    var osc = ctx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = hz;
+    var g1 = ctx.createGain(); g1.gain.value = 0.85;
+    osc.connect(g1); g1.connect(masterGain); osc.start();
+
+    var sub = ctx.createOscillator();
+    sub.type = 'sine'; sub.frequency.value = hz / 2;
+    var g2 = ctx.createGain(); g2.gain.value = 0.15;
+    sub.connect(g2); g2.connect(masterGain); sub.start();
+
+    activeNodes.push(osc, sub, g1, g2);
+  }
+
+  // ── Binaural: stereo pair ──
+  function startBinaural() {
+    var p = BINAURAL[selectedBin];
+    document.getElementById('freqInfo').textContent = p.name;
+    var merger = ctx.createChannelMerger(2);
+
+    var oscL = ctx.createOscillator();
+    oscL.type = 'sine'; oscL.frequency.value = p.carrier - p.beat / 2;
+    var gL = ctx.createGain(); gL.gain.value = 1;
+    oscL.connect(gL); gL.connect(merger, 0, 0); oscL.start();
+
+    var oscR = ctx.createOscillator();
+    oscR.type = 'sine'; oscR.frequency.value = p.carrier + p.beat / 2;
+    var gR = ctx.createGain(); gR.gain.value = 1;
+    oscR.connect(gR); gR.connect(merger, 0, 1); oscR.start();
+
+    merger.connect(masterGain);
+    activeNodes.push(oscL, oscR, gL, gR, merger);
+  }
+
+  // ── Pink noise via AudioWorklet fallback: ScriptProcessor ──
+  function startPinkNoise() {
+    document.getElementById('freqInfo').textContent = 'Pink Noise';
+    var buf = 4096;
+    var proc = ctx.createScriptProcessor(buf, 0, 1);
+    // Voss-McCartney pink noise
+    var rows = new Float32Array(7);
+    var runningSum = 0; var counter = 0;
+    proc.onaudioprocess = function(e) {
+      var out = e.outputBuffer.getChannelData(0);
+      for (var i = 0; i < buf; i++) {
+        counter++;
+        var numChanged = 0;
+        for (var r = 0; r < 7; r++) {
+          if ((counter & (1 << r)) === 0) {
+            runningSum -= rows[r];
+            rows[r] = Math.random() * 2 - 1;
+            runningSum += rows[r];
+            numChanged++;
+          }
+        }
+        var white = Math.random() * 2 - 1;
+        out[i] = (runningSum + white) * 0.08;
+      }
+    };
+    // Lowpass at 2000 Hz
+    var lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 2000; lp.Q.value = 0.7;
+    proc.connect(lp); lp.connect(masterGain);
+    activeNodes.push(proc, lp);
+  }
+
+  // ── Brown noise ──
+  function startBrownNoise() {
+    document.getElementById('freqInfo').textContent = 'Brown Noise';
+    var buf = 4096;
+    var proc = ctx.createScriptProcessor(buf, 0, 1);
+    var last = 0;
+    proc.onaudioprocess = function(e) {
+      var out = e.outputBuffer.getChannelData(0);
+      for (var i = 0; i < buf; i++) {
+        var white = Math.random() * 2 - 1;
+        last = (last + 0.02 * white) / 1.02;
+        out[i] = last * 3.5;
+      }
+    };
+    proc.connect(masterGain);
+    activeNodes.push(proc);
+  }
+
+  // ── Ocean: brown noise × slow LFO ──
+  function startOcean() {
+    document.getElementById('freqInfo').textContent = 'Ocean Ambience';
+    var buf = 4096;
+    var proc = ctx.createScriptProcessor(buf, 0, 1);
+    var last = 0; var phase = 0;
+    proc.onaudioprocess = function(e) {
+      var out = e.outputBuffer.getChannelData(0);
+      for (var i = 0; i < buf; i++) {
+        var white = Math.random() * 2 - 1;
+        last = (last + 0.02 * white) / 1.02;
+        phase += 0.08 / 44100;
+        if (phase > 1) phase -= 1;
+        var lfo = 0.5 + 0.5 * Math.sin(phase * Math.PI * 2);
+        out[i] = last * 3.5 * lfo;
+      }
+    };
+    // Highpass at 40 Hz
+    var hp = ctx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.value = 40; hp.Q.value = 0.7;
+    proc.connect(hp); hp.connect(masterGain);
+    activeNodes.push(proc, hp);
+  }
+
+  // ── Presets UI ──
+  function updatePresets() {
+    var grid = document.getElementById('presetGrid');
+    var label = document.getElementById('presetLabel');
+    var section = document.getElementById('presetSection');
+    grid.innerHTML = '';
+
+    if (currentMode === 'healing') {
+      section.style.display = '';
+      label.textContent = 'solfeggio frequency';
+      SOLFEGGIO.forEach(function(s, i) {
+        var btn = document.createElement('button');
+        btn.innerHTML = s.name + ' <span class="hz">' + s.hz + ' Hz</span>';
+        if (i === selectedSolf) btn.classList.add('active');
+        btn.addEventListener('click', function() {
+          selectedSolf = i;
+          setMode('healing');
+        });
+        grid.appendChild(btn);
+      });
+    } else if (currentMode === 'binaural') {
+      section.style.display = '';
+      label.textContent = 'binaural preset';
+      BINAURAL.forEach(function(b, i) {
+        var btn = document.createElement('button');
+        btn.innerHTML = b.name + ' <span class="hz">' + b.carrier + ' Hz carrier</span>';
+        if (i === selectedBin) btn.classList.add('active');
+        btn.addEventListener('click', function() {
+          selectedBin = i;
+          setMode('binaural');
+        });
+        grid.appendChild(btn);
+      });
+    } else {
+      section.style.display = 'none';
+    }
+  }
+
+  // ── Volume ──
+  document.getElementById('volume').addEventListener('input', function() {
+    volume = this.value / 100;
+    document.getElementById('volVal').textContent = this.value;
+    if (masterGain) masterGain.gain.setTargetAtTime(volume, ctx.currentTime, 0.02);
+  });
+
+  // ── Mode buttons ──
+  document.querySelectorAll('.modes button').forEach(function(btn) {
+    btn.addEventListener('click', function() { setMode(this.dataset.mode); });
+  });
+
+  // ── Visualizer ──
+  function drawViz() {
+    var canvas = document.getElementById('viz');
+    var c = canvas.getContext('2d');
+    var W, H;
+    function resize() {
+      var r = canvas.getBoundingClientRect();
+      canvas.width = W = r.width * devicePixelRatio;
+      canvas.height = H = r.height * devicePixelRatio;
+      c.scale(devicePixelRatio, devicePixelRatio);
+    }
+    resize(); window.addEventListener('resize', resize);
+
+    var dataArr = new Uint8Array(analyser.frequencyBinCount);
+    function draw() {
+      requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(dataArr);
+      var w = canvas.width / devicePixelRatio;
+      var h = canvas.height / devicePixelRatio;
+      c.clearRect(0, 0, w, h);
+
+      c.strokeStyle = '#A855F7';
+      c.lineWidth = 1.5;
+      c.beginPath();
+      var sliceW = w / dataArr.length;
+      for (var i = 0; i < dataArr.length; i++) {
+        var v = dataArr[i] / 128.0;
+        var y = v * h / 2;
+        if (i === 0) c.moveTo(0, y);
+        else c.lineTo(i * sliceW, y);
+      }
+      c.stroke();
+    }
+    draw();
+  }
+
+  updatePresets();
+})();
+</script>
+</body>
+</html>
