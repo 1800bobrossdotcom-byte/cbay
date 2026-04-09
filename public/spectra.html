@@ -85,12 +85,12 @@
     }
 
     .topbar button {
-      background: none;
-      border: 1px solid #1e1e3a;
-      border-radius: 8px;
-      color: #b0d0e0;
-      width: 32px; height: 32px;
-      font-size: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      width: 40px; height: 40px;
+      font-size: 16px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -99,9 +99,10 @@
       transition: border-color 0.2s, background 0.2s;
     }
 
+    .topbar button:hover { border-color: var(--border-hover); }
     .topbar button:active {
-      background: rgba(0, 229, 255, 0.15);
-      border-color: #00E5FF;
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
     }
 
     /* ── Viewport ── */
@@ -119,9 +120,9 @@
 
     /* ── Bottom bar ── */
     .bottombar {
-      background: rgba(10, 10, 20, 0.95);
-      border-top: 1px solid #1e1e3a;
-      padding: 10px 12px 14px;
+      background: rgba(6,6,16,0.95);
+      border-top: 1px solid var(--border);
+      padding: 10px 10px 14px;
       position: relative;
       z-index: 10;
       flex-shrink: 0;
@@ -135,28 +136,29 @@
     }
 
     .modes button {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid #1e1e3a;
-      border-radius: 8px;
-      color: #8888aa;
-      padding: 8px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-dim);
+      padding: 10px 14px;
       font-family: inherit;
-      font-size: 10px;
-      letter-spacing: 2px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
-      min-width: 48px;
+      min-width: 44px;
+      min-height: 40px;
     }
 
     .modes button.active {
-      border-color: #00E5FF;
-      color: #00E5FF;
-      background: rgba(0, 229, 255, 0.08);
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
     }
 
     .modes button:active {
-      background: rgba(0, 229, 255, 0.15);
+      background: var(--accent-dim);
     }
 
     .slider-row {
@@ -168,34 +170,34 @@
     .slider-row.hidden { display: none; }
 
     .slider-label {
-      font-size: 9px;
-      letter-spacing: 2px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #8888aa;
-      min-width: 40px;
+      color: var(--text-dim);
+      min-width: 44px;
     }
 
     input[type="range"] {
       flex: 1;
       -webkit-appearance: none;
       appearance: none;
-      height: 2px;
-      background: #1e1e3a;
+      height: 4px;
+      background: var(--border);
       outline: none;
-      border-radius: 1px;
+      border-radius: 2px;
     }
 
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 14px; height: 14px;
-      background: #00E5FF;
+      width: 24px; height: 24px;
+      background: var(--accent);
       border-radius: 50%;
       cursor: pointer;
     }
 
     input[type="range"]::-moz-range-thumb {
-      width: 14px; height: 14px;
-      background: #00E5FF;
+      width: 24px; height: 24px;
+      background: var(--accent);
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -210,36 +212,37 @@
       justify-content: center;
       flex-direction: column;
       gap: 16px;
-      background: #0a0a14;
+      background: var(--bg);
       z-index: 5;
     }
 
     .overlay p {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 2px;
-      color: #8888aa;
+      color: var(--text-dim);
       text-align: center;
-      max-width: 280px;
+      max-width: 300px;
       line-height: 1.8;
     }
 
     .overlay .error { color: #ff4466; }
 
     .overlay button {
-      background: none;
-      border: 1px solid #00E5FF;
-      border-radius: 8px;
-      color: #00E5FF;
-      padding: 10px 24px;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      color: var(--accent);
+      padding: 12px 28px;
       font-family: inherit;
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 2px;
       text-transform: uppercase;
       cursor: pointer;
+      min-height: 44px;
     }
 
     .overlay button:active {
-      background: rgba(0, 229, 255, 0.15);
+      background: var(--accent-dim);
     }
 
     /* ── Mode indicator HUD ── */
@@ -252,34 +255,46 @@
     }
 
     .hud-mode {
-      font-size: 9px;
+      font-size: 11px;
       letter-spacing: 3px;
-      color: rgba(0, 229, 255, 0.5);
+      color: rgba(0, 229, 255, 0.7);
       text-transform: uppercase;
+      font-weight: 600;
     }
 
     .hud-fps {
-      font-size: 8px;
+      font-size: 9px;
       letter-spacing: 1px;
-      color: rgba(136, 136, 170, 0.4);
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
     @media (max-width: 380px) {
-      .modes button { padding: 8px 8px; font-size: 9px; min-width: 40px; }
+      .modes button { padding: 8px 10px; font-size: 10px; min-width: 40px; }
     }
 
     @media (env(safe-area-inset-bottom)) {
       .bottombar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
     }
+
+    .share-toast {
+      position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: var(--bg); padding: 10px 20px;
+      border-radius: 10px; font-size: 11px; letter-spacing: 1.5px;
+      text-transform: uppercase; font-weight: 700; z-index: 200;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .share-toast.show { opacity: 1; }
   </style>
 </head>
 <body>
+  <div class="share-toast" id="shareToast">link copied</div>
   <div id="app">
     <div class="topbar">
       <a href="/apps">&larr; apps</a>
       <span class="title">SPECTRA</span>
       <div class="controls">
+        <button id="shareBtn" title="share">&#x2197;</button>
         <button id="captureBtn" title="capture frame">&#x2299;</button>
         <button id="flipBtn" title="flip camera">&#x21CC;</button>
       </div>
@@ -867,10 +882,25 @@
         gain = gainSlider.value / 100;
       });
 
+      var shareBtn = document.getElementById('shareBtn');
+      var shareToast = document.getElementById('shareToast');
+
       flipBtn.addEventListener('pointerdown', function(e) {
         e.preventDefault();
         useFront = !useFront;
         startCamera();
+      });
+
+      shareBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        if (navigator.share) {
+          navigator.share({ title: 'SPECTRA — cbay.ing', url: window.location.href }).catch(function(){});
+        } else {
+          navigator.clipboard.writeText(window.location.href).then(function() {
+            shareToast.classList.add('show');
+            setTimeout(function() { shareToast.classList.remove('show'); }, 1800);
+          }).catch(function(){});
+        }
       });
 
       captureBtn.addEventListener('pointerdown', function(e) {

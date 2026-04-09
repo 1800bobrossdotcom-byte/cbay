@@ -85,12 +85,12 @@
     }
 
     .topbar button {
-      background: none;
-      border: 1px solid #1e1e3a;
-      border-radius: 8px;
-      color: #e0c0a0;
-      width: 32px; height: 32px;
-      font-size: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      width: 40px; height: 40px;
+      font-size: 16px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -99,9 +99,10 @@
       transition: border-color 0.2s, background 0.2s;
     }
 
+    .topbar button:hover { border-color: var(--border-hover); }
     .topbar button:active {
-      background: rgba(255, 136, 0, 0.15);
-      border-color: #FF8800;
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
     }
 
     /* ── Viewport ── */
@@ -127,16 +128,17 @@
     }
 
     .hud-mode {
-      font-size: 9px;
+      font-size: 11px;
       letter-spacing: 3px;
-      color: rgba(255, 136, 0, 0.6);
+      color: rgba(255, 136, 0, 0.7);
       text-transform: uppercase;
+      font-weight: 600;
     }
 
     .hud-fps {
-      font-size: 8px;
+      font-size: 9px;
       letter-spacing: 1px;
-      color: rgba(136, 136, 170, 0.4);
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
@@ -152,17 +154,18 @@
     }
 
     .hud-rec .dot {
-      width: 8px; height: 8px;
+      width: 10px; height: 10px;
       border-radius: 50%;
-      background: #FF8800;
+      background: var(--accent);
       animation: recPulse 1s ease-in-out infinite;
     }
 
     .hud-rec .timer {
-      font-size: 10px;
+      font-size: 12px;
       letter-spacing: 2px;
-      color: #FF8800;
+      color: var(--accent);
       font-variant-numeric: tabular-nums;
+      font-weight: 600;
     }
 
     @keyframes recPulse {
@@ -172,13 +175,13 @@
 
     /* ── Timeline ── */
     .timeline {
-      height: 48px;
-      background: rgba(10, 10, 20, 0.96);
-      border-top: 1px solid #1e1e3a;
+      height: 52px;
+      background: rgba(6,6,16,0.92);
+      border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
-      padding: 0 12px;
-      gap: 4px;
+      padding: 0 14px;
+      gap: 6px;
       overflow-x: auto;
       scrollbar-width: none;
       flex-shrink: 0;
@@ -186,24 +189,24 @@
     .timeline::-webkit-scrollbar { display: none; }
 
     .timeline .empty-msg {
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 2px;
-      color: #555577;
+      color: var(--text-muted);
       width: 100%;
       text-align: center;
     }
 
     .clip-thumb {
-      height: 32px;
-      min-width: 40px;
-      border: 1px solid #1e1e3a;
-      border-radius: 6px;
+      height: 38px;
+      min-width: 48px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       background: rgba(255, 255, 255, 0.03);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 8px;
-      color: #8888aa;
+      font-size: 10px;
+      color: var(--text-dim);
       letter-spacing: 1px;
       cursor: pointer;
       flex-shrink: 0;
@@ -212,19 +215,19 @@
     }
 
     .clip-thumb.active {
-      border-color: #FF8800;
-      color: #FF8800;
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .clip-thumb .delete-clip {
       position: absolute;
       top: -4px;
       right: -4px;
-      width: 14px; height: 14px;
+      width: 18px; height: 18px;
       border-radius: 50%;
-      background: #FF8800;
-      color: #0a0a14;
-      font-size: 8px;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 10px;
       display: none;
       align-items: center;
       justify-content: center;
@@ -239,9 +242,9 @@
 
     /* ── Bottom bar ── */
     .bottombar {
-      background: rgba(10, 10, 20, 0.95);
-      border-top: 1px solid #1e1e3a;
-      padding: 10px 12px 14px;
+      background: rgba(6,6,16,0.95);
+      border-top: 1px solid var(--border);
+      padding: 10px 10px 14px;
       position: relative;
       z-index: 10;
       flex-shrink: 0;
@@ -249,36 +252,38 @@
 
     .modes {
       display: flex;
-      gap: 4px;
+      gap: 5px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 4px;
+      padding-bottom: 6px;
       margin-bottom: 6px;
       scrollbar-width: none;
       justify-content: center;
+      flex-wrap: wrap;
     }
     .modes::-webkit-scrollbar { display: none; }
 
     .modes button {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid #1e1e3a;
-      border-radius: 8px;
-      color: #8888aa;
-      padding: 6px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-dim);
+      padding: 8px 12px;
       font-family: inherit;
-      font-size: 9px;
+      font-size: 11px;
       letter-spacing: 1px;
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
-      min-width: 36px;
+      min-width: 40px;
+      min-height: 36px;
       flex-shrink: 0;
     }
 
     .modes button.active {
-      border-color: #FF8800;
-      color: #FFaa33;
-      background: rgba(255, 136, 0, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
     }
 
     /* ── Record row ── */
@@ -291,9 +296,9 @@
     }
 
     .rec-btn {
-      width: 52px; height: 52px;
+      width: 58px; height: 58px;
       border-radius: 50%;
-      border: 3px solid #FF8800;
+      border: 3px solid var(--accent);
       background: none;
       cursor: pointer;
       display: flex;
@@ -304,39 +309,40 @@
     }
 
     .rec-btn .inner {
-      width: 36px; height: 36px;
+      width: 40px; height: 40px;
       border-radius: 50%;
-      background: #FF8800;
+      background: var(--accent);
       transition: all 0.2s;
     }
 
     .rec-btn.recording .inner {
-      width: 20px; height: 20px;
+      width: 22px; height: 22px;
       border-radius: 4px;
     }
 
     .action-btn {
-      background: none;
-      border: 1px solid #1e1e3a;
-      border-radius: 8px;
-      color: #8888aa;
-      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-dim);
+      padding: 10px 16px;
       font-family: inherit;
-      font-size: 9px;
-      letter-spacing: 2px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
+      min-height: 40px;
     }
 
     .action-btn:active {
-      background: rgba(255, 136, 0, 0.15);
-      border-color: #FF8800;
+      background: var(--accent-dim);
+      border-color: var(--accent);
     }
 
     .action-btn.ready {
-      border-color: #FF8800;
-      color: #FF8800;
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .action-btn:disabled {
@@ -353,36 +359,37 @@
       justify-content: center;
       flex-direction: column;
       gap: 16px;
-      background: #0a0a14;
+      background: var(--bg);
       z-index: 5;
     }
 
     .overlay p {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 2px;
-      color: #8888aa;
+      color: var(--text-dim);
       text-align: center;
-      max-width: 280px;
+      max-width: 300px;
       line-height: 1.8;
     }
 
     .overlay .error { color: #ff4466; }
 
     .overlay button {
-      background: none;
-      border: 1px solid #FF8800;
-      border-radius: 8px;
-      color: #FFaa33;
-      padding: 10px 24px;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      color: var(--accent);
+      padding: 12px 28px;
       font-family: inherit;
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 2px;
       text-transform: uppercase;
       cursor: pointer;
+      min-height: 44px;
     }
 
     .overlay button:active {
-      background: rgba(255, 136, 0, 0.15);
+      background: var(--accent-dim);
     }
 
     /* ── Slider ── */
@@ -396,33 +403,34 @@
     .slider-row.hidden { display: none; }
 
     .slider-label {
-      font-size: 9px;
-      letter-spacing: 2px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #8888aa;
-      min-width: 40px;
+      color: var(--text-dim);
+      min-width: 44px;
     }
 
     input[type="range"] {
       flex: 1;
       -webkit-appearance: none;
       appearance: none;
-      height: 2px;
-      background: #1e1e3a;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
       outline: none;
     }
 
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 14px; height: 14px;
-      background: #FF8800;
+      width: 24px; height: 24px;
+      background: var(--accent);
       border-radius: 50%;
       cursor: pointer;
     }
 
     input[type="range"]::-moz-range-thumb {
-      width: 14px; height: 14px;
-      background: #FF8800;
+      width: 24px; height: 24px;
+      background: var(--accent);
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -432,7 +440,7 @@
     .export-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(10, 10, 20, 0.95);
+      background: rgba(6,6,16,0.95);
       z-index: 100;
       display: none;
       align-items: center;
@@ -444,32 +452,54 @@
     .export-overlay.active { display: flex; }
 
     .export-progress {
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 2px;
-      color: #FF8800;
+      color: var(--accent);
     }
 
     .export-bar {
-      width: 200px;
-      height: 2px;
-      background: #1e1e3a;
+      width: 220px;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
       position: relative;
     }
 
     .export-bar .fill {
       height: 100%;
-      background: #FF8800;
+      background: var(--accent);
       width: 0%;
+      border-radius: 2px;
       transition: width 0.3s;
     }
 
     @media (max-width: 380px) {
-      .modes button { padding: 6px 6px; font-size: 8px; }
+      .modes button { padding: 6px 8px; font-size: 10px; }
     }
 
     @media (env(safe-area-inset-bottom)) {
       .bottombar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
     }
+
+    .share-toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: var(--bg);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .share-toast.show { opacity: 1; }
   </style>
 </head>
 <body>
@@ -478,6 +508,7 @@
       <a href="/apps">&larr; apps</a>
       <span class="title">TAKE</span>
       <div class="controls">
+        <button id="shareBtn" title="share">&#x2197;</button>
         <button id="flipBtn" title="flip camera">&#x21CC;</button>
       </div>
     </div>
@@ -526,6 +557,8 @@
     </div>
   </div>
 
+  <div class="share-toast" id="shareToast">link copied</div>
+
   <div class="export-overlay" id="exportOverlay">
     <p class="export-progress" id="exportStatus">concatenating clips...</p>
     <div class="export-bar"><div class="fill" id="exportFill"></div></div>
@@ -547,6 +580,8 @@
       var sliderLabel = document.getElementById('sliderLabel');
       var fxSlider = document.getElementById('fxSlider');
       var flipBtn = document.getElementById('flipBtn');
+      var shareBtn = document.getElementById('shareBtn');
+      var shareToast = document.getElementById('shareToast');
       var recBtn = document.getElementById('recBtn');
       var undoBtn = document.getElementById('undoBtn');
       var exportBtn = document.getElementById('exportBtn');
@@ -1269,10 +1304,21 @@
 
       function downloadBlob(blob, name) {
         var ext = blob.type.includes('mp4') ? '.mp4' : '.webm';
+        var file = new File([blob], name + ext, { type: blob.type });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'TAKE — cbay.ing' }).catch(function() {
+            saveBlob(blob, name + ext);
+          });
+        } else {
+          saveBlob(blob, name + ext);
+        }
+      }
+
+      function saveBlob(blob, filename) {
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
-        a.download = name + ext;
+        a.download = filename;
         a.click();
         setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
       }
@@ -1365,6 +1411,19 @@
         e.preventDefault();
         useFront = !useFront;
         startCamera();
+      });
+
+      shareBtn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        var shareUrl = window.location.href;
+        if (navigator.share) {
+          navigator.share({ title: 'TAKE — cbay.ing', url: shareUrl }).catch(function(){});
+        } else {
+          navigator.clipboard.writeText(shareUrl).then(function() {
+            shareToast.classList.add('show');
+            setTimeout(function() { shareToast.classList.remove('show'); }, 1800);
+          }).catch(function(){});
+        }
       });
 
       recBtn.addEventListener('pointerdown', function(e) {
