@@ -146,6 +146,27 @@
       --accent-hover-bg: rgba(255, 136, 0, 0.12);
       --accent-glow: rgba(255, 136, 0, 0.08);
     }
+    .card--tones {
+      --accent: #00FF9F;
+      --accent-dim: rgba(0, 255, 159, 0.25);
+      --accent-bg: rgba(0, 255, 159, 0.06);
+      --accent-hover-bg: rgba(0, 255, 159, 0.12);
+      --accent-glow: rgba(0, 255, 159, 0.08);
+    }
+    .card--shield {
+      --accent: #FF2D55;
+      --accent-dim: rgba(255, 45, 85, 0.25);
+      --accent-bg: rgba(255, 45, 85, 0.06);
+      --accent-hover-bg: rgba(255, 45, 85, 0.12);
+      --accent-glow: rgba(255, 45, 85, 0.08);
+    }
+    .card--tonelab {
+      --accent: #A855F7;
+      --accent-dim: rgba(168, 85, 247, 0.25);
+      --accent-bg: rgba(168, 85, 247, 0.06);
+      --accent-hover-bg: rgba(168, 85, 247, 0.12);
+      --accent-glow: rgba(168, 85, 247, 0.08);
+    }
 
     .card-name {
       font-size: 28px;
@@ -285,6 +306,53 @@
     .card:nth-child(1) { animation-delay: 0.15s; }
     .card:nth-child(2) { animation-delay: 0.3s; }
     .card:nth-child(3) { animation-delay: 0.45s; }
+    .card:nth-child(4) { animation-delay: 0.15s; }
+    .card:nth-child(5) { animation-delay: 0.3s; }
+    .card:nth-child(6) { animation-delay: 0.45s; }
+
+    /* ── Section divider ── */
+    .section-divider {
+      text-align: center;
+      margin: 40px 0 28px;
+      position: relative;
+      animation: fadeUp 0.5s ease-out both;
+      animation-delay: 0.55s;
+    }
+    .section-divider::before {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    }
+    .section-divider span {
+      position: relative;
+      display: inline-block;
+      padding: 0 16px;
+      background: #0a0a14;
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+    .badge-native {
+      display: inline-block;
+      font-size: 7px;
+      letter-spacing: 2px;
+      color: #0a0a14;
+      background: var(--accent, rgba(255,255,255,0.6));
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 8px;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+    .card-price {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 8px;
+    }
 
     /* ── Responsive ── */
     @media (max-width: 600px) {
@@ -348,9 +416,44 @@
       </a>
     </div>
 
+    <div class="section-divider">
+      <span>audio instruments</span>
+    </div>
+
+    <div class="cards">
+      <a href="/pay" class="card card--tones">
+        <h2 class="card-name">TONES</h2>
+        <p class="card-desc">healing engine — 6 modes</p>
+        <p class="card-tags">solfeggio · binaural beats · pink noise · brown noise · ocean · sub-harmonic</p>
+        <span class="badge-native">native app</span>
+        <p class="card-price">iOS · Android · Desktop</p>
+      </a>
+
+      <a href="/pay" class="card card--shield">
+        <h2 class="card-name">SHIELD</h2>
+        <p class="card-desc">audio defense — 6 modes</p>
+        <p class="card-tags">threat detect · phase cancel · sweep jam · broadband · counter-frequency · evidence</p>
+        <span class="badge-native">native app</span>
+        <p class="card-price">iOS · Android · Desktop</p>
+      </a>
+
+      <a href="/pay" class="card card--tonelab">
+        <h2 class="card-name">TONE LAB</h2>
+        <p class="card-desc">synthesizer — 32 pads</p>
+        <p class="card-tags">solfeggio · sacred chant · binaural · noise · ultrasonic · sequencer · WAV export</p>
+        <span class="badge-native">native app</span>
+        <p class="card-price">iOS · Android · Desktop</p>
+      </a>
+    </div>
+
     <div class="store-cta">
       <p><span class="beta">BETA</span>free access · all 23 shader modes</p>
       <a href="/store">enter the store</a>
+    </div>
+
+    <div class="store-cta" style="border-color: rgba(168, 85, 247, 0.2);">
+      <p>audio apps · crypto purchase unlocks all 3 platforms</p>
+      <a href="/pay" style="border-color: rgba(168, 85, 247, 0.3);">purchase with crypto</a>
     </div>
 
     <div class="footer">
