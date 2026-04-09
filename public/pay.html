@@ -7,9 +7,9 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
-      background: #0c0b09;
-      color: #d4c8a8;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      background: #0a0a14;
+      color: #e8e8f0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     .page {
@@ -26,18 +26,18 @@
       justify-content: space-between;
       margin-bottom: 48px;
       padding-bottom: 16px;
-      border-bottom: 1px solid #2a2418;
+      border-bottom: 1px solid #1e1e3a;
     }
     .nav a {
-      color: #a08860;
+      color: #8888aa;
       text-decoration: none;
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
       transition: color 0.3s;
     }
-    .nav a:hover { color: #e8a040; }
-    .nav .brand { font-size: 14px; letter-spacing: 6px; color: #e8a040; }
+    .nav a:hover { color: #fff; }
+    .nav .brand { font-size: 16px; letter-spacing: 6px; color: #fff; font-weight: 600; }
 
     /* ── Steps ── */
     .step-indicator {
@@ -47,38 +47,41 @@
     }
     .step-dot {
       width: 8px; height: 8px;
-      border: 1px solid #4a3a28;
+      border: 1px solid #2a2a4a;
+      border-radius: 50%;
       transition: all 0.3s;
     }
-    .step-dot.active { background: #e8a040; border-color: #e8a040; }
-    .step-dot.done { background: #6a8a5a; border-color: #6a8a5a; }
+    .step-dot.active { background: #fff; border-color: #fff; }
+    .step-dot.done { background: #00E5FF; border-color: #00E5FF; }
 
     /* ── Sections ── */
     .section { display: none; }
     .section.active { display: block; }
 
     .section-title {
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: #6a5a40;
+      color: #8888aa;
       margin-bottom: 20px;
     }
 
     /* ── Product summary ── */
     .product-summary {
-      border: 1px solid #2a2418;
+      border: 1px solid #1e1e3a;
+      border-radius: 16px;
       padding: 20px;
       margin-bottom: 24px;
       display: flex;
       align-items: center;
       gap: 16px;
+      background: rgba(255,255,255,0.03);
     }
     .product-summary .icon {
       width: 48px; height: 48px;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #2a2418;
+      border: 1px solid #1e1e3a;
       flex-shrink: 0;
     }
     .product-summary .icon img { width: 100%; height: 100%; display: block; }
@@ -86,12 +89,13 @@
     .product-summary .name {
       font-size: 14px;
       letter-spacing: 4px;
-      color: #e8a040;
+      color: #fff;
       margin-bottom: 2px;
+      font-weight: 600;
     }
     .product-summary .tagline {
       font-size: 10px;
-      color: #6a5a40;
+      color: #8888aa;
       letter-spacing: 1px;
     }
     .product-summary .price {
@@ -99,11 +103,12 @@
     }
     .product-summary .amount {
       font-size: 16px;
-      color: #e8a040;
+      color: #fff;
+      font-weight: 600;
     }
     .product-summary .coin-name {
       font-size: 9px;
-      color: #6a5a40;
+      color: #8888aa;
       letter-spacing: 2px;
     }
 
@@ -115,44 +120,48 @@
     }
     .coin-opt {
       flex: 1;
-      background: #0c0b08;
-      border: 1px solid #2a2418;
-      color: #6a5a40;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      color: #8888aa;
       padding: 10px 12px;
       font-family: inherit;
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 2px;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
     }
     .coin-opt.active {
-      border-color: #e8a040;
-      color: #e8a040;
-      background: rgba(232, 160, 64, 0.06);
+      border-color: #fff;
+      color: #fff;
+      background: rgba(255,255,255,0.08);
     }
 
     /* ── Wallet display ── */
     .wallet-box {
-      border: 1px solid #2a2418;
+      border: 1px solid #1e1e3a;
+      border-radius: 16px;
       padding: 20px;
       margin-bottom: 16px;
+      background: rgba(255,255,255,0.03);
     }
     .wallet-label {
       font-size: 9px;
       letter-spacing: 3px;
-      color: #6a5a40;
+      color: #8888aa;
       margin-bottom: 8px;
       text-transform: uppercase;
     }
     .wallet-addr {
       font-size: 11px;
-      color: #d4c8a8;
+      color: #e8e8f0;
       word-break: break-all;
       line-height: 1.6;
       padding: 12px;
-      background: rgba(42, 36, 24, 0.3);
-      border: 1px solid #1a1408;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
       cursor: pointer;
       position: relative;
     }
@@ -162,7 +171,7 @@
       top: -20px;
       right: 0;
       font-size: 8px;
-      color: #e8a040;
+      color: #00E5FF;
       letter-spacing: 2px;
     }
     .wallet-addr.copied::after {
@@ -171,31 +180,34 @@
       top: -20px;
       right: 0;
       font-size: 8px;
-      color: #6a8a5a;
+      color: #00E5FF;
       letter-spacing: 2px;
     }
 
     .send-amount {
       text-align: center;
       padding: 16px;
-      border: 1px dashed #2a2418;
+      border: 1px dashed #2a2a4a;
+      border-radius: 12px;
       margin-bottom: 24px;
+      background: rgba(255,255,255,0.02);
     }
     .send-amount .label {
       font-size: 9px;
       letter-spacing: 3px;
-      color: #6a5a40;
+      color: #8888aa;
       text-transform: uppercase;
       margin-bottom: 6px;
     }
     .send-amount .value {
       font-size: 22px;
-      color: #e8a040;
+      color: #fff;
       letter-spacing: 2px;
+      font-weight: 600;
     }
     .send-amount .sub {
       font-size: 9px;
-      color: #4a3a28;
+      color: #555577;
       margin-top: 4px;
     }
 
@@ -207,40 +219,42 @@
       display: block;
       font-size: 9px;
       letter-spacing: 3px;
-      color: #6a5a40;
+      color: #8888aa;
       text-transform: uppercase;
       margin-bottom: 8px;
     }
     .field input {
       width: 100%;
-      background: rgba(42, 36, 24, 0.3);
-      border: 1px solid #2a2418;
-      color: #d4c8a8;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      color: #e8e8f0;
       padding: 12px;
       font-family: inherit;
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 1px;
       outline: none;
       transition: border-color 0.2s;
     }
     .field input:focus {
-      border-color: #e8a040;
+      border-color: #fff;
     }
     .field input::placeholder {
-      color: #3a3020;
+      color: #3a3a5a;
     }
     .field .hint {
       font-size: 9px;
-      color: #4a3a28;
+      color: #555577;
       margin-top: 6px;
     }
 
     .btn {
       font-family: inherit;
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
       padding: 10px 20px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
@@ -248,52 +262,55 @@
       align-items: center;
     }
     .btn-primary {
-      background: rgba(232, 160, 64, 0.1);
-      border: 1px solid #e8a040;
-      color: #e8a040;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid #fff;
+      color: #fff;
     }
-    .btn-primary:hover { background: rgba(232, 160, 64, 0.2); }
+    .btn-primary:hover { background: rgba(255,255,255,0.18); }
     .btn-primary:disabled {
       opacity: 0.4;
       cursor: not-allowed;
     }
     .btn-secondary {
       background: none;
-      border: 1px solid #3a3020;
-      color: #a08860;
+      border: 1px solid #2a2a4a;
+      color: #8888aa;
     }
+    .btn-secondary:hover { border-color: #5555aa; color: #ccc; }
 
     /* ── Success ── */
     .code-display {
-      border: 2px solid #e8a040;
+      border: 2px solid #00E5FF;
+      border-radius: 16px;
       padding: 24px;
       text-align: center;
       margin: 24px 0;
-      background: rgba(232, 160, 64, 0.04);
+      background: rgba(0,229,255,0.04);
     }
     .code-display .label {
       font-size: 9px;
       letter-spacing: 3px;
-      color: #6a5a40;
+      color: #8888aa;
       text-transform: uppercase;
       margin-bottom: 10px;
     }
     .code-display .code {
       font-size: 20px;
       letter-spacing: 4px;
-      color: #e8a040;
+      color: #00E5FF;
       cursor: pointer;
+      font-weight: 600;
     }
     .code-display .note {
       font-size: 9px;
-      color: #6a5a40;
+      color: #8888aa;
       margin-top: 10px;
       letter-spacing: 1px;
       line-height: 1.7;
     }
 
     .error-msg {
-      color: #a04040;
+      color: #ff4466;
       font-size: 10px;
       letter-spacing: 1px;
       margin-bottom: 12px;
@@ -317,9 +334,9 @@
       </div>
     </nav>
 
-    <div style="border:1px solid #3a3020;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
-      <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#0c0b09;background:#e8a040;padding:2px 8px;">beta</span>
-      <p style="font-size:10px;color:#6a5a40;letter-spacing:1px;line-height:1.6;">payments are not yet active. all instruments are free during beta. <a href="/store" style="color:#e8a040;">back to store</a></p>
+    <div style="border:1px solid #1e1e3a;border-radius:12px;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);">
+      <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#0a0a14;background:#fff;padding:2px 8px;border-radius:4px;">beta</span>
+      <p style="font-size:10px;color:#8888aa;letter-spacing:1px;line-height:1.6;">payments are not yet active. all instruments are free during beta. <a href="/store" style="color:#00E5FF;">back to store</a></p>
     </div>
 
     <div class="step-indicator">
@@ -367,7 +384,7 @@
         <div class="wallet-addr" id="wallet-addr">—</div>
       </div>
 
-      <p style="font-size:10px;color:#6a5a40;margin:16px 0;letter-spacing:1px;line-height:1.7;">
+      <p style="font-size:10px;color:#8888aa;margin:16px 0;letter-spacing:1px;line-height:1.7;">
         Send the exact amount above to the wallet address. After sending, paste your transaction hash below.
       </p>
 
@@ -395,7 +412,7 @@
     <div class="section" id="step-3">
       <div class="section-title">3 — access code</div>
 
-      <p style="font-size:11px;color:#a08860;margin-bottom:16px;line-height:1.7;">
+      <p style="font-size:11px;color:#b0b0cc;margin-bottom:16px;line-height:1.7;">
         Your order has been placed. Once payment is confirmed, your access code will activate.
         Save this code — it's your key to the full version.
       </p>
@@ -404,7 +421,7 @@
         <div class="label">your access code</div>
         <div class="code" id="access-code">—</div>
         <div class="note">
-          click to copy · use this at <a href="/unlock" style="color:#e8a040;">/unlock</a> or in the app
+          click to copy · use this at <a href="/unlock" style="color:#00E5FF;">/unlock</a> or in the app
         </div>
       </div>
 

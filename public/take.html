@@ -10,9 +10,9 @@
     html, body {
       width: 100%; height: 100%;
       overflow: hidden;
-      background: #0a0406;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
-      color: #c08080;
+      background: #0a0a14;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #e0c0a0;
       -webkit-user-select: none;
       user-select: none;
       touch-action: manipulation;
@@ -32,15 +32,15 @@
       justify-content: space-between;
       height: 44px;
       padding: 0 12px;
-      background: rgba(10, 4, 6, 0.94);
-      border-bottom: 1px solid #2a1418;
+      background: rgba(10, 10, 20, 0.94);
+      border-bottom: 1px solid #1e1e3a;
       position: relative;
       z-index: 10;
       flex-shrink: 0;
     }
 
     .topbar a {
-      color: #cc4433;
+      color: #FF8800;
       text-decoration: none;
       font-size: 12px;
       letter-spacing: 2px;
@@ -50,10 +50,11 @@
       font-size: 10px;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: #8a6068;
+      color: #8888aa;
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
+      font-weight: 600;
     }
 
     .topbar .controls {
@@ -63,8 +64,9 @@
 
     .topbar button {
       background: none;
-      border: 1px solid #3a1820;
-      color: #c08080;
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      color: #e0c0a0;
       width: 32px; height: 32px;
       font-size: 14px;
       cursor: pointer;
@@ -76,8 +78,8 @@
     }
 
     .topbar button:active {
-      background: rgba(204, 68, 51, 0.15);
-      border-color: #cc4433;
+      background: rgba(255, 136, 0, 0.15);
+      border-color: #FF8800;
     }
 
     /* ── Viewport ── */
@@ -105,14 +107,14 @@
     .hud-mode {
       font-size: 9px;
       letter-spacing: 3px;
-      color: rgba(204, 68, 51, 0.6);
+      color: rgba(255, 136, 0, 0.6);
       text-transform: uppercase;
     }
 
     .hud-fps {
       font-size: 8px;
       letter-spacing: 1px;
-      color: rgba(140, 96, 104, 0.4);
+      color: rgba(136, 136, 170, 0.4);
       margin-top: 4px;
     }
 
@@ -130,14 +132,14 @@
     .hud-rec .dot {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: #cc4433;
+      background: #FF8800;
       animation: recPulse 1s ease-in-out infinite;
     }
 
     .hud-rec .timer {
       font-size: 10px;
       letter-spacing: 2px;
-      color: #cc4433;
+      color: #FF8800;
       font-variant-numeric: tabular-nums;
     }
 
@@ -149,8 +151,8 @@
     /* ── Timeline ── */
     .timeline {
       height: 48px;
-      background: rgba(10, 4, 6, 0.96);
-      border-top: 1px solid #2a1418;
+      background: rgba(10, 10, 20, 0.96);
+      border-top: 1px solid #1e1e3a;
       display: flex;
       align-items: center;
       padding: 0 12px;
@@ -164,7 +166,7 @@
     .timeline .empty-msg {
       font-size: 9px;
       letter-spacing: 2px;
-      color: #4a2830;
+      color: #555577;
       width: 100%;
       text-align: center;
     }
@@ -172,13 +174,14 @@
     .clip-thumb {
       height: 32px;
       min-width: 40px;
-      border: 1px solid #3a1820;
-      background: #1a0a0e;
+      border: 1px solid #1e1e3a;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 8px;
-      color: #8a5060;
+      color: #8888aa;
       letter-spacing: 1px;
       cursor: pointer;
       flex-shrink: 0;
@@ -187,8 +190,8 @@
     }
 
     .clip-thumb.active {
-      border-color: #cc4433;
-      color: #cc4433;
+      border-color: #FF8800;
+      color: #FF8800;
     }
 
     .clip-thumb .delete-clip {
@@ -196,8 +199,9 @@
       top: -4px;
       right: -4px;
       width: 14px; height: 14px;
-      background: #cc4433;
-      color: #0a0406;
+      border-radius: 50%;
+      background: #FF8800;
+      color: #0a0a14;
       font-size: 8px;
       display: none;
       align-items: center;
@@ -213,8 +217,8 @@
 
     /* ── Bottom bar ── */
     .bottombar {
-      background: rgba(10, 4, 6, 0.95);
-      border-top: 1px solid #2a1418;
+      background: rgba(10, 10, 20, 0.95);
+      border-top: 1px solid #1e1e3a;
       padding: 10px 12px 14px;
       position: relative;
       z-index: 10;
@@ -234,9 +238,10 @@
     .modes::-webkit-scrollbar { display: none; }
 
     .modes button {
-      background: #120608;
-      border: 1px solid #3a1820;
-      color: #8a5060;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      color: #8888aa;
       padding: 6px 10px;
       font-family: inherit;
       font-size: 9px;
@@ -249,9 +254,9 @@
     }
 
     .modes button.active {
-      border-color: #cc4433;
-      color: #ee6655;
-      background: rgba(204, 68, 51, 0.1);
+      border-color: #FF8800;
+      color: #FFaa33;
+      background: rgba(255, 136, 0, 0.1);
     }
 
     /* ── Record row ── */
@@ -266,7 +271,7 @@
     .rec-btn {
       width: 52px; height: 52px;
       border-radius: 50%;
-      border: 3px solid #cc4433;
+      border: 3px solid #FF8800;
       background: none;
       cursor: pointer;
       display: flex;
@@ -279,7 +284,7 @@
     .rec-btn .inner {
       width: 36px; height: 36px;
       border-radius: 50%;
-      background: #cc4433;
+      background: #FF8800;
       transition: all 0.2s;
     }
 
@@ -290,8 +295,9 @@
 
     .action-btn {
       background: none;
-      border: 1px solid #3a1820;
-      color: #8a5060;
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      color: #8888aa;
       padding: 8px 14px;
       font-family: inherit;
       font-size: 9px;
@@ -302,13 +308,13 @@
     }
 
     .action-btn:active {
-      background: rgba(204, 68, 51, 0.15);
-      border-color: #cc4433;
+      background: rgba(255, 136, 0, 0.15);
+      border-color: #FF8800;
     }
 
     .action-btn.ready {
-      border-color: #cc4433;
-      color: #cc4433;
+      border-color: #FF8800;
+      color: #FF8800;
     }
 
     .action-btn:disabled {
@@ -325,25 +331,26 @@
       justify-content: center;
       flex-direction: column;
       gap: 16px;
-      background: #0a0406;
+      background: #0a0a14;
       z-index: 5;
     }
 
     .overlay p {
       font-size: 11px;
       letter-spacing: 2px;
-      color: #8a5060;
+      color: #8888aa;
       text-align: center;
       max-width: 280px;
       line-height: 1.8;
     }
 
-    .overlay .error { color: #cc4433; }
+    .overlay .error { color: #ff4466; }
 
     .overlay button {
       background: none;
-      border: 1px solid #cc4433;
-      color: #ee6655;
+      border: 1px solid #FF8800;
+      border-radius: 8px;
+      color: #FFaa33;
       padding: 10px 24px;
       font-family: inherit;
       font-size: 11px;
@@ -353,7 +360,7 @@
     }
 
     .overlay button:active {
-      background: rgba(204, 68, 51, 0.15);
+      background: rgba(255, 136, 0, 0.15);
     }
 
     /* ── Slider ── */
@@ -370,7 +377,7 @@
       font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #8a5060;
+      color: #8888aa;
       min-width: 40px;
     }
 
@@ -379,22 +386,22 @@
       -webkit-appearance: none;
       appearance: none;
       height: 2px;
-      background: #3a1820;
+      background: #1e1e3a;
       outline: none;
     }
 
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 14px; height: 14px;
-      background: #cc4433;
-      border-radius: 0;
+      background: #FF8800;
+      border-radius: 50%;
       cursor: pointer;
     }
 
     input[type="range"]::-moz-range-thumb {
       width: 14px; height: 14px;
-      background: #cc4433;
-      border-radius: 0;
+      background: #FF8800;
+      border-radius: 50%;
       border: none;
       cursor: pointer;
     }
@@ -403,7 +410,7 @@
     .export-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(10, 4, 6, 0.95);
+      background: rgba(10, 10, 20, 0.95);
       z-index: 100;
       display: none;
       align-items: center;
@@ -417,19 +424,19 @@
     .export-progress {
       font-size: 10px;
       letter-spacing: 2px;
-      color: #cc4433;
+      color: #FF8800;
     }
 
     .export-bar {
       width: 200px;
       height: 2px;
-      background: #3a1820;
+      background: #1e1e3a;
       position: relative;
     }
 
     .export-bar .fill {
       height: 100%;
-      background: #cc4433;
+      background: #FF8800;
       width: 0%;
       transition: width 0.3s;
     }

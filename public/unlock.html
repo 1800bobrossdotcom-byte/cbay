@@ -7,9 +7,9 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
-      background: #0c0b09;
-      color: #d4c8a8;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      background: #0a0a14;
+      color: #e8e8f0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     .page {
@@ -28,18 +28,18 @@
       justify-content: space-between;
       margin-bottom: 48px;
       padding-bottom: 16px;
-      border-bottom: 1px solid #2a2418;
+      border-bottom: 1px solid #1e1e3a;
     }
     .nav a {
-      color: #a08860;
+      color: #8888aa;
       text-decoration: none;
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
       transition: color 0.3s;
     }
-    .nav a:hover { color: #e8a040; }
-    .nav .brand { font-size: 14px; letter-spacing: 6px; color: #e8a040; }
+    .nav a:hover { color: #fff; }
+    .nav .brand { font-size: 16px; letter-spacing: 6px; color: #fff; font-weight: 600; }
 
     /* ── Content ── */
     .main {
@@ -50,16 +50,16 @@
     }
 
     .heading {
-      font-size: 12px;
+      font-size: 14px;
       letter-spacing: 5px;
-      color: #a08860;
-      font-weight: normal;
+      color: #fff;
+      font-weight: 600;
       text-transform: uppercase;
       margin-bottom: 8px;
     }
     .sub {
-      font-size: 10px;
-      color: #6a5a40;
+      font-size: 11px;
+      color: #8888aa;
       letter-spacing: 1px;
       line-height: 1.7;
       margin-bottom: 32px;
@@ -74,15 +74,17 @@
     }
     .code-prefix {
       font-size: 14px;
-      color: #4a3a28;
+      color: #555577;
       letter-spacing: 2px;
+      font-weight: 600;
     }
     .code-segment {
       width: 80px;
-      background: rgba(42, 36, 24, 0.3);
-      border: 1px solid #2a2418;
-      border-bottom: 2px solid #3a3020;
-      color: #e8a040;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid #1e1e3a;
+      border-bottom: 2px solid #2a2a4a;
+      border-radius: 8px;
+      color: #00E5FF;
       padding: 12px 8px;
       font-family: inherit;
       font-size: 16px;
@@ -94,27 +96,28 @@
       -webkit-appearance: none;
     }
     .code-segment:focus {
-      border-color: #e8a040;
-      border-bottom-color: #e8a040;
+      border-color: #00E5FF;
+      border-bottom-color: #00E5FF;
     }
     .code-sep {
-      color: #3a3020;
+      color: #2a2a4a;
       font-size: 16px;
     }
 
     .hint {
       font-size: 9px;
-      color: #4a3a28;
+      color: #555577;
       letter-spacing: 1px;
       margin-bottom: 24px;
     }
 
     .btn {
       font-family: inherit;
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
       padding: 10px 20px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
@@ -122,34 +125,37 @@
       align-items: center;
     }
     .btn-primary {
-      background: rgba(232, 160, 64, 0.1);
-      border: 1px solid #e8a040;
-      color: #e8a040;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid #fff;
+      color: #fff;
     }
-    .btn-primary:hover { background: rgba(232, 160, 64, 0.2); }
+    .btn-primary:hover { background: rgba(255,255,255,0.18); }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .btn-secondary {
       background: none;
-      border: 1px solid #3a3020;
-      color: #a08860;
+      border: 1px solid #2a2a4a;
+      color: #8888aa;
     }
+    .btn-secondary:hover { border-color: #5555aa; color: #ccc; }
 
     /* ── Result ── */
     .result {
       display: none;
       margin-top: 24px;
       padding: 20px;
-      border: 1px solid #2a2418;
+      border: 1px solid #1e1e3a;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
     }
     .result.valid {
-      border-color: #6a8a5a;
+      border-color: #00E5FF;
     }
     .result.invalid {
-      border-color: #a04040;
+      border-color: #ff4466;
     }
     .result.redeemed {
-      border-color: #e8a040;
+      border-color: #FF8800;
     }
 
     .result-status {
@@ -157,19 +163,20 @@
       letter-spacing: 3px;
       text-transform: uppercase;
       margin-bottom: 12px;
+      font-weight: 600;
     }
-    .result.valid .result-status { color: #6a8a5a; }
-    .result.invalid .result-status { color: #a04040; }
-    .result.redeemed .result-status { color: #e8a040; }
+    .result.valid .result-status { color: #00E5FF; }
+    .result.invalid .result-status { color: #ff4466; }
+    .result.redeemed .result-status { color: #FF8800; }
 
     .result-detail {
       font-size: 11px;
-      color: #a08860;
+      color: #b0b0cc;
       line-height: 1.7;
       margin-bottom: 4px;
     }
     .result-detail .label {
-      color: #6a5a40;
+      color: #8888aa;
       font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -182,47 +189,48 @@
     }
     .unlock-list li {
       font-size: 11px;
-      color: #d4c8a8;
+      color: #e8e8f0;
       padding: 6px 0;
-      border-bottom: 1px solid #1a1408;
+      border-bottom: 1px solid #1e1e3a;
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .unlock-list li::before {
       content: '◆';
-      color: #e8a040;
+      color: #00E5FF;
       font-size: 6px;
     }
 
     .redeem-section {
       margin-top: 16px;
       padding-top: 16px;
-      border-top: 1px solid #2a2418;
+      border-top: 1px solid #1e1e3a;
     }
     .redeem-section label {
       display: block;
       font-size: 9px;
       letter-spacing: 3px;
-      color: #6a5a40;
+      color: #8888aa;
       text-transform: uppercase;
       margin-bottom: 8px;
     }
     .redeem-section input {
       width: 100%;
-      background: rgba(42, 36, 24, 0.3);
-      border: 1px solid #2a2418;
-      color: #d4c8a8;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      color: #e8e8f0;
       padding: 10px;
       font-family: inherit;
-      font-size: 11px;
+      font-size: 12px;
       outline: none;
       margin-bottom: 8px;
     }
-    .redeem-section input:focus { border-color: #e8a040; }
+    .redeem-section input:focus { border-color: #00E5FF; }
 
     .error-msg {
-      color: #a04040;
+      color: #ff4466;
       font-size: 10px;
       letter-spacing: 1px;
       margin-top: 8px;
@@ -231,11 +239,11 @@
     .buy-prompt {
       margin-top: 32px;
       padding-top: 16px;
-      border-top: 1px solid #2a2418;
+      border-top: 1px solid #1e1e3a;
     }
     .buy-prompt p {
       font-size: 10px;
-      color: #4a3a28;
+      color: #555577;
       letter-spacing: 1px;
       margin-bottom: 8px;
     }
@@ -257,9 +265,9 @@
     </nav>
 
     <div class="main">
-      <div style="border:1px solid #3a3020;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;">
-        <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#0c0b09;background:#e8a040;padding:2px 8px;">beta</span>
-        <p style="font-size:10px;color:#6a5a40;letter-spacing:1px;line-height:1.6;">access codes are not yet active. all instruments are free during beta.</p>
+      <div style="border:1px solid #1e1e3a;border-radius:12px;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);">
+        <span style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#0a0a14;background:#fff;padding:2px 8px;border-radius:4px;">beta</span>
+        <p style="font-size:10px;color:#8888aa;letter-spacing:1px;line-height:1.6;">access codes are not yet active. all instruments are free during beta.</p>
       </div>
 
       <h1 class="heading">enter access code</h1>
