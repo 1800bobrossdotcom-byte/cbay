@@ -9,14 +9,14 @@
 
     html, body {
       width: 100%; height: 100%;
-      background: #0c0b09;
-      color: #d4c8a8;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      background: #0a0a14;
+      color: #e8e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
-    /* ── Blueprint grid canvas ── */
+    /* ── Animated prismatic background ── */
     canvas#bg {
       position: fixed; inset: 0;
       width: 100%; height: 100%;
@@ -28,56 +28,439 @@
     .page {
       position: relative;
       z-index: 1;
-      max-width: 900px;
+      max-width: 540px;
       margin: 0 auto;
-      padding: 8vh 32px 10vh;
+      padding: 6vh 24px 10vh;
       min-height: 100vh;
     }
 
-    /* ── Technical drawing frame ── */
-    .drawing-frame {
-      border: 1px solid #3a3020;
-      position: relative;
-      padding: 40px 32px 32px;
+    /* ── Navigation ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 48px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .drawing-frame::before {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      border: 1px solid rgba(58, 48, 32, 0.3);
-      pointer-events: none;
+    nav .logo {
+      font-size: 16px;
+      letter-spacing: 8px;
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
     }
-    /* corner marks */
-    .drawing-frame::after {
-      content: '';
-      position: absolute;
-      top: -1px; left: -1px; right: -1px; bottom: -1px;
-      background:
-        linear-gradient(#e8a040, #e8a040) 0 0 / 16px 1px no-repeat,
-        linear-gradient(#e8a040, #e8a040) 0 0 / 1px 16px no-repeat,
-        linear-gradient(#e8a040, #e8a040) 100% 0 / 16px 1px no-repeat,
-        linear-gradient(#e8a040, #e8a040) 100% 0 / 1px 16px no-repeat,
-        linear-gradient(#e8a040, #e8a040) 0 100% / 16px 1px no-repeat,
-        linear-gradient(#e8a040, #e8a040) 0 100% / 1px 16px no-repeat,
-        linear-gradient(#e8a040, #e8a040) 100% 100% / 16px 1px no-repeat,
-        linear-gradient(#e8a040, #e8a040) 100% 100% / 1px 16px no-repeat;
-      pointer-events: none;
-      opacity: 0.5;
+    nav a {
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #fff; }
+
+    /* ── Title ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .hero h1 {
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: 16px;
+      color: #fff;
+      text-indent: 16px;
+      margin-bottom: 8px;
+    }
+    .hero .sub {
+      font-size: 11px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .hero .tagline {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.2);
+      margin-top: 6px;
     }
 
-    /* ── Title block (like a technical drawing title block) ── */
-    .title-block {
+    /* ── Product cards ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      padding: 28px 24px;
+      border-radius: 20px;
+      border: 1px solid var(--accent-dim);
+      background: var(--accent-bg);
+      transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, transform 0.3s;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      box-shadow: 0 0 30px var(--accent-glow);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .card:hover {
+      border-color: var(--accent);
+      background: var(--accent-hover-bg);
+      transform: translateY(-2px);
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* accent colors */
+    .card--spectra {
+      --accent: #00E5FF;
+      --accent-dim: rgba(0, 229, 255, 0.25);
+      --accent-bg: rgba(0, 229, 255, 0.06);
+      --accent-hover-bg: rgba(0, 229, 255, 0.12);
+      --accent-glow: rgba(0, 229, 255, 0.08);
+    }
+    .card--artifact {
+      --accent: #FF00E5;
+      --accent-dim: rgba(255, 0, 229, 0.25);
+      --accent-bg: rgba(255, 0, 229, 0.06);
+      --accent-hover-bg: rgba(255, 0, 229, 0.12);
+      --accent-glow: rgba(255, 0, 229, 0.08);
+    }
+    .card--take {
+      --accent: #FF8800;
+      --accent-dim: rgba(255, 136, 0, 0.25);
+      --accent-bg: rgba(255, 136, 0, 0.06);
+      --accent-hover-bg: rgba(255, 136, 0, 0.12);
+      --accent-glow: rgba(255, 136, 0, 0.08);
+    }
+
+    .card-name {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .card-tags {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1px;
+    }
+
+    /* ── Preview panel ── */
+    .preview-toggle {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 10px;
+      padding: 2px 0;
+      border: none;
+      background: none;
+      font-family: inherit;
+      transition: color 0.3s;
+      user-select: none;
+    }
+    .preview-toggle:hover { color: var(--accent); }
+    .preview-toggle::before { content: '▸ '; display: inline-block; transition: transform 0.3s; }
+    .preview-toggle.open::before { transform: rotate(90deg); }
+
+    .preview-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s, margin 0.4s;
+      opacity: 0;
+      margin-top: 0;
+    }
+    .preview-panel.open {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 12px;
+    }
+    .preview-img {
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      display: block;
+      padding: 8px;
+      background: rgba(255,255,255,0.02);
+    }
+    .preview-caption {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.15);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ── Store CTA ── */
+    .store-cta {
       text-align: center;
-      margin-bottom: 12px;
+      margin: 40px 0 32px;
+      padding: 28px 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
     }
-    .mark {
-      font-size: 48px;
-      letter-spacing: 18px;
-      color: #e8a040;
-      font-weight: normal;
-      text-indent: 18px;
+    .store-cta .beta {
+      display: inline-block;
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: #0a0a14;
+      background: #fff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 8px;
+      font-weight: 600;
     }
+    .store-cta p {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .store-cta a {
+      display: inline-block;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 12px 28px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .store-cta a:hover {
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer span {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.15);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero { animation: fadeUp 0.6s ease-out; }
+    .card { animation: fadeUp 0.5s ease-out both; }
+    .card:nth-child(1) { animation-delay: 0.15s; }
+    .card:nth-child(2) { animation-delay: 0.3s; }
+    .card:nth-child(3) { animation-delay: 0.45s; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .page { padding: 4vh 16px 8vh; }
+      .hero h1 { font-size: 48px; letter-spacing: 10px; text-indent: 10px; }
+      .card { padding: 22px 18px; }
+      .card-name { font-size: 22px; letter-spacing: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+
+  <div class="page">
+    <nav>
+      <span class="logo">cbay</span>
+      <div style="display:flex;gap:16px;">
+        <a href="/store">store</a>
+        <a href="/unlock">unlock</a>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <h1>CBAY</h1>
+      <p class="sub">computational instruments</p>
+      <p class="tagline">see different</p>
+    </div>
+
+    <div class="cards">
+      <a href="/spectra" class="card card--spectra">
+        <h2 class="card-name">SPECTRA</h2>
+        <p class="card-desc">vision engine — 5 modes</p>
+        <p class="card-tags">night vision · thermal · edge detect · motion · infrared</p>
+        <button class="preview-toggle" data-target="prev-spectra">preview</button>
+        <div class="preview-panel" id="prev-spectra">
+          <img class="preview-img" src="/preview-spectra.svg" alt="SPECTRA preview">
+          <p class="preview-caption">fig. 1 — night vision with low-light boost</p>
+        </div>
+      </a>
+
+      <a href="/artifact" class="card card--artifact">
+        <h2 class="card-name">ARTIFACT</h2>
+        <p class="card-desc">glitch camera — 10 modes</p>
+        <p class="card-tags">pixel sort · vhs · databend · signal mod · melt · kaleidoscope</p>
+        <button class="preview-toggle" data-target="prev-artifact">preview</button>
+        <div class="preview-panel" id="prev-artifact">
+          <img class="preview-img" src="/preview-artifact.svg" alt="ARTIFACT preview">
+          <p class="preview-caption">fig. 2 — pixel sort with touch sensitivity</p>
+        </div>
+      </a>
+
+      <a href="/take" class="card card--take">
+        <h2 class="card-name">TAKE</h2>
+        <p class="card-desc">short film tool — 8 modes</p>
+        <p class="card-tags">film · neon · bloom · super 8 · vhs · tilt shift</p>
+        <button class="preview-toggle" data-target="prev-take">preview</button>
+        <div class="preview-panel" id="prev-take">
+          <img class="preview-img" src="/preview-take.svg" alt="TAKE preview">
+          <p class="preview-caption">fig. 3 — timeline editor with clip concatenation</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="store-cta">
+      <p><span class="beta">BETA</span>free access · all 23 shader modes</p>
+      <a href="/store">enter the store</a>
+    </div>
+
+    <div class="footer">
+      <span>cbay.ing · v1.0.0</span>
+    </div>
+  </div>
+
+  <script>
+    /* ── Prismatic aurora background ── */
+    var c = document.getElementById('bg');
+    var gl = c.getContext('webgl2') || c.getContext('webgl');
+    var W, H, t = 0, mx = 0.5, my = 0.5;
+
+    function resize() {
+      W = c.width = window.innerWidth;
+      H = c.height = window.innerHeight;
+      if (gl) gl.viewport(0, 0, W, H);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', function(e) {
+      mx = e.clientX / W;
+      my = e.clientY / H;
+    });
+
+    if (gl) {
+      var vs = gl.createShader(gl.VERTEX_SHADER);
+      gl.shaderSource(vs, 'attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}');
+      gl.compileShader(vs);
+
+      var fs = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(fs, [
+        'precision highp float;',
+        'uniform float t;uniform vec2 r;uniform vec2 m;',
+        'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+        'float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);',
+        'return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}',
+        'float fbm(vec2 p){float v=0.0,a=0.5;mat2 rot=mat2(0.8,-0.6,0.6,0.8);',
+        'for(int i=0;i<5;i++){v+=a*noise(p);p=rot*p*2.0;a*=0.5;}return v;}',
+        'vec3 prism(float t){',
+        'vec3 a=vec3(0.5),b=vec3(0.5),c=vec3(1.0),d=vec3(0.0,0.33,0.67);',
+        'return a+b*cos(6.2832*(c*t+d));}',
+        'void main(){',
+        'vec2 uv=gl_FragCoord.xy/r;',
+        'float n=fbm(uv*3.0+t*0.08);',
+        'n+=fbm(uv*6.0-t*0.05)*0.3;',
+        'vec2 mc=m-uv;float md=length(mc);',
+        'float glow=0.12*exp(-md*3.0);',
+        'vec3 col=prism(n*0.6+t*0.02)*0.15;',
+        'col+=prism(n*0.8+0.5)*glow*2.0;',
+        'col+=vec3(0.02,0.02,0.04);',
+        'float grain=hash(uv*r+t)*0.015;',
+        'col+=grain;',
+        'float vig=1.0-dot((uv-0.5)*1.2,(uv-0.5)*1.2);',
+        'col*=vig;',
+        'gl_FragColor=vec4(col,1.0);}'
+      ].join('\n'));
+      gl.compileShader(fs);
+
+      var pg = gl.createProgram();
+      gl.attachShader(pg, vs);
+      gl.attachShader(pg, fs);
+      gl.linkProgram(pg);
+      gl.useProgram(pg);
+
+      var buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+      var pa = gl.getAttribLocation(pg, 'p');
+      gl.enableVertexAttribArray(pa);
+      gl.vertexAttribPointer(pa, 2, gl.FLOAT, false, 0, 0);
+
+      var ut = gl.getUniformLocation(pg, 't');
+      var ur = gl.getUniformLocation(pg, 'r');
+      var um = gl.getUniformLocation(pg, 'm');
+
+      function draw() {
+        t += 0.016;
+        gl.uniform1f(ut, t);
+        gl.uniform2f(ur, W, H);
+        gl.uniform2f(um, mx, 1.0 - my);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        requestAnimationFrame(draw);
+      }
+      draw();
+    } else {
+      /* fallback: simple CSS gradient */
+      c.style.background = 'linear-gradient(135deg, #0a0a14 0%, #0f0a1a 50%, #0a0a14 100%)';
+    }
+
+    /* ── Preview toggle ── */
+    document.querySelectorAll('.preview-toggle').forEach(function(btn) {
+      btn.addEventListener('pointerdown', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var panel = document.getElementById(this.getAttribute('data-target'));
+        if (panel) {
+          panel.classList.toggle('open');
+          this.classList.toggle('open');
+        }
+      });
+    });
+    document.querySelectorAll('.card').forEach(function(card) {
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('.preview-toggle')) e.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>
     .subtitle {
       font-size: 10px;
       letter-spacing: 5px;

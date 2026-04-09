@@ -7,15 +7,15 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
-      background: #0c0b09;
-      color: #d4c8a8;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace;
+      background: #0a0a14;
+      color: #e8e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
     .page {
-      max-width: 900px;
+      max-width: 540px;
       margin: 0 auto;
-      padding: 6vh 32px 10vh;
+      padding: 6vh 24px 10vh;
       min-height: 100vh;
     }
 
@@ -26,21 +26,22 @@
       justify-content: space-between;
       margin-bottom: 48px;
       padding-bottom: 16px;
-      border-bottom: 1px solid #2a2418;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .nav a {
-      color: #a08860;
+      color: rgba(255,255,255,0.45);
       text-decoration: none;
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
       transition: color 0.3s;
     }
-    .nav a:hover { color: #e8a040; }
+    .nav a:hover { color: #fff; }
     .nav .brand {
-      font-size: 14px;
-      letter-spacing: 6px;
-      color: #e8a040;
+      font-size: 16px;
+      letter-spacing: 8px;
+      color: #fff;
+      font-weight: 600;
     }
 
     /* ── Section headers ── */
@@ -48,8 +49,8 @@
       font-size: 9px;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: #6a5a40;
-      margin-bottom: 24px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -58,7 +59,7 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: #2a2418;
+      background: rgba(255,255,255,0.06);
     }
 
     /* ── Coin selector ── */
@@ -68,9 +69,10 @@
       margin-bottom: 32px;
     }
     .coin-btn {
-      background: #0c0b08;
-      border: 1px solid #2a2418;
-      color: #6a5a40;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      color: rgba(255,255,255,0.4);
       padding: 8px 14px;
       font-family: inherit;
       font-size: 10px;
@@ -79,39 +81,35 @@
       transition: all 0.2s;
     }
     .coin-btn.active {
-      border-color: #e8a040;
-      color: #e8a040;
-      background: rgba(232, 160, 64, 0.06);
+      border-color: rgba(255,255,255,0.3);
+      color: #fff;
+      background: rgba(255,255,255,0.08);
     }
     .coin-btn:hover:not(.active) {
-      border-color: #4a3a28;
-      color: #a08860;
+      border-color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
     }
 
     /* ── Product cards ── */
     .products {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 16px;
       margin-bottom: 48px;
     }
 
     .card {
-      border: 1px solid #2a2418;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
       padding: 24px;
       position: relative;
-      transition: border-color 0.3s, background 0.3s;
-    }
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 3px;
-      border: 1px solid rgba(58, 48, 32, 0.2);
-      pointer-events: none;
+      background: rgba(255,255,255,0.03);
+      transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
     }
     .card:hover {
-      border-color: #e8a040;
-      background: rgba(232, 160, 64, 0.02);
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.05);
+      box-shadow: 0 0 30px rgba(255,255,255,0.03);
     }
 
     .card-top {
@@ -123,26 +121,29 @@
     }
 
     .card-icon {
-      width: 56px;
-      height: 56px;
+      width: 48px;
+      height: 48px;
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid #2a2418;
+      border: 1px solid rgba(255,255,255,0.08);
       flex-shrink: 0;
     }
     .card-icon img { width: 100%; height: 100%; display: block; }
 
     .card-meta { flex: 1; min-width: 0; }
     .card-name {
-      font-size: 16px;
-      letter-spacing: 5px;
-      color: #e8a040;
-      font-weight: normal;
+      font-size: 18px;
+      letter-spacing: 4px;
+      font-weight: 700;
       margin-bottom: 2px;
     }
+    .card-name.spectra { color: #00E5FF; }
+    .card-name.artifact { color: #FF00E5; }
+    .card-name.take { color: #FF8800; }
+    .card-name.suite { color: #fff; }
     .card-tagline {
       font-size: 10px;
-      color: #a08860;
+      color: rgba(255,255,255,0.4);
       letter-spacing: 1px;
     }
 
@@ -151,31 +152,32 @@
       flex-shrink: 0;
     }
     .card-price .amount {
-      font-size: 18px;
-      color: #e8a040;
+      font-size: 16px;
+      color: #fff;
       letter-spacing: 1px;
+      font-weight: 600;
     }
     .card-price .coin-label {
       font-size: 9px;
-      color: #6a5a40;
+      color: rgba(255,255,255,0.35);
       letter-spacing: 2px;
     }
     .card-price .usd {
       font-size: 9px;
-      color: #4a3a28;
+      color: rgba(255,255,255,0.2);
       letter-spacing: 1px;
     }
 
     .card-desc {
-      font-size: 11px;
-      color: #8a7a60;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
       line-height: 1.6;
       margin-bottom: 12px;
     }
 
     .card-tags {
       font-size: 9px;
-      color: #4a3a28;
+      color: rgba(255,255,255,0.2);
       letter-spacing: 1px;
       margin-bottom: 16px;
     }
@@ -195,92 +197,99 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      border-radius: 8px;
     }
     .btn-primary {
-      background: rgba(232, 160, 64, 0.1);
-      border: 1px solid #e8a040;
-      color: #e8a040;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
     }
     .btn-primary:hover {
-      background: rgba(232, 160, 64, 0.2);
+      background: rgba(255,255,255,0.14);
     }
     .btn-secondary {
       background: none;
-      border: 1px solid #3a3020;
-      color: #a08860;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5);
     }
     .btn-secondary:hover {
-      border-color: #6a5a40;
-      color: #d4c8a8;
+      border-color: rgba(255,255,255,0.25);
+      color: #fff;
     }
     .btn-free {
       background: none;
-      border: 1px solid #2a4a2a;
-      color: #6a8a5a;
+      border: 1px solid rgba(0,229,255,0.25);
+      color: #00E5FF;
     }
     .btn-free:hover {
-      background: rgba(106, 138, 90, 0.1);
+      background: rgba(0,229,255,0.08);
     }
     .btn-disabled {
-      background: rgba(74, 58, 40, 0.1);
-      border: 1px solid #3a3020;
-      color: #4a3a28;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.2);
       cursor: default;
       pointer-events: none;
     }
 
     /* ── Beta badge ── */
     .beta-banner {
-      border: 1px solid #3a3020;
-      padding: 12px 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 14px 18px;
       margin-bottom: 24px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      background: rgba(255,255,255,0.02);
     }
     .beta-tag {
       font-size: 8px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: #0c0b09;
-      background: #e8a040;
-      padding: 2px 8px;
+      color: #0a0a14;
+      background: #fff;
+      padding: 3px 8px;
+      border-radius: 4px;
       flex-shrink: 0;
+      font-weight: 600;
     }
     .beta-banner p {
-      font-size: 10px;
-      color: #6a5a40;
-      letter-spacing: 1px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.5px;
       line-height: 1.6;
     }
 
     .badge-type {
       position: absolute;
-      top: 8px;
-      right: 10px;
+      top: 10px;
+      right: 14px;
       font-size: 7px;
       letter-spacing: 2px;
-      color: #4a3a28;
+      color: rgba(255,255,255,0.15);
       text-transform: uppercase;
     }
 
     /* ── Crypto info ── */
     .crypto-info {
-      border: 1px solid #2a2418;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
       padding: 20px;
       margin-bottom: 32px;
+      background: rgba(255,255,255,0.02);
     }
     .crypto-info h3 {
       font-size: 10px;
       letter-spacing: 3px;
-      color: #a08860;
-      font-weight: normal;
-      margin-bottom: 12px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
+      margin-bottom: 10px;
       text-transform: uppercase;
     }
     .crypto-info p {
-      font-size: 11px;
-      color: #6a5a40;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
       line-height: 1.7;
     }
     .crypto-info .coins {
@@ -292,26 +301,27 @@
       font-size: 11px;
       letter-spacing: 1px;
     }
-    .crypto-info .coin .symbol { color: #e8a040; }
-    .crypto-info .coin .name { color: #6a5a40; }
+    .crypto-info .coin .symbol { color: #fff; font-weight: 600; }
+    .crypto-info .coin .name { color: rgba(255,255,255,0.3); }
 
-    /* ── Already have code ── */
+    /* ── Unlock prompt ── */
     .unlock-prompt {
       text-align: center;
       padding: 24px;
-      border-top: 1px solid #2a2418;
+      border-top: 1px solid rgba(255,255,255,0.06);
       margin-top: 32px;
     }
     .unlock-prompt p {
       font-size: 10px;
-      color: #6a5a40;
+      color: rgba(255,255,255,0.3);
       letter-spacing: 2px;
       margin-bottom: 12px;
     }
 
     /* ── Marketplace teaser ── */
     .marketplace-teaser {
-      border: 1px dashed #2a2418;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 12px;
       padding: 24px;
       text-align: center;
       margin-top: 48px;
@@ -319,14 +329,14 @@
     .marketplace-teaser h3 {
       font-size: 12px;
       letter-spacing: 4px;
-      color: #6a5a40;
-      font-weight: normal;
+      color: rgba(255,255,255,0.4);
+      font-weight: 600;
       margin-bottom: 8px;
     }
     .marketplace-teaser p {
-      font-size: 10px;
-      color: #4a3a28;
-      letter-spacing: 1px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.5px;
       line-height: 1.8;
     }
 
@@ -426,6 +436,8 @@
           var isFree = p.access === 'free';
           var hasWeb = p.webPath !== null;
 
+          var colorClass = p.id === 'spectra' ? 'spectra' : p.id === 'artifact' ? 'artifact' : p.id === 'take' ? 'take' : 'suite';
+
           var card = document.createElement('div');
           card.className = 'card';
           card.innerHTML =
@@ -433,7 +445,7 @@
             '<div class="card-top">' +
               '<div class="card-icon"><img src="' + iconPath + '" alt="' + p.name + '"></div>' +
               '<div class="card-meta">' +
-                '<h2 class="card-name">' + p.name + '</h2>' +
+                '<h2 class="card-name ' + colorClass + '">' + p.name + '</h2>' +
                 '<p class="card-tagline">' + p.tagline + '</p>' +
               '</div>' +
               '<div class="card-price">' +
