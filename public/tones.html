@@ -11,19 +11,20 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg: #060610;
-      --surface: rgba(255,255,255,0.03);
-      --surface-hover: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.06);
-      --border-hover: rgba(255,255,255,0.12);
-      --text: #e8e8f0;
-      --text-dim: rgba(255,255,255,0.4);
-      --text-muted: rgba(255,255,255,0.2);
+      --bg: #080806;
+      --surface: rgba(200,180,140,0.04);
+      --surface-hover: rgba(200,180,140,0.08);
+      --border: rgba(200,180,140,0.08);
+      --border-hover: rgba(200,180,140,0.16);
+      --text: #dcd4c4;
+      --text-dim: rgba(220,210,190,0.45);
+      --text-muted: rgba(220,210,190,0.22);
       --accent: #A855F7;
       --accent-dim: rgba(168,85,247,0.15);
       --accent-border: rgba(168,85,247,0.35);
-      --accent-glow: rgba(168,85,247,0.08);
-      --radius: 12px;
+      --accent-glow: rgba(168,85,247,0.12);
+      --radius: 6px;
+      --knob: linear-gradient(135deg, #b8a87c 0%, #6a5e48 50%, #b8a87c 100%);
     }
     html, body {
       width: 100%; height: 100%; overflow: hidden;
@@ -144,6 +145,35 @@
       .modes button { padding: 10px 12px; font-size: 10px; }
       .preset-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
     }
+
+    /* ══ Analogue Hardware Skin ══ */
+    body { background: var(--bg) repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(200,180,140,0.008) 3px, rgba(200,180,140,0.008) 4px); }
+    .topbar { background: rgba(10,10,6,0.92); border-bottom-color: rgba(200,180,140,0.10); }
+    .topbar .mode-label, .slider-val, .info-bar, .preset-grid .hz { font-family: 'Courier New', Courier, monospace; }
+    .topbar .mode-label { text-shadow: 0 0 10px var(--accent-glow); }
+    .viz { box-shadow: inset 0 0 40px rgba(0,0,0,0.6), 0 0 1px rgba(200,180,140,0.10); border-color: rgba(200,180,140,0.10); }
+    .modes button {
+      background: linear-gradient(180deg, rgba(200,180,140,0.06) 0%, rgba(200,180,140,0.02) 100%);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+      border-radius: 6px;
+    }
+    .modes button:active { box-shadow: inset 0 2px 6px rgba(0,0,0,0.5); transform: translateY(1px); }
+    .modes button.active { box-shadow: inset 0 2px 8px rgba(0,0,0,0.35), 0 0 14px var(--accent-glow); }
+    .preset-grid button {
+      background: linear-gradient(180deg, rgba(200,180,140,0.05) 0%, rgba(200,180,140,0.01) 100%);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
+      border-radius: 6px; font-family: 'Courier New', Courier, monospace;
+    }
+    .preset-grid button.active { box-shadow: inset 0 2px 6px rgba(0,0,0,0.35), 0 0 10px var(--accent-glow); }
+    .slider-row input[type=range] {
+      height: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(200,180,140,0.08);
+      border-radius: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      background: var(--knob); box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+      border: 1px solid rgba(100,85,60,0.4); width: 28px; height: 28px;
+    }
+    .info-bar { border-top-color: rgba(200,180,140,0.08); }
   </style>
 </head>
 <body>

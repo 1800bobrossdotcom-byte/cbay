@@ -1236,11 +1236,10 @@
 
       function concatenateClips(clipList) {
         return new Promise(function(resolve, reject) {
-          // Use video element playback → canvas → MediaRecorder to re-encode
           var concatCanvas = document.createElement('canvas');
           concatCanvas.width = canvas.width;
           concatCanvas.height = canvas.height;
-          var ctx = concatCanvas.getContext('2d');
+          var ctx2d = concatCanvas.getContext('2d');
 
           var mimeType = 'video/webm;codecs=vp9,opus';
           if (!MediaRecorder.isTypeSupported(mimeType)) {
@@ -1251,9 +1250,8 @@
           var outputChunks = [];
           var concatStream = concatCanvas.captureStream(30);
 
-          // Merge audio from clip playback
-          var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          var audioDestination = audioCtx.createMediaStreamDestination();
+          var concatAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          var audioDestination = concatAudioCtx.createMediaStreamDestination();
           var audioTracks = audioDestination.stream.getAudioTracks();
           for (var a = 0; a < audioTracks.length; a++) concatStream.addTrack(audioTracks[a]);
 
@@ -1267,17 +1265,17 @@
           };
 
           concatRecorder.onstop = function() {
-            audioCtx.close();
+            concatAudioCtx.close();
             var finalBlob = new Blob(outputChunks, { type: mimeType });
             resolve(finalBlob);
           };
 
-          concatRecorder.start();
+          concatRecorder.start(100);
 
           var clipIdx = 0;
           function playNextClip() {
             if (clipIdx >= clipList.length) {
-              concatRecorder.stop();
+              setTimeout(function() { concatRecorder.stop(); }, 300);
               return;
             }
 
@@ -1286,41 +1284,64 @@
             exportStatus.textContent = 'clip ' + (clipIdx + 1) + ' / ' + clipList.length;
 
             var clipVideo = document.createElement('video');
-            clipVideo.muted = false;
             clipVideo.playsInline = true;
+            clipVideo.preload = 'auto';
             var url = URL.createObjectURL(clipList[clipIdx].blob);
             clipVideo.src = url;
 
-            // Connect audio
-            var source = audioCtx.createMediaElementSource(clipVideo);
-            source.connect(audioDestination);
+            var clipDone = false;
+            var storedDuration = clipList[clipIdx].duration;
+            var fallbackTimer = null;
+            var drawId = null;
+            var source = null;
 
-            clipVideo.onended = function() {
+            function finishClip() {
+              if (clipDone) return;
+              clipDone = true;
+              if (fallbackTimer) clearTimeout(fallbackTimer);
+              if (drawId) cancelAnimationFrame(drawId);
+              clipVideo.pause();
               URL.revokeObjectURL(url);
-              source.disconnect();
+              try { if (source) source.disconnect(); } catch(e) {}
               clipIdx++;
               playNextClip();
-            };
+            }
 
-            clipVideo.onplay = function() {
-              function drawFrame() {
-                if (clipVideo.paused || clipVideo.ended) return;
-                ctx.drawImage(clipVideo, 0, 0, concatCanvas.width, concatCanvas.height);
-                requestAnimationFrame(drawFrame);
-              }
-              drawFrame();
-            };
+            try {
+              source = concatAudioCtx.createMediaElementSource(clipVideo);
+              source.connect(audioDestination);
+            } catch(e) {}
+
+            clipVideo.onended = finishClip;
 
             clipVideo.onerror = function() {
+              if (clipDone) return;
+              clipDone = true;
               URL.revokeObjectURL(url);
               clipIdx++;
               playNextClip();
             };
 
-            clipVideo.play().catch(function() {
-              clipIdx++;
-              playNextClip();
-            });
+            function drawFrame() {
+              if (clipDone || clipVideo.paused || clipVideo.ended) return;
+              ctx2d.drawImage(clipVideo, 0, 0, concatCanvas.width, concatCanvas.height);
+              drawId = requestAnimationFrame(drawFrame);
+            }
+
+            clipVideo.onloadeddata = function() {
+              clipVideo.play().then(function() {
+                drawFrame();
+                fallbackTimer = setTimeout(finishClip, (storedDuration + 1) * 1000);
+              }).catch(function() {
+                clipVideo.muted = true;
+                clipVideo.play().then(function() {
+                  drawFrame();
+                  fallbackTimer = setTimeout(finishClip, (storedDuration + 1) * 1000);
+                }).catch(finishClip);
+              });
+            };
+
+            clipVideo.load();
           }
 
           playNextClip();
