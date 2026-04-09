@@ -1067,34 +1067,59 @@
         if (isRecording) return;
         if (getTotalDuration() >= MAX_TOTAL_SEC) return;
 
-        var mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
+        if (typeof MediaRecorder === 'undefined') { showError('recording not supported on this browser'); return; }
+
+        var mimeTypes = ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
         var mimeType = '';
         for (var i = 0; i < mimeTypes.length; i++) {
-          if (MediaRecorder.isTypeSupported(mimeTypes[i])) {
-            mimeType = mimeTypes[i];
-            break;
-          }
+          try {
+            if (MediaRecorder.isTypeSupported(mimeTypes[i])) {
+              mimeType = mimeTypes[i];
+              break;
+            }
+          } catch(e) {}
         }
-        if (!mimeType) { showError('recording not supported'); return; }
+        if (!mimeType) {
+          // Last resort: let browser pick
+          mimeType = '';
+        }
 
         var recordedChunks = [];
         var mixedStream = getCanvasStream();
 
-        recorder = new MediaRecorder(mixedStream, {
-          mimeType: mimeType,
-          videoBitsPerSecond: 5000000,
-        });
+        var recOpts = { videoBitsPerSecond: 5000000 };
+        if (mimeType) recOpts.mimeType = mimeType;
+
+        try {
+          recorder = new MediaRecorder(mixedStream, recOpts);
+        } catch(e) {
+          try {
+            recorder = new MediaRecorder(mixedStream);
+          } catch(e2) {
+            showError('recording not supported');
+            return;
+          }
+        }
+        var actualMime = recorder.mimeType || mimeType || 'video/webm';
 
         recorder.ondataavailable = function(e) {
           if (e.data && e.data.size > 0) recordedChunks.push(e.data);
         };
 
         recorder.onstop = function() {
-          var blob = new Blob(recordedChunks, { type: mimeType });
+          var blob = new Blob(recordedChunks, { type: actualMime });
           var duration = (performance.now() - recStartTime) / 1000;
           clips.push({ blob: blob, duration: duration, mode: MODE_NAMES[currentMode] });
           updateTimeline();
           updateButtons();
+        };
+
+        recorder.onerror = function() {
+          isRecording = false;
+          recorder = null;
+          recBtn.classList.remove('recording');
+          hudRec.style.display = 'none';
+          clearInterval(recTimerInterval);
         };
 
         recorder.start(100);
@@ -1303,23 +1328,33 @@
       }
 
       function downloadBlob(blob, name) {
+        if (!blob || blob.size === 0) {
+          exportStatus.textContent = 'error: no video data';
+          setTimeout(function() { exportOverlay.classList.remove('active'); }, 2000);
+          return;
+        }
         var ext = blob.type.includes('mp4') ? '.mp4' : '.webm';
-        var file = new File([blob], name + ext, { type: blob.type });
+        var filename = name + ext;
+
+        // Strategy 1: Native share (mobile)
         if (navigator.share && navigator.canShare) {
           try {
+            var file = new File([blob], filename, { type: blob.type });
             if (navigator.canShare({ files: [file] })) {
               navigator.share({ files: [file], title: 'TAKE — cbay.ing' }).catch(function() {
-                saveBlob(blob, name + ext);
+                saveBlob(blob, filename);
               });
               return;
             }
           } catch(e) {}
         }
-        saveBlob(blob, name + ext);
+        saveBlob(blob, filename);
       }
 
       function saveBlob(blob, filename) {
         var url = URL.createObjectURL(blob);
+
+        // Strategy 2: Anchor download (Chrome, Firefox, desktop)
         var a = document.createElement('a');
         a.href = url;
         a.download = filename;
@@ -1327,7 +1362,18 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 10000);
+
+        // Strategy 3: If anchor download didn't trigger (iOS Safari),
+        // open in new window so user can long-press to save
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (isIOS) {
+          setTimeout(function() {
+            window.open(url, '_blank');
+          }, 300);
+        }
+
+        setTimeout(function() { URL.revokeObjectURL(url); }, 30000);
       }
 
       // ── Render Loop ──
