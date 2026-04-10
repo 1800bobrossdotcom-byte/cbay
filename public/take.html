@@ -1610,7 +1610,7 @@
         }
 
         // Multiple clips — concatenate via re-encoding
-        exportStatus.textContent = 'concatenating ' + clips.length + ' clips...';
+        exportStatus.textContent = 'joining ' + clips.length + ' clips...';
         concatenateClips(clips).then(function(finalBlob) {
           exportFill.style.width = '100%';
           exportStatus.textContent = 'done';
@@ -1619,126 +1619,213 @@
             exportOverlay.classList.remove('active');
           }, 500);
         }).catch(function() {
-          // Fallback: download clips individually
-          exportStatus.textContent = 'exporting clips individually...';
-          for (var i = 0; i < clips.length; i++) {
-            downloadBlob(clips[i].blob, 'take-clip' + (i + 1) + '-' + Date.now());
+          // Fallback: export clips one at a time with staggered delays
+          exportStatus.textContent = 'saving clips separately...';
+          var fallbackIdx = 0;
+          function nextFallback() {
+            if (fallbackIdx >= clips.length) {
+              exportStatus.textContent = clips.length + ' clips saved';
+              setTimeout(function() { exportOverlay.classList.remove('active'); }, 1200);
+              return;
+            }
+            exportStatus.textContent = 'saving clip ' + (fallbackIdx + 1) + ' / ' + clips.length;
+            exportFill.style.width = Math.round(((fallbackIdx + 1) / clips.length) * 100) + '%';
+            downloadBlob(clips[fallbackIdx].blob, 'take-clip' + (fallbackIdx + 1) + '-' + Date.now());
+            fallbackIdx++;
+            setTimeout(nextFallback, 1500);
           }
-          setTimeout(function() { exportOverlay.classList.remove('active'); }, 1000);
+          nextFallback();
         });
       }
 
       function concatenateClips(clipList) {
         return new Promise(function(resolve, reject) {
+          // Filter out empty blobs
+          var validClips = [];
+          for (var v = 0; v < clipList.length; v++) {
+            if (clipList[v].blob && clipList[v].blob.size > 0) validClips.push(clipList[v]);
+          }
+          if (validClips.length === 0) { reject(new Error('no valid clips')); return; }
+          if (validClips.length === 1) { resolve(validClips[0].blob); return; }
+
+          // Check captureStream support (missing on older iOS Safari)
+          var testCanvas = document.createElement('canvas');
+          if (!testCanvas.captureStream) {
+            reject(new Error('captureStream not supported'));
+            return;
+          }
+
           var concatCanvas = document.createElement('canvas');
           concatCanvas.width = canvas.width;
           concatCanvas.height = canvas.height;
           var ctx2d = concatCanvas.getContext('2d');
+          ctx2d.fillStyle = '#000';
+          ctx2d.fillRect(0, 0, concatCanvas.width, concatCanvas.height);
 
-          var mimeType = 'video/webm;codecs=vp9,opus';
-          if (!MediaRecorder.isTypeSupported(mimeType)) {
-            mimeType = 'video/webm;codecs=vp8,opus';
-            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+          // Match output format to input clips where possible
+          var inputMime = validClips[0].blob.type || '';
+          var mimeType = '';
+          var mimesToTry = [];
+          if (inputMime) mimesToTry.push(inputMime);
+          mimesToTry.push('video/mp4', 'video/webm;codecs=vp9,opus',
+            'video/webm;codecs=vp8,opus', 'video/webm');
+          for (var m = 0; m < mimesToTry.length; m++) {
+            try {
+              if (MediaRecorder.isTypeSupported(mimesToTry[m])) {
+                mimeType = mimesToTry[m]; break;
+              }
+            } catch(e) {}
           }
 
           var outputChunks = [];
           var concatStream = concatCanvas.captureStream(30);
 
-          var concatAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          var audioDestination = concatAudioCtx.createMediaStreamDestination();
-          var audioTracks = audioDestination.stream.getAudioTracks();
-          for (var a = 0; a < audioTracks.length; a++) concatStream.addTrack(audioTracks[a]);
+          // Audio routing — wrap in try/catch so video still works if audio fails
+          var concatAudioCtx = null;
+          var audioDestination = null;
+          try {
+            concatAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioDestination = concatAudioCtx.createMediaStreamDestination();
+            var audioTracks = audioDestination.stream.getAudioTracks();
+            for (var a = 0; a < audioTracks.length; a++) concatStream.addTrack(audioTracks[a]);
+          } catch(e) { /* proceed without audio */ }
 
-          var concatRecorder = new MediaRecorder(concatStream, {
-            mimeType: mimeType,
-            videoBitsPerSecond: 5000000,
-          });
+          // Create recorder with fallback
+          var recOpts = { videoBitsPerSecond: 5000000 };
+          if (mimeType) recOpts.mimeType = mimeType;
+          var concatRecorder;
+          try {
+            concatRecorder = new MediaRecorder(concatStream, recOpts);
+          } catch(e) {
+            try { concatRecorder = new MediaRecorder(concatStream); }
+            catch(e2) { reject(e2); return; }
+          }
 
           concatRecorder.ondataavailable = function(e) {
             if (e.data && e.data.size > 0) outputChunks.push(e.data);
           };
 
           concatRecorder.onstop = function() {
-            concatAudioCtx.close();
-            var finalBlob = new Blob(outputChunks, { type: mimeType });
-            resolve(finalBlob);
+            if (concatAudioCtx) try { concatAudioCtx.close(); } catch(e) {}
+            var outMime = concatRecorder.mimeType || mimeType || 'video/webm';
+            var finalBlob = new Blob(outputChunks, { type: outMime });
+            if (finalBlob.size > 0) resolve(finalBlob);
+            else reject(new Error('empty output'));
           };
 
-          concatRecorder.start(100);
+          concatRecorder.onerror = function(e) {
+            reject(e.error || new Error('recorder error'));
+          };
 
-          var clipIdx = 0;
-          function playNextClip() {
-            if (clipIdx >= clipList.length) {
-              setTimeout(function() { concatRecorder.stop(); }, 300);
-              return;
-            }
+          // Resume AudioContext (REQUIRED on mobile — starts suspended)
+          var ready = concatAudioCtx
+            ? concatAudioCtx.resume().catch(function() {})
+            : Promise.resolve();
 
-            var progress = Math.round((clipIdx / clipList.length) * 100);
-            exportFill.style.width = progress + '%';
-            exportStatus.textContent = 'clip ' + (clipIdx + 1) + ' / ' + clipList.length;
+          ready.then(function() {
+            concatRecorder.start(100);
 
-            var clipVideo = document.createElement('video');
-            clipVideo.playsInline = true;
-            clipVideo.preload = 'auto';
-            var url = URL.createObjectURL(clipList[clipIdx].blob);
-            clipVideo.src = url;
+            var clipIdx = 0;
+            function playNextClip() {
+              if (clipIdx >= validClips.length) {
+                exportFill.style.width = '95%';
+                exportStatus.textContent = 'finalizing...';
+                // Longer flush to ensure last frames are captured
+                setTimeout(function() {
+                  try { concatRecorder.stop(); } catch(e) { reject(e); }
+                }, 600);
+                return;
+              }
 
-            var clipDone = false;
-            var storedDuration = clipList[clipIdx].duration;
-            var fallbackTimer = null;
-            var drawId = null;
-            var source = null;
+              var progress = Math.round((clipIdx / validClips.length) * 90);
+              exportFill.style.width = progress + '%';
+              exportStatus.textContent = 'clip ' + (clipIdx + 1) + ' / ' + validClips.length;
 
-            function finishClip() {
-              if (clipDone) return;
-              clipDone = true;
-              if (fallbackTimer) clearTimeout(fallbackTimer);
-              if (drawId) cancelAnimationFrame(drawId);
-              clipVideo.pause();
-              URL.revokeObjectURL(url);
-              try { if (source) source.disconnect(); } catch(e) {}
-              clipIdx++;
-              playNextClip();
-            }
+              var clipVideo = document.createElement('video');
+              clipVideo.playsInline = true;
+              clipVideo.preload = 'auto';
+              var url = URL.createObjectURL(validClips[clipIdx].blob);
+              clipVideo.src = url;
 
-            try {
-              source = concatAudioCtx.createMediaElementSource(clipVideo);
-              source.connect(audioDestination);
-            } catch(e) {}
+              var clipDone = false;
+              var storedDuration = validClips[clipIdx].duration;
+              var fallbackTimer = null;
+              var drawId = null;
+              var source = null;
+              var loadTimer = null;
 
-            clipVideo.onended = finishClip;
+              function finishClip() {
+                if (clipDone) return;
+                clipDone = true;
+                if (fallbackTimer) clearTimeout(fallbackTimer);
+                if (loadTimer) clearTimeout(loadTimer);
+                if (drawId) cancelAnimationFrame(drawId);
+                clipVideo.pause();
+                clipVideo.removeAttribute('src');
+                clipVideo.load(); // release resources
+                URL.revokeObjectURL(url);
+                try { if (source) source.disconnect(); } catch(e) {}
+                clipIdx++;
+                playNextClip();
+              }
 
-            clipVideo.onerror = function() {
-              if (clipDone) return;
-              clipDone = true;
-              URL.revokeObjectURL(url);
-              clipIdx++;
-              playNextClip();
-            };
+              // Wire audio through Web Audio graph
+              if (concatAudioCtx && audioDestination && concatAudioCtx.state !== 'closed') {
+                try {
+                  source = concatAudioCtx.createMediaElementSource(clipVideo);
+                  source.connect(audioDestination);
+                } catch(e) {}
+              }
 
-            function drawFrame() {
-              if (clipDone || clipVideo.paused || clipVideo.ended) return;
-              ctx2d.drawImage(clipVideo, 0, 0, concatCanvas.width, concatCanvas.height);
-              drawId = requestAnimationFrame(drawFrame);
-            }
+              clipVideo.onended = finishClip;
 
-            clipVideo.onloadeddata = function() {
-              clipVideo.play().then(function() {
-                drawFrame();
-                fallbackTimer = setTimeout(finishClip, (storedDuration + 1) * 1000);
-              }).catch(function() {
-                clipVideo.muted = true;
+              clipVideo.onerror = function() {
+                finishClip(); // skip broken clip
+              };
+
+              function drawFrame() {
+                if (clipDone) return;
+                if (clipVideo.readyState >= 2) {
+                  ctx2d.drawImage(clipVideo, 0, 0, concatCanvas.width, concatCanvas.height);
+                }
+                drawId = requestAnimationFrame(drawFrame);
+              }
+
+              function beginPlay() {
+                if (clipDone) return;
                 clipVideo.play().then(function() {
                   drawFrame();
-                  fallbackTimer = setTimeout(finishClip, (storedDuration + 1) * 1000);
-                }).catch(finishClip);
-              });
-            };
+                  fallbackTimer = setTimeout(finishClip, (storedDuration + 2) * 1000);
+                }).catch(function() {
+                  // Autoplay blocked — retry muted (Web Audio routing unaffected)
+                  clipVideo.muted = true;
+                  clipVideo.play().then(function() {
+                    drawFrame();
+                    fallbackTimer = setTimeout(finishClip, (storedDuration + 2) * 1000);
+                  }).catch(finishClip);
+                });
+              }
 
-            clipVideo.load();
-          }
+              // canplay is more reliable than loadeddata for blob videos
+              clipVideo.oncanplay = function() {
+                clipVideo.oncanplay = null;
+                if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
+                beginPlay();
+              };
 
-          playNextClip();
+              // Timeout if video never becomes ready (prevents infinite hang)
+              loadTimer = setTimeout(function() {
+                if (!clipDone) {
+                  if (clipVideo.readyState >= 3) beginPlay();
+                  else finishClip(); // skip unloadable clip
+                }
+              }, 5000);
+
+              clipVideo.load();
+            }
+
+            playNextClip();
+          });
         });
       }
 
