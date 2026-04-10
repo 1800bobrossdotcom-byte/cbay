@@ -250,66 +250,237 @@
       .cat-tabs button { padding: 8px 6px; font-size: 9px; }
     }
 
-    /* ══ Modular Synth Panel Skin ══ */
-    body { background: var(--bg) repeating-linear-gradient(0deg, transparent 0px, transparent 4px, rgba(200,170,100,0.006) 4px, rgba(200,170,100,0.006) 5px); }
-    .topbar { background: rgba(10,9,8,0.92); border-bottom-color: rgba(200,170,100,0.10); }
-    .topbar .now-playing, .info-bar, .bpm-row, .pad-freq { font-family: 'Courier New', Courier, monospace; }
-    .topbar .now-playing { text-shadow: 0 0 10px var(--accent-glow); }
-    .cat-tabs button {
-      background: linear-gradient(180deg, rgba(200,170,100,0.06) 0%, rgba(200,170,100,0.02) 100%);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
-      border-radius: 5px;
+    /* ══ Eurorack Modular Synth Panel ══ */
+    body {
+      background: #090807;
+      background-image:
+        repeating-linear-gradient(90deg, transparent 0, transparent 1px, rgba(200,170,100,0.015) 1px, rgba(200,170,100,0.015) 2px),
+        repeating-linear-gradient(0deg, transparent 0, transparent 80px, rgba(200,170,100,0.025) 80px, rgba(200,170,100,0.025) 81px);
     }
-    .cat-tabs button:active { box-shadow: inset 0 2px 6px rgba(0,0,0,0.5); transform: translateY(1px); }
-    .cat-tabs button.active { box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 10px var(--accent-glow); }
-    .pad {
-      background: linear-gradient(180deg, rgba(200,170,100,0.05) 0%, rgba(200,170,100,0.01) 100%);
-      border-color: rgba(200,170,100,0.10);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
+    #app {
+      max-width: 600px; margin: 0 auto;
+      border-left: 3px solid rgba(200,170,100,0.06);
+      border-right: 3px solid rgba(200,170,100,0.06);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.4), -4px 0 20px rgba(0,0,0,0.4);
+    }
+    .topbar {
+      background: linear-gradient(180deg, #161412 0%, #0c0a08 100%);
+      border-bottom: 3px solid rgba(200,170,100,0.10);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+    .topbar .title {
+      font-family: 'Courier New', Courier, monospace;
+      color: rgba(200,170,100,0.40);
+      text-shadow: 0 0 12px rgba(200,170,100,0.12);
+      letter-spacing: 8px;
+    }
+    .topbar .now-playing {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      text-shadow: 0 0 14px rgba(255,214,0,0.5);
+    }
+    .topbar .controls button {
+      background: linear-gradient(180deg, #1a1810 0%, #0c0a06 100%);
+      border: 2px solid rgba(200,170,100,0.10);
       border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .topbar .controls button:active { box-shadow: inset 0 3px 6px rgba(0,0,0,0.6); transform: translateY(1px); }
+
+    .main {
+      background: linear-gradient(180deg, rgba(20,18,14,0.5) 0%, rgba(10,8,6,0.8) 100%);
+      box-shadow: inset 0 0 80px rgba(0,0,0,0.3);
+    }
+
+    /* Module section tabs */
+    .cat-tabs button {
+      background: linear-gradient(180deg, #1a1610 0%, #0e0c08 100%);
+      border: 2px solid rgba(200,170,100,0.10);
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .cat-tabs button:hover {
+      border-color: rgba(200,170,100,0.16);
+      background: linear-gradient(180deg, #1e1a12 0%, #100e0a 100%);
+    }
+    .cat-tabs button:active {
+      box-shadow: inset 0 4px 8px rgba(0,0,0,0.6);
+      transform: translateY(2px);
+    }
+    .cat-tabs button.active {
+      background: linear-gradient(180deg, #1a180e 0%, #10100a 100%);
+      border-color: rgba(255,214,0,0.30);
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.4), 0 0 18px rgba(255,214,0,0.1);
+      text-shadow: 0 0 10px rgba(255,214,0,0.5);
+    }
+
+    /* Pad grid - recessed module bay */
+    .pad-grid {
+      background: rgba(0,0,0,0.25);
+      border: 3px solid rgba(200,170,100,0.06);
+      border-radius: 8px;
+      padding: 6px;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.5), inset 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .pad {
+      background: linear-gradient(180deg, #181510 0%, #0a0908 100%);
+      border: 2px solid rgba(200,170,100,0.10);
+      border-radius: 5px;
+      box-shadow:
+        0 4px 10px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .pad:hover {
+      border-color: rgba(200,170,100,0.18);
+      background: linear-gradient(180deg, #1c1812 0%, #0e0c0a 100%);
     }
     .pad:active, .pad.playing {
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), 0 0 14px var(--accent-glow);
-      transform: scale(0.97);
+      background: linear-gradient(180deg, #1a180e 0%, #100e08 100%);
+      border-color: rgba(255,214,0,0.30);
+      box-shadow:
+        inset 0 4px 12px rgba(0,0,0,0.6),
+        0 0 22px rgba(255,214,0,0.12);
+      transform: scale(0.96);
     }
-    .pad-name { font-family: 'Courier New', Courier, monospace; }
+    .pad-name {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .pad-freq {
+      font-family: 'Courier New', Courier, monospace;
+      color: rgba(255,214,0,0.35);
+      text-shadow: 0 0 8px rgba(255,214,0,0.15);
+    }
+
+    /* Hardware fader channels */
+    .fx-label {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      color: rgba(200,170,100,0.40);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
     .fx-slider input[type=range], .vol-row input[type=range] {
-      height: 6px; background: rgba(0,0,0,0.45); border: 1px solid rgba(200,170,100,0.08);
-      border-radius: 2px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      height: 10px;
+      background: #060504;
+      border: 2px solid rgba(200,170,100,0.06);
+      border-radius: 3px;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.8);
     }
     .fx-slider input[type=range]::-webkit-slider-thumb, .vol-row input[type=range]::-webkit-slider-thumb {
-      background: var(--knob); box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
-      border: 1px solid rgba(120,100,60,0.4); width: 26px; height: 26px;
+      background: linear-gradient(135deg, #d0aa60 0%, #8a7040 25%, #e0c070 50%, #8a7040 75%, #d0aa60 100%);
+      border: 2px solid rgba(90,70,30,0.7);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.25), 0 1px 0 rgba(200,170,100,0.1);
+      width: 30px; height: 30px;
     }
-    .fx-label { font-family: 'Courier New', Courier, monospace; }
+
+    /* Waveform selector switches */
     .wave-btn {
+      background: linear-gradient(180deg, #1a1610 0%, #0c0a06 100%);
+      border: 2px solid rgba(200,170,100,0.10);
       border-radius: 5px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
-    }
-    .wave-btn:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); transform: translateY(1px); }
-    .wave-btn.active { box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 8px var(--accent-glow); }
-    .seq-step {
-      border-radius: 3px; background: rgba(0,0,0,0.3);
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
-    }
-    .seq-step.on { background: rgba(255,214,0,0.18); box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 0 6px var(--accent-glow); }
-    .seq-step.current { box-shadow: 0 0 0 1.5px var(--accent), 0 0 8px var(--accent-glow); }
-    .seq-bar button, .tools-row button {
-      border-radius: 5px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
       font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
     }
-    .seq-bar button:active, .tools-row button:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); transform: translateY(1px); }
-    .seq-bar button.active { box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 8px var(--accent-glow); }
+    .wave-btn:hover { border-color: rgba(200,170,100,0.16); }
+    .wave-btn:active {
+      box-shadow: inset 0 3px 6px rgba(0,0,0,0.6);
+      transform: translateY(2px);
+    }
+    .wave-btn.active {
+      border-color: rgba(255,214,0,0.30);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 0 14px rgba(255,214,0,0.12);
+      text-shadow: 0 0 10px rgba(255,214,0,0.6);
+    }
+
+    /* LED sequencer step grid */
+    .seq-step {
+      background: #050404;
+      border: 2px solid rgba(200,170,100,0.05);
+      border-radius: 3px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .seq-step.on {
+      background: rgba(255,214,0,0.14);
+      border-color: rgba(255,214,0,0.22);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.3), 0 0 10px rgba(255,214,0,0.12);
+    }
+    .seq-step.current {
+      box-shadow: 0 0 0 2px var(--accent), 0 0 14px rgba(255,214,0,0.25);
+    }
+
+    /* Panel control buttons */
+    .seq-bar button, .tools-row button {
+      background: linear-gradient(180deg, #181510 0%, #0c0a06 100%);
+      border: 2px solid rgba(200,170,100,0.08);
+      border-radius: 5px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+    }
+    .seq-bar button:hover, .tools-row button:hover { border-color: rgba(200,170,100,0.14); }
+    .seq-bar button:active, .tools-row button:active {
+      box-shadow: inset 0 4px 8px rgba(0,0,0,0.6);
+      transform: translateY(2px);
+    }
+    .seq-bar button.active {
+      border-color: rgba(255,214,0,0.28);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 0 14px rgba(255,214,0,0.1);
+      text-shadow: 0 0 8px rgba(255,214,0,0.5);
+    }
+
+    /* BPM readout */
+    .bpm-row {
+      font-family: 'Courier New', Courier, monospace;
+      color: rgba(255,214,0,0.5);
+      text-shadow: 0 0 8px rgba(255,214,0,0.2);
+    }
     .bpm-row input[type=range] {
-      height: 5px; background: rgba(0,0,0,0.4); border: 1px solid rgba(200,170,100,0.08);
-      border-radius: 2px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+      height: 8px;
+      background: #050404;
+      border: 2px solid rgba(200,170,100,0.06);
+      border-radius: 2px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.6);
     }
     .bpm-row input[type=range]::-webkit-slider-thumb {
-      background: var(--knob); box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
-      border: 1px solid rgba(120,100,60,0.4);
+      background: linear-gradient(135deg, #c8aa60 0%, #8a7040 50%, #c8aa60 100%);
+      border: 2px solid rgba(90,70,30,0.7);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+      width: 26px; height: 26px;
     }
-    .info-bar { border-top-color: rgba(200,170,100,0.08); }
+
+    .info-bar {
+      font-family: 'Courier New', Courier, monospace;
+      border-top: 3px solid rgba(200,170,100,0.06);
+    }
+
+    /* Preset modal */
+    .modal {
+      background: #0c0a08;
+      border: 3px solid rgba(200,170,100,0.10);
+      border-radius: 6px;
+      box-shadow: 0 12px 50px rgba(0,0,0,0.8);
+    }
+    .modal h3 { font-family: 'Courier New', Courier, monospace; }
+    .modal input[type=text] {
+      background: #060504;
+      border: 2px solid rgba(200,170,100,0.08);
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .preset-item {
+      background: rgba(0,0,0,0.3);
+      border: 2px solid rgba(200,170,100,0.06);
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .preset-item:hover { border-color: rgba(200,170,100,0.14); }
+    .modal-btns button {
+      font-family: 'Courier New', Courier, monospace;
+      border: 2px solid rgba(200,170,100,0.08);
+    }
   </style>
 </head>
 <body>
