@@ -49,6 +49,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   color:var(--text-muted);font-size:11px;cursor:pointer;font-family:inherit;min-width:28px;text-align:center}
 .oct-btn:active{color:var(--accent);border-color:var(--accent)}
 
+/* ── Engine macro bar ── */
+.engine-bar{display:flex;gap:1px;padding:4px 6px;overflow-x:auto;flex-shrink:0;
+  background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);
+  scrollbar-width:none;-ms-overflow-style:none}
+.engine-bar::-webkit-scrollbar{display:none}
+.knob{display:flex;flex-direction:column;align-items:center;gap:0;min-width:44px;
+  padding:2px 3px;flex:1;flex-shrink:0}
+.knob .lbl{font-size:7px;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;line-height:1}
+.knob input[type=range]{width:100%;min-width:32px;height:3px;-webkit-appearance:none;appearance:none;
+  background:var(--border);border-radius:2px;outline:none;margin:3px 0 1px}
+.knob input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;
+  border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+.knob .val{font-size:7px;color:var(--accent);font-variant-numeric:tabular-nums;
+  letter-spacing:0.5px;line-height:1;opacity:0.7}
+
 .pad-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:6px;
   min-height:0;align-content:center;max-width:480px;margin:0 auto;width:100%}
 .pad{border-radius:10px;background:var(--pad-bg);border:1px solid var(--border);
@@ -123,7 +138,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;text-transform:uppercase}
 .toast.show{opacity:1}
 
-@media(max-width:380px){.pad .nm{font-size:9px}.transport button{font-size:9px;padding:9px 2px}.step{width:18px;height:24px}}
+@media(max-width:380px){.pad .nm{font-size:9px}.transport button{font-size:9px;padding:9px 2px}
+  .step{width:18px;height:24px}.knob{min-width:38px}}
 @media(min-width:600px){.pad-grid{max-width:380px}}
 @media(min-height:700px){.pad-grid{gap:8px;padding:10px}}
 </style>
@@ -131,9 +147,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
 <body>
 <div id="app">
   <div class="topbar">
-    <a href="/apps">← apps</a>
+    <a href="/apps">&#8592; apps</a>
     <span class="title">SYNTH</span>
-    <button id="shareBtn" aria-label="share">↗</button>
+    <button id="shareBtn" aria-label="share">&#8599;</button>
   </div>
   <div class="ctrl-bar">
     <span class="lbl">BPM</span><span class="val" id="bpmV">120</span>
@@ -145,9 +161,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
     <div class="scale-btn" id="rootBtn"><span class="lbl">ROOT</span><span id="rootV">C</span></div>
     <div class="scale-btn" id="scaleBtn"><span class="lbl">SCALE</span><span id="scaleV">MINOR</span></div>
     <div style="flex:1"></div>
-    <div class="oct-btn" id="octDn">−</div>
+    <div class="oct-btn" id="octDn">&#8722;</div>
     <span class="val" id="octV" style="font-size:10px;min-width:32px;color:var(--accent)">OCT 3</span>
     <div class="oct-btn" id="octUp">+</div>
+  </div>
+  <div class="engine-bar">
+    <div class="knob"><span class="lbl">CUT</span><input type="range" id="cutR" min="0" max="100" value="100"><span class="val" id="cutV">20k</span></div>
+    <div class="knob"><span class="lbl">RES</span><input type="range" id="resR" min="0" max="100" value="0"><span class="val" id="resV">0</span></div>
+    <div class="knob"><span class="lbl">ATK</span><input type="range" id="atkR" min="0" max="100" value="27"><span class="val" id="atkV">8ms</span></div>
+    <div class="knob"><span class="lbl">DEC</span><input type="range" id="decR" min="0" max="100" value="38"><span class="val" id="decV">100ms</span></div>
+    <div class="knob"><span class="lbl">SUS</span><input type="range" id="susR" min="0" max="100" value="100"><span class="val" id="susV">100%</span></div>
+    <div class="knob"><span class="lbl">REL</span><input type="range" id="relR" min="0" max="100" value="46"><span class="val" id="relV">180ms</span></div>
+    <div class="knob"><span class="lbl">VRB</span><input type="range" id="vrbR" min="0" max="100" value="36"><span class="val" id="vrbV">36</span></div>
+    <div class="knob"><span class="lbl">DLY</span><input type="range" id="dlyR" min="0" max="100" value="0"><span class="val" id="dlyV">0</span></div>
   </div>
   <div class="pad-grid" id="pGrid"></div>
   <div class="pattern-bar">
@@ -159,14 +185,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   </div>
   <div class="step-wrap" id="stepW"></div>
   <div class="transport">
-    <button id="playB">▶ play</button>
-    <button id="clrB">✕ clr</button>
-    <button id="soundB">♪ sound</button>
-    <button id="wavB">⬇ wav</button>
+    <button id="playB">&#9654; play</button>
+    <button id="clrB">&#10005; clr</button>
+    <button id="soundB">&#9834; sound</button>
+    <button id="wavB">&#11015; wav</button>
   </div>
   <div class="lib-ov" id="libOv">
     <div class="lib-modal">
-      <div class="lib-hdr"><span id="libTitle">SOUND LIBRARY</span><button id="libX">✕</button></div>
+      <div class="lib-hdr"><span id="libTitle">SOUND LIBRARY</span><button id="libX">&#10005;</button></div>
       <div class="lib-cats" id="libCats"></div>
       <div class="lib-list" id="libList"></div>
     </div>
@@ -197,18 +223,19 @@ var NOTE_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 var NUM=16,selPad=0,bpm=120,swing=0,stepLen=16,direction='fwd',
     playing=false,curStep=0,pingFwd=true,schedTimer=null,nextTime=0,
     libCat=0,curBank=0,
-    rootNote=0,scaleIdx=1,baseOctave=3; // C MINOR from octave 3
-// pattern: 0=off, 1=on per pad per step (polyphonic)
+    rootNote=0,scaleIdx=1,baseOctave=3;
 var pattern=[];
 for(var p=0;p<NUM;p++)pattern.push(new Uint8Array(32));
-// Pad notes (MIDI numbers) derived from scale
 var padNotes=new Array(NUM);
-// Global sound
 var globalSoundKey=null,globalSoundBuffer=null,globalSoundName='---';
+
+// Engine macro state (slider positions 0-100)
+var engCut=100,engRes=0,engAtk=27,engDec=38,engSus=100,engRel=46,engVrb=36,engDly=0;
+// Derived ADSR values (computed by applyEngine)
+var adsrA=0.008,adsrD=0.1,adsrS=1.0,adsrR=0.18;
 
 function getScaleName(){return SCALE_NAMES[scaleIdx];}
 function getScaleIntervals(){return SCALES[getScaleName()];}
-
 function computePadNotes(){
   var intervals=getScaleIntervals();
   var base=rootNote+baseOctave*12;
@@ -223,13 +250,32 @@ function midiToName(midi){
   return NOTE_NAMES[note]+oct;
 }
 
+/* ═══ ENGINE MAPPING ═══ */
+function mapCut(v){return 200*Math.pow(100,v/100);}      // 200-20000 Hz
+function mapRes(v){return v*0.2;}                          // 0-20 Q
+function mapAtk(v){return 0.001*Math.pow(2000,v/100);}    // 1ms-2s
+function mapDec(v){return 0.01*Math.pow(300,v/100);}      // 10ms-3s
+function mapSus(v){return v/100;}                          // 0-1
+function mapRel(v){return 0.01*Math.pow(500,v/100);}      // 10ms-5s
+function mapVrb(v){return v/100*0.5;}                      // 0-0.5
+function mapDly(v){return v/100*0.5;}                      // 0-0.5
+
+function fmtMs(s){return s<1?Math.round(s*1000)+'ms':s.toFixed(1)+'s';}
+function fmtHz(hz){return hz>=1000?(hz/1000).toFixed(1)+'k':Math.round(hz)+'';}
+
 /* ═══ AUDIO GRAPH ═══ */
 var master=ctx.createGain();master.gain.value=0.8;
+
+// Filter on master bus
+var lpFilter=ctx.createBiquadFilter();
+lpFilter.type='lowpass';lpFilter.frequency.value=20000;lpFilter.Q.value=0;
+
 var comp=ctx.createDynamicsCompressor();
 comp.threshold.value=-8;comp.ratio.value=4;comp.attack.value=0.003;comp.release.value=0.12;
 var limiter=ctx.createDynamicsCompressor();
 limiter.threshold.value=-1;limiter.ratio.value=20;limiter.attack.value=0.001;limiter.release.value=0.05;
-master.connect(comp);comp.connect(limiter);limiter.connect(ctx.destination);
+
+// Reverb
 var reverbNode=ctx.createConvolver(),reverbGain=ctx.createGain();
 reverbGain.gain.value=0.18;
 function makeReverbIR(len,decay){
@@ -239,6 +285,31 @@ function makeReverbIR(len,decay){
 }
 reverbNode.buffer=makeReverbIR(2.0,0.4);
 reverbNode.connect(reverbGain);reverbGain.connect(master);
+
+// Delay (tempo-synced, dotted eighth)
+var delayNode=ctx.createDelay(2.0);
+delayNode.delayTime.value=0.375;
+var delayFB=ctx.createGain();delayFB.gain.value=0.35;
+var delayWet=ctx.createGain();delayWet.gain.value=0;
+delayNode.connect(delayFB);delayFB.connect(delayNode);
+delayNode.connect(delayWet);
+
+// Routing: master → filter → comp → limiter → dest
+//          master → delay → delayWet → filter
+master.connect(lpFilter);
+master.connect(delayNode);
+delayWet.connect(lpFilter);
+lpFilter.connect(comp);comp.connect(limiter);limiter.connect(ctx.destination);
+
+function syncDelay(){delayNode.delayTime.value=Math.min(60/bpm*0.75,2.0);}
+
+function applyEngine(){
+  lpFilter.frequency.setTargetAtTime(mapCut(engCut),ctx.currentTime,0.02);
+  lpFilter.Q.setTargetAtTime(mapRes(engRes),ctx.currentTime,0.02);
+  adsrA=mapAtk(engAtk);adsrD=mapDec(engDec);adsrS=mapSus(engSus);adsrR=mapRel(engRel);
+  reverbGain.gain.setTargetAtTime(mapVrb(engVrb),ctx.currentTime,0.02);
+  delayWet.gain.setTargetAtTime(mapDly(engDly),ctx.currentTime,0.02);
+}
 
 /* ═══ DSP ═══ */
 function makeBuffer(fn,dur){
@@ -290,7 +361,7 @@ function setGlobalSound(key,name,buffer){
   globalSoundKey=key;globalSoundName=name;globalSoundBuffer=buffer;
 }
 
-/* ═══ SUSTAIN ═══ */
+/* ═══ SUSTAIN + ADSR ═══ */
 var activeVoices={};
 function noteOn(padIdx,pointerId){
   if(!globalSoundBuffer)return;
@@ -302,8 +373,10 @@ function noteOn(padIdx,pointerId){
   var dur=globalSoundBuffer.duration;
   src.loopStart=Math.min(0.08,dur*0.1);src.loopEnd=Math.max(dur-0.01,dur*0.9);
   var g=ctx.createGain();
-  g.gain.setValueAtTime(0,ctx.currentTime);
-  g.gain.linearRampToValueAtTime(0.7,ctx.currentTime+0.008);
+  var now=ctx.currentTime,peak=0.7;
+  g.gain.setValueAtTime(0,now);
+  g.gain.linearRampToValueAtTime(peak,now+adsrA);
+  g.gain.linearRampToValueAtTime(peak*adsrS,now+adsrA+adsrD);
   src.connect(g);g.connect(master);g.connect(reverbNode);
   src.start();
   activeVoices[pointerId]={src:src,gain:g,pad:padIdx};
@@ -313,8 +386,8 @@ function noteOff(pointerId){
   var now=ctx.currentTime;
   v.gain.gain.cancelScheduledValues(now);
   v.gain.gain.setValueAtTime(v.gain.gain.value,now);
-  v.gain.gain.linearRampToValueAtTime(0,now+0.18);
-  var s=v.src;setTimeout(function(){try{s.stop();}catch(e){}},220);
+  v.gain.gain.linearRampToValueAtTime(0,now+adsrR);
+  var s=v.src;setTimeout(function(){try{s.stop();}catch(e){}},Math.max(250,(adsrR+0.05)*1000));
   delete activeVoices[pointerId];
 }
 function setGlow(el,p){
@@ -323,15 +396,19 @@ function setGlow(el,p){
   el.style.background='radial-gradient(circle,rgba(255,0,128,'+(p*0.35)+') 0%,var(--surface) 70%)';
 }
 function clearGlow(el){el.style.boxShadow='';el.style.background='';}
-// Fire-and-forget for sequencer
+// Fire-and-forget for sequencer (ADSR attack+decay, natural buffer playback)
 function triggerNote(padIdx,time){
   if(!globalSoundBuffer)return;
   var midi=padNotes[padIdx],semi=midi-60;
   var src=ctx.createBufferSource();src.buffer=globalSoundBuffer;
   src.playbackRate.value=Math.pow(2,semi/12);
-  var g=ctx.createGain();g.gain.value=0.7;
+  var g=ctx.createGain();
+  var t=time||ctx.currentTime,peak=0.7;
+  g.gain.setValueAtTime(0,t);
+  g.gain.linearRampToValueAtTime(peak,t+adsrA);
+  g.gain.linearRampToValueAtTime(peak*adsrS,t+adsrA+adsrD);
   src.connect(g);g.connect(master);g.connect(reverbNode);
-  if(time)src.start(time);else src.start();
+  src.start(t);
 }
 
 /* ═══ SEQUENCER ═══ */
@@ -374,20 +451,33 @@ function stopSeq(){
 function exportWAV(){
   if(!globalSoundBuffer){showToast('no sound selected');return;}
   var dur=0;for(var s=0;s<stepLen;s++)dur+=stepDur(s);
-  dur+=2.0; // reverb tail
+  dur+=Math.max(2.0,adsrR+1.5);
   var sr=ctx.sampleRate,len=Math.ceil(sr*dur);
   var offline=new OfflineAudioContext(2,len,sr);
   var oMaster=offline.createGain();oMaster.gain.value=0.8;
+  // Filter
+  var oFilter=offline.createBiquadFilter();
+  oFilter.type='lowpass';oFilter.frequency.value=mapCut(engCut);oFilter.Q.value=mapRes(engRes);
   var oComp=offline.createDynamicsCompressor();
   oComp.threshold.value=-8;oComp.ratio.value=4;oComp.attack.value=0.003;oComp.release.value=0.12;
   var oLim=offline.createDynamicsCompressor();
   oLim.threshold.value=-1;oLim.ratio.value=20;oLim.attack.value=0.001;oLim.release.value=0.05;
-  oMaster.connect(oComp);oComp.connect(oLim);oLim.connect(offline.destination);
-  var oRev=offline.createConvolver(),oRevG=offline.createGain();oRevG.gain.value=0.18;
+  // Reverb
+  var oRev=offline.createConvolver(),oRevG=offline.createGain();
+  oRevG.gain.value=mapVrb(engVrb);
   var rIR=offline.createBuffer(2,Math.floor(sr*2),sr);
   for(var c=0;c<2;c++){var rd=rIR.getChannelData(c);for(var i=0;i<rd.length;i++)rd[i]=(Math.random()*2-1)*Math.exp(-i/(sr*0.4));}
   oRev.buffer=rIR;oRev.connect(oRevG);oRevG.connect(oMaster);
-  // schedule notes
+  // Delay
+  var oDly=offline.createDelay(2.0);
+  oDly.delayTime.value=Math.min(60/bpm*0.75,2.0);
+  var oDlyFB=offline.createGain();oDlyFB.gain.value=0.35;
+  var oDlyWet=offline.createGain();oDlyWet.gain.value=mapDly(engDly);
+  oDly.connect(oDlyFB);oDlyFB.connect(oDly);oDly.connect(oDlyWet);
+  // Routing
+  oMaster.connect(oFilter);oMaster.connect(oDly);oDlyWet.connect(oFilter);
+  oFilter.connect(oComp);oComp.connect(oLim);oLim.connect(offline.destination);
+  // Schedule notes with ADSR
   var time=0,localStep=direction==='rev'?stepLen-1:0,localPing=true;
   for(var s=0;s<stepLen;s++){
     for(var p=0;p<NUM;p++){
@@ -395,7 +485,11 @@ function exportWAV(){
         var midi=padNotes[p],semi=midi-60;
         var src=offline.createBufferSource();src.buffer=globalSoundBuffer;
         src.playbackRate.value=Math.pow(2,semi/12);
-        var g=offline.createGain();g.gain.value=0.7;
+        var g=offline.createGain();
+        var peak=0.7;
+        g.gain.setValueAtTime(0,time);
+        g.gain.linearRampToValueAtTime(peak,time+adsrA);
+        g.gain.linearRampToValueAtTime(peak*adsrS,time+adsrA+adsrD);
         src.connect(g);g.connect(oMaster);g.connect(oRev);src.start(time);
       }
     }
@@ -440,6 +534,8 @@ function saveBank(slot){
   var data={bpm:bpm,swing:swing,stepLen:stepLen,direction:direction,
     rootNote:rootNote,scaleIdx:scaleIdx,baseOctave:baseOctave,
     globalSoundKey:globalSoundKey,globalSoundName:globalSoundName,
+    engCut:engCut,engRes:engRes,engAtk:engAtk,engDec:engDec,
+    engSus:engSus,engRel:engRel,engVrb:engVrb,engDly:engDly,
     pattern:pattern.map(function(p){return Array.from(p);})
   };
   try{localStorage.setItem(BKEY+slot,JSON.stringify(data));}catch(e){}
@@ -456,8 +552,17 @@ function loadBank(slot){
     if(data.globalSoundKey&&libBuffers[data.globalSoundKey]){
       setGlobalSound(data.globalSoundKey,data.globalSoundName,libBuffers[data.globalSoundKey]);
     }
+    // Restore engine
+    engCut=data.engCut!==undefined?data.engCut:100;
+    engRes=data.engRes!==undefined?data.engRes:0;
+    engAtk=data.engAtk!==undefined?data.engAtk:27;
+    engDec=data.engDec!==undefined?data.engDec:38;
+    engSus=data.engSus!==undefined?data.engSus:100;
+    engRel=data.engRel!==undefined?data.engRel:46;
+    engVrb=data.engVrb!==undefined?data.engVrb:36;
+    engDly=data.engDly!==undefined?data.engDly:0;
     for(var i=0;i<NUM;i++)if(data.pattern&&data.pattern[i])for(var s=0;s<32;s++)pattern[i][s]=data.pattern[i][s]||0;
-    curBank=slot;computePadNotes();
+    curBank=slot;computePadNotes();applyEngine();syncDelay();
     bpmREl.value=bpm;bpmVEl.textContent=bpm;swgREl.value=swing;swgVEl.textContent=swing+'%';
     renderAll();return true;
   }catch(e){return false;}
@@ -479,6 +584,15 @@ var pGridEl=document.getElementById('pGrid'),stepWEl=document.getElementById('st
     libListEl=document.getElementById('libList'),libXEl=document.getElementById('libX'),
     libTitleEl=document.getElementById('libTitle'),
     toastEl=document.getElementById('toast'),shareBtnEl=document.getElementById('shareBtn');
+// Engine knobs
+var cutREl=document.getElementById('cutR'),cutVEl=document.getElementById('cutV'),
+    resREl=document.getElementById('resR'),resVEl=document.getElementById('resV'),
+    atkREl=document.getElementById('atkR'),atkVEl=document.getElementById('atkV'),
+    decREl=document.getElementById('decR'),decVEl=document.getElementById('decV'),
+    susREl=document.getElementById('susR'),susVEl=document.getElementById('susV'),
+    relREl=document.getElementById('relR'),relVEl=document.getElementById('relV'),
+    vrbREl=document.getElementById('vrbR'),vrbVEl=document.getElementById('vrbV'),
+    dlyREl=document.getElementById('dlyR'),dlyVEl=document.getElementById('dlyV');
 
 function showToast(msg){toastEl.textContent=msg;toastEl.classList.add('show');setTimeout(function(){toastEl.classList.remove('show');},1800);}
 
@@ -519,7 +633,6 @@ function renderSteps(){
   for(var s=0;s<stepLen;s++){
     var el=document.createElement('div');
     var on=pattern[selPad][s]>0;
-    // Check if other pads also have this step active (polyphonic indicator)
     var multi=false;
     if(on)for(var p=0;p<NUM;p++){if(p!==selPad&&pattern[p][s]>0){multi=true;break;}}
     el.className='step'+(on?' on':'')+(s%4===0?' beat':'')+(multi?' multi':'');
@@ -595,11 +708,21 @@ function renderScaleUI(){
   scaleVEl.textContent=getScaleName();
   octVEl.textContent='OCT '+baseOctave;
 }
+function renderEngine(){
+  cutREl.value=engCut;cutVEl.textContent=fmtHz(mapCut(engCut));
+  resREl.value=engRes;resVEl.textContent=engRes;
+  atkREl.value=engAtk;atkVEl.textContent=fmtMs(mapAtk(engAtk));
+  decREl.value=engDec;decVEl.textContent=fmtMs(mapDec(engDec));
+  susREl.value=engSus;susVEl.textContent=engSus+'%';
+  relREl.value=engRel;relVEl.textContent=fmtMs(mapRel(engRel));
+  vrbREl.value=engVrb;vrbVEl.textContent=engVrb;
+  dlyREl.value=engDly;dlyVEl.textContent=engDly;
+}
 function renderTransport(){
-  playBEl.textContent=playing?'■ stop':'▶ play';
+  playBEl.textContent=playing?'\u25A0 stop':'\u25B6 play';
   playBEl.classList.toggle('playing',playing);
 }
-function renderAll(){renderPads();renderSteps();renderLenBtns();renderDirBtns();renderBankBtns();renderScaleUI();renderTransport();}
+function renderAll(){renderPads();renderSteps();renderLenBtns();renderDirBtns();renderBankBtns();renderScaleUI();renderEngine();renderTransport();}
 
 /* ═══ SOUND MODAL ═══ */
 function openLib(){
@@ -625,7 +748,6 @@ function renderLibList(){
     (function(sound){el.addEventListener('pointerdown',function(e){
       e.preventDefault();if(ctx.state==='suspended')ctx.resume();
       setGlobalSound(sound.key,sound.name,sound.buffer);
-      // Play a preview at middle note
       triggerNote(Math.min(7,NUM-1));
       libTitleEl.textContent='SOUND: '+globalSoundName;
       renderLibList();renderPads();
@@ -635,7 +757,7 @@ function renderLibList(){
 }
 
 /* ═══ EVENTS ═══ */
-bpmREl.addEventListener('input',function(){bpm=+bpmREl.value;bpmVEl.textContent=bpm;});
+bpmREl.addEventListener('input',function(){bpm=+bpmREl.value;bpmVEl.textContent=bpm;syncDelay();});
 swgREl.addEventListener('input',function(){swing=+swgREl.value;swgVEl.textContent=swing+'%';});
 rootBtnEl.addEventListener('pointerdown',function(e){
   e.preventDefault();rootNote=(rootNote+1)%12;computePadNotes();renderScaleUI();renderPads();
@@ -649,6 +771,16 @@ octDnEl.addEventListener('pointerdown',function(e){
 octUpEl.addEventListener('pointerdown',function(e){
   e.preventDefault();if(baseOctave<6){baseOctave++;computePadNotes();renderScaleUI();renderPads();}
 });
+// Engine knobs
+cutREl.addEventListener('input',function(){engCut=+cutREl.value;applyEngine();cutVEl.textContent=fmtHz(mapCut(engCut));});
+resREl.addEventListener('input',function(){engRes=+resREl.value;applyEngine();resVEl.textContent=engRes;});
+atkREl.addEventListener('input',function(){engAtk=+atkREl.value;applyEngine();atkVEl.textContent=fmtMs(adsrA);});
+decREl.addEventListener('input',function(){engDec=+decREl.value;applyEngine();decVEl.textContent=fmtMs(adsrD);});
+susREl.addEventListener('input',function(){engSus=+susREl.value;applyEngine();susVEl.textContent=engSus+'%';});
+relREl.addEventListener('input',function(){engRel=+relREl.value;applyEngine();relVEl.textContent=fmtMs(adsrR);});
+vrbREl.addEventListener('input',function(){engVrb=+vrbREl.value;applyEngine();vrbVEl.textContent=engVrb;});
+dlyREl.addEventListener('input',function(){engDly=+dlyREl.value;applyEngine();dlyVEl.textContent=engDly;});
+
 playBEl.addEventListener('pointerdown',function(e){e.preventDefault();if(playing)stopSeq();else startSeq();});
 clrBEl.addEventListener('pointerdown',function(e){e.preventDefault();for(var s=0;s<32;s++)pattern[selPad][s]=0;renderSteps();});
 soundBEl.addEventListener('pointerdown',function(e){e.preventDefault();openLib();});
@@ -657,7 +789,7 @@ libXEl.addEventListener('pointerdown',function(e){e.preventDefault();closeLib();
 libOvEl.addEventListener('pointerdown',function(e){if(e.target===libOvEl)closeLib();});
 shareBtnEl.addEventListener('pointerdown',function(e){
   e.preventDefault();
-  if(navigator.share)navigator.share({title:'SYNTH — cbay.ing',url:location.href}).catch(function(){});
+  if(navigator.share)navigator.share({title:'SYNTH \u2014 cbay.ing',url:location.href}).catch(function(){});
   else navigator.clipboard.writeText(location.href).then(function(){showToast('link copied');}).catch(function(){});
 });
 
@@ -680,9 +812,9 @@ document.addEventListener('keyup',function(e){
 
 /* ═══ INIT ═══ */
 initLibrary();computePadNotes();
-// Default sound: KEYS > PIANO
 var dflt=LIB[1].sounds[0];
 setGlobalSound(dflt.key,dflt.name,dflt.buffer);
+applyEngine();syncDelay();
 renderAll();
 
 })();
