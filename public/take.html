@@ -500,6 +500,400 @@
       pointer-events: none;
     }
     .share-toast.show { opacity: 1; }
+
+    /* ══════════════════════════════════════════════════════════
+       CINEMA CAMERA BODY — Heavy Skeuomorphic Skin
+       ══════════════════════════════════════════════════════════ */
+
+    html, body {
+      background:
+        repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(255,255,255,0.006) 4px, rgba(255,255,255,0.006) 5px),
+        linear-gradient(145deg, #100c08, #0c0806, #0e0a06, #100c08);
+      font-family: 'Courier New', 'Consolas', monospace;
+    }
+
+    #app {
+      max-width: 640px;
+      margin: 0 auto;
+      border-left: 5px solid #1e1610;
+      border-right: 5px solid #1e1610;
+      box-shadow:
+        inset 2px 0 0 #2a2018,
+        inset -2px 0 0 #2a2018,
+        8px 0 24px rgba(0,0,0,0.6),
+        -8px 0 24px rgba(0,0,0,0.6);
+    }
+
+    /* ── Camera Top Plate ── */
+    .topbar {
+      background:
+        linear-gradient(180deg, #201810 0%, #161008 40%, #120c06 100%);
+      border-bottom: 3px solid #3a2a18;
+      box-shadow:
+        0 4px 10px rgba(0,0,0,0.7),
+        inset 0 1px 0 rgba(255,200,100,0.04);
+      backdrop-filter: none;
+      height: 52px;
+    }
+
+    .topbar a {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 0 0 6px rgba(255,136,0,0.3);
+    }
+
+    .topbar .title {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 6px;
+      color: rgba(255,136,0,0.45);
+      text-shadow: 0 0 8px rgba(255,136,0,0.2);
+    }
+
+    .topbar button {
+      background: linear-gradient(180deg, #2a2018, #1a1208, #2a2018);
+      border: 2px solid #3a2a18;
+      border-radius: 6px;
+      box-shadow:
+        0 3px 6px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,200,100,0.05);
+      color: var(--text-dim);
+      transition: all 0.15s;
+    }
+
+    .topbar button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      background: linear-gradient(180deg, #1a1208, #2a2018, #1a1208);
+    }
+
+    /* ── Viewfinder ── */
+    .viewport {
+      border: 3px solid #1e1610;
+      box-shadow:
+        inset 0 0 40px rgba(0,0,0,0.8),
+        inset 0 0 80px rgba(255,136,0,0.01),
+        0 0 1px rgba(255,136,0,0.08);
+      position: relative;
+    }
+
+    /* Film gate frame overlay */
+    .viewport::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 12px solid rgba(0,0,0,0.5);
+      border-image: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.6) 0%,
+        rgba(0,0,0,0.3) 10%,
+        transparent 15%,
+        transparent 85%,
+        rgba(0,0,0,0.3) 90%,
+        rgba(0,0,0,0.6) 100%
+      ) 1;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* Scan lines */
+    .viewport::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0,0,0,0.06) 3px,
+          rgba(0,0,0,0.06) 4px
+        );
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* ── HUD ── */
+    .hud-mode {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: rgba(255,136,0,0.85);
+      text-shadow:
+        0 0 4px rgba(255,136,0,0.5),
+        0 0 12px rgba(255,136,0,0.2);
+      background: rgba(0,0,0,0.5);
+      padding: 2px 8px;
+      border: 1px solid rgba(255,136,0,0.12);
+    }
+
+    .hud-fps {
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      color: rgba(255,136,0,0.3);
+      text-shadow: 0 0 4px rgba(255,136,0,0.1);
+    }
+
+    .hud-rec .timer {
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 8px rgba(255,136,0,0.4);
+    }
+
+    .hud-rec .dot {
+      box-shadow:
+        0 0 6px rgba(255,68,0,0.6),
+        0 0 16px rgba(255,68,0,0.3);
+    }
+
+    /* ── Film Strip Timeline ── */
+    .timeline {
+      background:
+        repeating-linear-gradient(90deg,
+          transparent, transparent 8px,
+          rgba(255,255,255,0.015) 8px, rgba(255,255,255,0.015) 9px
+        ),
+        linear-gradient(180deg, #0c0806, #100c08, #0c0806);
+      border-top: 3px solid #2a2018;
+      border-bottom: 2px solid #1e1610;
+      box-shadow:
+        inset 0 3px 6px rgba(0,0,0,0.5),
+        0 2px 4px rgba(0,0,0,0.3);
+      height: 58px;
+    }
+
+    .timeline .empty-msg {
+      font-family: 'Courier New', monospace;
+      letter-spacing: 3px;
+      color: rgba(255,136,0,0.15);
+    }
+
+    .clip-thumb {
+      border: 2px solid #2a2018;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #1a1208, #0e0a06);
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,200,100,0.03);
+      min-width: 56px;
+    }
+
+    .clip-thumb.active {
+      border-color: rgba(255,136,0,0.5);
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.5),
+        0 0 8px rgba(255,136,0,0.15);
+      text-shadow: 0 0 4px rgba(255,136,0,0.3);
+    }
+
+    .clip-thumb .delete-clip {
+      background: #cc4400;
+      border: 1px solid #ff6600;
+      box-shadow: 0 0 6px rgba(255,68,0,0.3);
+    }
+
+    /* ── Control Deck ── */
+    .bottombar {
+      background:
+        linear-gradient(180deg, #100c08 0%, #140e08 30%, #0e0a06 100%);
+      border-top: 3px solid #3a2a18;
+      box-shadow:
+        0 -4px 10px rgba(0,0,0,0.6),
+        inset 0 2px 0 rgba(255,200,100,0.02);
+      padding: 10px 10px 18px;
+    }
+
+    /* ── Mode Switches ── */
+    .modes button {
+      background: linear-gradient(180deg, #221a10, #161008, #221a10);
+      border: 2px solid #30220e;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      box-shadow:
+        0 3px 6px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,200,100,0.03);
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .modes button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .modes button.active {
+      background: linear-gradient(180deg, #1a1408, #201810, #1a1408);
+      border-color: rgba(255,136,0,0.45);
+      color: #FF8800;
+      box-shadow:
+        0 3px 6px rgba(0,0,0,0.5),
+        0 0 10px rgba(255,136,0,0.12),
+        inset 0 0 8px rgba(255,136,0,0.04);
+      text-shadow: 0 0 6px rgba(255,136,0,0.35);
+    }
+
+    /* ── Cinema Record Button ── */
+    .rec-btn {
+      width: 72px; height: 72px;
+      border: 4px solid #aa5500;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(30,20,10,0.8), rgba(10,8,4,0.9));
+      box-shadow:
+        0 4px 12px rgba(0,0,0,0.6),
+        0 0 20px rgba(255,136,0,0.08),
+        inset 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    .rec-btn .inner {
+      width: 48px; height: 48px;
+      background:
+        radial-gradient(circle at 40% 35%, #ff9922, #cc5500 50%, #883300);
+      box-shadow:
+        0 0 10px rgba(255,136,0,0.3),
+        inset 0 2px 4px rgba(255,220,160,0.2);
+    }
+
+    .rec-btn.recording {
+      border-color: #ff4400;
+      box-shadow:
+        0 4px 12px rgba(0,0,0,0.6),
+        0 0 30px rgba(255,68,0,0.2),
+        inset 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    .rec-btn.recording .inner {
+      background: #ff4400;
+      box-shadow:
+        0 0 15px rgba(255,68,0,0.5),
+        0 0 30px rgba(255,68,0,0.2);
+    }
+
+    /* ── UNDO / EXPORT Action Buttons ── */
+    .action-btn {
+      background: linear-gradient(180deg, #221a10, #161008, #221a10);
+      border: 2px solid #30220e;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 2px;
+      box-shadow:
+        0 3px 6px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,200,100,0.03);
+    }
+
+    .action-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+
+    .action-btn.ready {
+      border-color: rgba(255,136,0,0.45);
+      box-shadow:
+        0 3px 6px rgba(0,0,0,0.5),
+        0 0 8px rgba(255,136,0,0.1);
+      text-shadow: 0 0 4px rgba(255,136,0,0.3);
+    }
+
+    /* ── Heavy Fader Knobs ── */
+    .slider-label {
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(255,136,0,0.35);
+      text-shadow: 0 0 4px rgba(255,136,0,0.1);
+    }
+
+    input[type="range"] {
+      height: 8px;
+      background: #0a0806;
+      border: 2px solid #1e1610;
+      border-radius: 4px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      width: 30px; height: 30px;
+      background:
+        radial-gradient(circle at 40% 35%, #d09050, #8a5a30 40%, #4a3018 70%, #2a1a0c);
+      border: 2px solid #8a6030;
+      border-radius: 50%;
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.6),
+        0 0 8px rgba(255,136,0,0.08),
+        inset 0 1px 0 rgba(255,220,160,0.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 30px; height: 30px;
+      background:
+        radial-gradient(circle at 40% 35%, #d09050, #8a5a30 40%, #4a3018 70%, #2a1a0c);
+      border: 2px solid #8a6030;
+      border-radius: 50%;
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.6),
+        0 0 8px rgba(255,136,0,0.08),
+        inset 0 1px 0 rgba(255,220,160,0.15);
+    }
+
+    /* ── Overlay ── */
+    .overlay {
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px),
+        var(--bg);
+    }
+
+    .overlay p {
+      font-family: 'Courier New', monospace;
+      letter-spacing: 3px;
+      text-shadow: 0 0 6px rgba(255,136,0,0.15);
+    }
+
+    .overlay button {
+      background: linear-gradient(180deg, #221a10, #161008, #221a10);
+      border: 2px solid rgba(255,136,0,0.35);
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      box-shadow:
+        0 4px 8px rgba(0,0,0,0.5),
+        0 0 12px rgba(255,136,0,0.08);
+    }
+
+    /* ── Export Overlay ── */
+    .export-overlay {
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px),
+        rgba(6,6,16,0.96);
+    }
+
+    .export-progress {
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 6px rgba(255,136,0,0.3);
+    }
+
+    .export-bar {
+      border: 1px solid #2a2018;
+      background: #0a0806;
+      height: 6px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .export-bar .fill {
+      background: linear-gradient(90deg, #cc5500, #ff8800, #ffaa44);
+      box-shadow: 0 0 8px rgba(255,136,0,0.3);
+      height: 100%;
+    }
+
+    /* ── Share Toast ── */
+    .share-toast {
+      font-family: 'Courier New', monospace;
+      border: 2px solid rgba(255,136,0,0.35);
+      box-shadow: 0 0 16px rgba(255,136,0,0.15);
+    }
   </style>
 </head>
 <body>
