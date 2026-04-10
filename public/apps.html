@@ -148,6 +148,8 @@
     .app-card--tones { --card-accent: var(--mint); --card-border: rgba(0,255,159,0.2); --card-bg: rgba(0,255,159,0.04); --card-glow: rgba(0,255,159,0.08); }
     .app-card--shield { --card-accent: var(--red); --card-border: rgba(255,45,85,0.2); --card-bg: rgba(255,45,85,0.04); --card-glow: rgba(255,45,85,0.08); }
     .app-card--tone-lab { --card-accent: var(--purple); --card-border: rgba(168,85,247,0.2); --card-bg: rgba(168,85,247,0.04); --card-glow: rgba(168,85,247,0.08); }
+    .app-card--synth { --card-accent: #FF0080; --card-border: rgba(255,0,128,0.2); --card-bg: rgba(255,0,128,0.04); --card-glow: rgba(255,0,128,0.08); }
+    .app-card--breaks { --card-accent: #39FF14; --card-border: rgba(57,255,20,0.2); --card-bg: rgba(57,255,20,0.04); --card-glow: rgba(57,255,20,0.08); }
 
     .app-icon {
       font-size: 28px;
@@ -246,6 +248,8 @@
     .app-card:nth-child(4) { animation-delay: 0.2s; }
     .app-card:nth-child(5) { animation-delay: 0.25s; }
     .app-card:nth-child(6) { animation-delay: 0.3s; }
+    .app-card:nth-child(7) { animation-delay: 0.35s; }
+    .app-card:nth-child(8) { animation-delay: 0.4s; }
 
     @media (max-width: 400px) {
       .apps { grid-template-columns: 1fr; }
@@ -322,6 +326,29 @@
       </a>
     </div>
 
+    <!-- Production -->
+    <div class="section-head">
+      <span class="line"></span>
+      <span class="label">production</span>
+      <span class="line"></span>
+    </div>
+
+    <div class="apps">
+      <a href="/synth" class="app-card app-card--synth">
+        <div class="app-icon">&#9838;</div>
+        <div class="app-name">SYNTH</div>
+        <div class="app-sub">polyphonic synth<br>8-voice &middot; MIDI &middot; effects</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+
+      <a href="/breaks" class="app-card app-card--breaks">
+        <div class="app-icon">&#9000;</div>
+        <div class="app-name">BREAKS</div>
+        <div class="app-sub">drum machine<br>16 pads &middot; step sequencer</div>
+        <div class="app-launch">launch &rarr;</div>
+      </a>
+    </div>
+
     <div class="install-hint">
       <p>
         <strong>Install on phone:</strong> open any app &rarr; browser menu &rarr; &ldquo;Add to Home Screen&rdquo;<br>
@@ -330,7 +357,7 @@
     </div>
 
     <div class="footer">
-      <span>cbay.ing &middot; 6 instruments</span>
+      <span>cbay.ing &middot; 8 instruments</span>
     </div>
   </div>
 </body>

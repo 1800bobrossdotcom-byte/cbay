@@ -24,6 +24,8 @@ const PAGES = {
   '/tones':    { file: 'tones.html',    security: 'strict' },
   '/shield':   { file: 'shield.html',   security: 'camera' },
   '/tone-lab': { file: 'tone-lab.html', security: 'camera' },
+  '/synth':    { file: 'synth.html',    security: 'camera' },
+  '/breaks':   { file: 'breaks.html',   security: 'camera' },
 };
 
 // Pre-load HTML templates at startup
@@ -49,6 +51,7 @@ const ALLOWED = new Set([
   '/index.html', '/spectra.html', '/take.html',
   '/store.html', '/pay.html', '/unlock.html', '/apps.html',
   '/tones.html', '/shield.html', '/tone-lab.html',
+  '/synth', '/synth.html', '/breaks', '/breaks.html',
 ]);
 
 // API routes bypass the static allowlist
@@ -187,6 +190,8 @@ app.get('/take', serve('/take'));
 app.get('/tones', serve('/tones'));
 app.get('/shield', serve('/shield'));
 app.get('/tone-lab', serve('/tone-lab'));
+app.get('/synth', serve('/synth'));
+app.get('/breaks', serve('/breaks'));
 
 // ── Clean URL redirects ──
 app.get('/index.html', (_, res) => res.redirect(301, '/'));
@@ -200,6 +205,8 @@ app.get('/unlock.html', (_, res) => res.redirect(301, '/unlock'));
 app.get('/tones.html', (_, res) => res.redirect(301, '/tones'));
 app.get('/shield.html', (_, res) => res.redirect(301, '/shield'));
 app.get('/tone-lab.html', (_, res) => res.redirect(301, '/tone-lab'));
+app.get('/synth.html', (_, res) => res.redirect(301, '/synth'));
+app.get('/breaks.html', (_, res) => res.redirect(301, '/breaks'));
 
 // ── Store API ──
 app.use('/api', storeApi);
