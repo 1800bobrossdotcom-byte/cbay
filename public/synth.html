@@ -53,8 +53,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   min-height:0;align-content:center;max-width:480px;margin:0 auto;width:100%}
 .pad{border-radius:10px;background:var(--pad-bg);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;
-  cursor:pointer;transition:transform 0.06s,background 0.06s,border-color 0.15s;
-  -webkit-tap-highlight-color:transparent;aspect-ratio:1;position:relative;min-height:0}
+  cursor:pointer;transition:transform 0.06s,background 0.06s,border-color 0.15s,box-shadow 0.18s;
+  -webkit-tap-highlight-color:transparent;aspect-ratio:1;position:relative;min-height:0;touch-action:none}
 .pad:active,.pad.flash{transform:scale(0.92);background:var(--accent-dim);border-color:var(--accent)}
 .pad.sel{border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow)}
 .pad .nm{font-size:11px;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase;
@@ -290,14 +290,45 @@ function setGlobalSound(key,name,buffer){
   globalSoundKey=key;globalSoundName=name;globalSoundBuffer=buffer;
 }
 
-/* ═══ TRIGGER ═══ */
-// All sounds synthesized at C4 (MIDI 60, 261.63 Hz). Pitch shift to target note.
+/* ═══ SUSTAIN ═══ */
+var activeVoices={};
+function noteOn(padIdx,pointerId){
+  if(!globalSoundBuffer)return;
+  noteOff(pointerId);
+  var midi=padNotes[padIdx],semi=midi-60;
+  var src=ctx.createBufferSource();src.buffer=globalSoundBuffer;
+  src.playbackRate.value=Math.pow(2,semi/12);
+  src.loop=true;
+  var dur=globalSoundBuffer.duration;
+  src.loopStart=Math.min(0.08,dur*0.1);src.loopEnd=Math.max(dur-0.01,dur*0.9);
+  var g=ctx.createGain();
+  g.gain.setValueAtTime(0,ctx.currentTime);
+  g.gain.linearRampToValueAtTime(0.7,ctx.currentTime+0.008);
+  src.connect(g);g.connect(master);g.connect(reverbNode);
+  src.start();
+  activeVoices[pointerId]={src:src,gain:g,pad:padIdx};
+}
+function noteOff(pointerId){
+  var v=activeVoices[pointerId];if(!v)return;
+  var now=ctx.currentTime;
+  v.gain.gain.cancelScheduledValues(now);
+  v.gain.gain.setValueAtTime(v.gain.gain.value,now);
+  v.gain.gain.linearRampToValueAtTime(0,now+0.18);
+  var s=v.src;setTimeout(function(){try{s.stop();}catch(e){}},220);
+  delete activeVoices[pointerId];
+}
+function setGlow(el,p){
+  p=Math.max(0.2,Math.min(1,p));
+  el.style.boxShadow='0 0 '+(p*28)+'px rgba(255,0,128,'+(p*0.7)+')';
+  el.style.background='radial-gradient(circle,rgba(255,0,128,'+(p*0.35)+') 0%,var(--surface) 70%)';
+}
+function clearGlow(el){el.style.boxShadow='';el.style.background='';}
+// Fire-and-forget for sequencer
 function triggerNote(padIdx,time){
   if(!globalSoundBuffer)return;
-  var midi=padNotes[padIdx];
-  var semitoneOffset=midi-60; // C4 reference
+  var midi=padNotes[padIdx],semi=midi-60;
   var src=ctx.createBufferSource();src.buffer=globalSoundBuffer;
-  src.playbackRate.value=Math.pow(2,semitoneOffset/12);
+  src.playbackRate.value=Math.pow(2,semi/12);
   var g=ctx.createGain();g.gain.value=0.7;
   src.connect(g);g.connect(master);g.connect(reverbNode);
   if(time)src.start(time);else src.start();
@@ -462,12 +493,22 @@ function renderPads(){
     var noteName=midiToName(padNotes[i]);
     el.innerHTML='<span class="idx">'+(i+1)+'</span><span class="nm">'+noteName+'</span>'
       +'<span class="sub">'+globalSoundName+'</span>';
-    (function(idx){
-      el.addEventListener('pointerdown',function(e){
-        e.preventDefault();if(ctx.state==='suspended')ctx.resume();
-        selPad=idx;triggerNote(idx);renderPadSel();renderSteps();
+    (function(idx,padEl){
+      padEl.addEventListener('pointerdown',function(e){
+        e.preventDefault();padEl.setPointerCapture(e.pointerId);
+        if(ctx.state==='suspended')ctx.resume();
+        selPad=idx;noteOn(idx,e.pointerId);
+        setGlow(padEl,e.pressure||0.5);
+        renderPadSel();renderSteps();
       });
-    })(i);
+      padEl.addEventListener('pointermove',function(e){
+        if(activeVoices[e.pointerId]&&activeVoices[e.pointerId].pad===idx)
+          setGlow(padEl,e.pressure||0.5);
+      });
+      padEl.addEventListener('pointerup',function(e){noteOff(e.pointerId);clearGlow(padEl);});
+      padEl.addEventListener('pointerleave',function(e){noteOff(e.pointerId);clearGlow(padEl);});
+      padEl.addEventListener('pointercancel',function(e){noteOff(e.pointerId);clearGlow(padEl);});
+    })(i,el);
     pGridEl.appendChild(el);padEls.push(el);
   }
 }
@@ -627,10 +668,15 @@ document.addEventListener('keydown',function(e){
   if(k===' '){e.preventDefault();if(playing)stopSeq();else startSeq();return;}
   if(KEY_MAP[k]!==undefined&&!keysDown[k]){
     keysDown[k]=true;if(ctx.state==='suspended')ctx.resume();
-    var idx=KEY_MAP[k];selPad=idx;triggerNote(idx);renderPadSel();renderSteps();flashPadEl(idx);
+    var idx=KEY_MAP[k];selPad=idx;noteOn(idx,'kb_'+k);
+    if(padEls[idx])setGlow(padEls[idx],0.7);
+    renderPadSel();renderSteps();
   }
 });
-document.addEventListener('keyup',function(e){keysDown[e.key.toLowerCase()]=false;});
+document.addEventListener('keyup',function(e){
+  var k=e.key.toLowerCase();keysDown[k]=false;
+  if(KEY_MAP[k]!==undefined){noteOff('kb_'+k);if(padEls[KEY_MAP[k]])clearGlow(padEls[KEY_MAP[k]]);}
+});
 
 /* ═══ INIT ═══ */
 initLibrary();computePadNotes();
