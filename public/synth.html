@@ -181,6 +181,14 @@
     }
     .midi-dot.connected { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 
+    /* ── Mic indicator ── */
+    .mic-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #333;
+      position: absolute; top: 6px; right: 20px; display: none;
+    }
+    .mic-dot.active { background: #ff4040; box-shadow: 0 0 6px #ff4040; display: block; animation: mic-pulse 1.2s infinite; }
+    @keyframes mic-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
     /* ── Share toast ── */
     .share-toast {
       position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
@@ -355,6 +363,7 @@
       <a href="/apps">&larr; apps</a>
       <span class="title">SYNTH</span>
       <div class="controls">
+        <span class="mic-dot" id="micDot"></span>
         <span class="midi-dot" id="midiDot"></span>
         <button id="shareBtn" title="share">&#x2197;</button>
       </div>
@@ -374,6 +383,7 @@
       <button class="tab-btn" data-tab="env">ENV</button>
       <button class="tab-btn" data-tab="mod">MOD</button>
       <button class="tab-btn" data-tab="fx">FX</button>
+      <button class="tab-btn" data-tab="voc">VOC</button>
     </div>
 
     <div class="panel-wrap">
@@ -441,6 +451,24 @@
             <span class="ctrl-val" data-for="noiseLevel">0</span>
           </div>
         </div>
+        <div class="ctrl-group">
+          <div class="group-label">UNISON</div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">VOICE</span>
+            <div class="wave-sel" data-param="unisonVoices">
+              <button class="wave-btn active" data-val="1">1</button>
+              <button class="wave-btn" data-val="2">2</button>
+              <button class="wave-btn" data-val="3">3</button>
+              <button class="wave-btn" data-val="5">5</button>
+              <button class="wave-btn" data-val="7">7</button>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">SPRD</span>
+            <input type="range" data-param="unisonSpread" min="0" max="100" value="50">
+            <span class="ctrl-val" data-for="unisonSpread">50</span>
+          </div>
+        </div>
       </div>
 
       <!-- FILTER panel -->
@@ -469,6 +497,11 @@
             <span class="ctrl-label">ENV</span>
             <input type="range" data-param="filterEnvAmt" min="0" max="100" value="0">
             <span class="ctrl-val" data-for="filterEnvAmt">0</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">DRIVE</span>
+            <input type="range" data-param="drive" min="0" max="100" value="0">
+            <span class="ctrl-val" data-for="drive">0</span>
           </div>
         </div>
       </div>
@@ -615,6 +648,38 @@
           </div>
         </div>
       </div>
+
+      <!-- VOC panel -->
+      <div class="panel" id="panel-voc">
+        <div class="ctrl-group">
+          <div class="group-label">VOCODER — MIC &rarr; SYNTH</div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">MIC</span>
+            <div class="wave-sel" id="vocMicSel">
+              <button class="wave-btn active" data-val="off" id="vocMicOff">OFF</button>
+              <button class="wave-btn" data-val="on" id="vocMicOn">ON</button>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">BANDS</span>
+            <div class="wave-sel" data-param="vocBands">
+              <button class="wave-btn" data-val="8">8</button>
+              <button class="wave-btn active" data-val="16">16</button>
+              <button class="wave-btn" data-val="24">24</button>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">SHIFT</span>
+            <input type="range" data-param="vocShift" min="-12" max="12" value="0">
+            <span class="ctrl-val" data-for="vocShift">0</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">MIX</span>
+            <input type="range" data-param="vocMix" min="0" max="100" value="50">
+            <span class="ctrl-val" data-for="vocMix">50</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="kb-wrap">
@@ -626,16 +691,19 @@
 
   <script>
     /* ══════════════════════════════════════════════════════
-       SYNTH ENGINE — Polyphonic subtractive synthesizer
-       8-voice polyphony, 2 OSC + SUB + NOISE, Filter w/
-       envelope, Amp ADSR, LFO, Chorus, Delay, Reverb
+       SYNTH v2 — Polyphonic Subtractive Synthesizer
+       8-voice poly, 2 OSC + SUB + NOISE, Filter ADSR,
+       Amp ADSR, LFO, Unison (1-7 voices), Drive/Saturation,
+       Chorus, Delay, Reverb, Mic Vocoder, Master Limiter
        ══════════════════════════════════════════════════════ */
 
     const P = {
       osc1Wave: 'sawtooth', osc1Level: 80,
       osc2Wave: 'sawtooth', osc2Oct: 0, osc2Detune: 7, osc2Level: 0,
       subLevel: 0, noiseLevel: 0,
+      unisonVoices: 1, unisonSpread: 50,
       filterType: 'lowpass', filterCutoff: 80, filterRes: 0, filterEnvAmt: 0,
+      drive: 0,
       ampA: 2, ampD: 20, ampS: 70, ampR: 25,
       filtA: 5, filtD: 30, filtS: 50, filtR: 30,
       lfoWave: 'sine', lfoRate: 30, lfoDepth: 0, lfoDest: 'filter',
@@ -644,47 +712,92 @@
       delayTime: 25, delayFeedback: 0, delayMix: 0,
       reverbSize: 30, reverbMix: 0,
       masterVol: 75,
+      vocBands: 16, vocShift: 0, vocMix: 50,
     };
 
     // ── Presets ──
     const PRESETS = [
       { name: 'INIT', p: {} },
       { name: 'WARM PAD', p: { osc2Level:70, osc2Detune:12, ampA:60, ampD:40, ampS:80, ampR:55, filterCutoff:55, filterRes:10, chorusDepth:50, reverbMix:40, reverbSize:60 } },
-      { name: 'DEEP BASS', p: { osc1Wave:'sawtooth', osc1Level:90, subLevel:80, filterCutoff:30, filterRes:15, filterEnvAmt:40, ampA:1, ampD:30, ampS:60, ampR:15, filtA:1, filtD:25, filtS:20 } },
-      { name: 'ACID', p: { osc1Wave:'square', filterCutoff:20, filterRes:70, filterEnvAmt:80, ampA:1, ampD:15, ampS:0, ampR:10, filtA:1, filtD:20, filtS:0, filtR:10, glide:30 } },
+      { name: 'DEEP BASS', p: { osc1Wave:'sawtooth', osc1Level:90, subLevel:80, filterCutoff:30, filterRes:15, filterEnvAmt:40, ampA:1, ampD:30, ampS:60, ampR:15, filtA:1, filtD:25, filtS:20, drive:20 } },
+      { name: 'ACID', p: { osc1Wave:'square', filterCutoff:20, filterRes:70, filterEnvAmt:80, ampA:1, ampD:15, ampS:0, ampR:10, filtA:1, filtD:20, filtS:0, filtR:10, glide:30, drive:35 } },
       { name: 'STRINGS', p: { osc2Level:60, osc2Detune:10, ampA:55, ampD:30, ampS:85, ampR:50, filterCutoff:60, chorusDepth:60, reverbMix:45, reverbSize:55 } },
       { name: 'PLUCK', p: { filterCutoff:70, filterRes:5, filterEnvAmt:50, ampA:0, ampD:35, ampS:0, ampR:15, filtA:0, filtD:25, filtS:0, filtR:15, delayMix:20, delayTime:30, delayFeedback:30 } },
       { name: 'LEAD SAW', p: { osc1Level:90, osc2Level:40, osc2Detune:5, filterCutoff:65, filterRes:20, ampA:2, ampD:15, ampS:80, ampR:20, delayMix:15, delayTime:25, delayFeedback:25 } },
       { name: 'ORGAN', p: { osc1Wave:'sine', osc2Wave:'sine', osc2Oct:1, osc2Level:50, subLevel:40, ampA:2, ampD:5, ampS:100, ampR:8, filterCutoff:90, chorusDepth:30, reverbMix:20 } },
-      { name: 'BRASS', p: { osc1Wave:'sawtooth', osc2Wave:'sawtooth', osc2Level:70, osc2Detune:3, filterCutoff:35, filterRes:10, filterEnvAmt:60, ampA:8, ampD:20, ampS:75, ampR:15, filtA:8, filtD:25, filtS:40 } },
+      { name: 'BRASS', p: { osc1Wave:'sawtooth', osc2Wave:'sawtooth', osc2Level:70, osc2Detune:3, filterCutoff:35, filterRes:10, filterEnvAmt:60, ampA:8, ampD:20, ampS:75, ampR:15, filtA:8, filtD:25, filtS:40, drive:15 } },
       { name: 'SUB', p: { osc1Wave:'sine', osc1Level:90, subLevel:100, filterCutoff:25, ampA:3, ampD:20, ampS:80, ampR:20, noiseLevel:5 } },
-      { name: 'SUPER SAW', p: { osc1Level:90, osc2Level:80, osc2Detune:15, subLevel:30, filterCutoff:70, filterRes:8, ampA:3, ampD:25, ampS:85, ampR:30, chorusDepth:45, reverbMix:25, reverbSize:40 } },
+      { name: 'SUPER SAW', p: { osc1Level:90, osc2Level:80, osc2Detune:15, subLevel:30, filterCutoff:70, filterRes:8, ampA:3, ampD:25, ampS:85, ampR:30, chorusDepth:45, reverbMix:25, reverbSize:40, unisonVoices:5, unisonSpread:60 } },
       { name: 'AMBIENT', p: { osc1Wave:'triangle', osc2Wave:'sine', osc2Level:50, osc2Detune:8, ampA:80, ampD:30, ampS:70, ampR:80, filterCutoff:45, noiseLevel:10, reverbMix:65, reverbSize:80, chorusDepth:35, lfoDepth:15, lfoRate:10 } },
+      { name: 'UNISON LEAD', p: { osc1Level:100, osc2Level:60, osc2Detune:7, filterCutoff:60, filterRes:25, filterEnvAmt:30, ampA:2, ampD:20, ampS:75, ampR:20, unisonVoices:5, unisonSpread:45, drive:25, delayMix:18, delayFeedback:30 } },
+      { name: 'VOX PAD', p: { osc1Wave:'sawtooth', osc2Wave:'sawtooth', osc2Level:80, osc2Detune:10, ampA:50, ampD:40, ampS:80, ampR:60, filterCutoff:50, filterRes:15, chorusDepth:40, reverbMix:50, reverbSize:65, vocMix:70 } },
     ];
 
     let presetIdx = 0;
-    let ctx, masterGain, analyser, chorusNode, delayNode, delayFb, delayWet, delayDry, reverbNode, reverbWet, reverbDry, noiseBuffer;
+    let ctx, masterGain, analyser, limiter, dcBlocker;
+    let synthBus, vocoderDry, vocoderWet, driveNode;
+    let chorusNode, delayNode, delayFb, delayWet, delayDry;
+    let reverbNode, reverbWet, reverbDry, noiseBuffer;
     const MAX_VOICES = 8;
     const voices = new Map();
     let lastNote = -1;
     let baseOctave = 3;
 
+    // ── Vocoder state ──
+    const voc = {
+      active: false,
+      micStream: null,
+      micSource: null,
+      analyser: null,
+      fftData: null,
+      carrierFilters: [],
+      carrierGains: [],
+      bandFreqs: [],
+    };
+
     // ── Utility ──
     function noteFreq(n) { return 440 * Math.pow(2, (n - 69) / 12); }
-    function envTime(v) { return 0.003 + (v / 100) * 4.997; } // 3ms - 5s
-    function cutoffFreq(v) { return 20 * Math.pow(1000, v / 100); } // 20Hz - 20kHz log
-    function resQ(v) { return v * 0.25; } // 0-25
+    function envTime(v) { return 0.003 + (v / 100) * 4.997; }
+    function cutoffFreq(v) { return 20 * Math.pow(1000, v / 100); }
+    function resQ(v) { return v * 0.25; }
+
+    function makeDriveCurve(amount) {
+      const n = 8192;
+      const curve = new Float32Array(n);
+      const k = amount * 20 + 1;
+      for (let i = 0; i < n; i++) {
+        const x = (i * 2) / n - 1;
+        curve[i] = Math.tanh(x * k) / Math.tanh(k);
+      }
+      return curve;
+    }
 
     // ── Init Audio ──
     function initAudio() {
       if (ctx) return;
       ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-      // Noise buffer
+      // Noise buffer (stereo)
       const sz = ctx.sampleRate * 2;
-      noiseBuffer = ctx.createBuffer(1, sz, ctx.sampleRate);
-      const nd = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < sz; i++) nd[i] = Math.random() * 2 - 1;
+      noiseBuffer = ctx.createBuffer(2, sz, ctx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const nd = noiseBuffer.getChannelData(ch);
+        for (let i = 0; i < sz; i++) nd[i] = Math.random() * 2 - 1;
+      }
+
+      // Synth bus — all voices output here
+      synthBus = ctx.createGain();
+      synthBus.gain.value = 1;
+
+      // Vocoder dry/wet paths
+      vocoderDry = ctx.createGain();
+      vocoderDry.gain.value = 1;
+      vocoderWet = ctx.createGain();
+      vocoderWet.gain.value = 0;
+      synthBus.connect(vocoderDry);
+
+      // Build initial vocoder carrier bands
+      buildVocoderBands(P.vocBands);
 
       // Master chain
       masterGain = ctx.createGain();
@@ -692,6 +805,11 @@
 
       analyser = ctx.createAnalyser();
       analyser.fftSize = 2048;
+
+      // Drive / saturation (post-chorus, pre-delay)
+      driveNode = ctx.createWaveShaper();
+      driveNode.curve = makeDriveCurve(P.drive / 100);
+      driveNode.oversample = '4x';
 
       // Chorus (stereo delay modulated by LFO)
       const chorusDelay = ctx.createDelay(0.05);
@@ -714,6 +832,10 @@
       chorusDry.connect(chorusOut);
       chorusWet.connect(chorusOut);
       chorusNode = { input: chorusIn, output: chorusOut, wet: chorusWet, lfoGain: chorusLFOGain };
+
+      // Vocoder → chorus input
+      vocoderDry.connect(chorusNode.input);
+      vocoderWet.connect(chorusNode.input);
 
       // Delay
       delayNode = ctx.createDelay(2.0);
@@ -744,14 +866,29 @@
       reverbDry.connect(reverbOut);
       reverbWet.connect(reverbOut);
 
-      // Chain: voices → chorus → delay → reverb → master → analyser → dest
-      chorusNode.output.connect(delayIn);
+      // Limiter (brick-wall)
+      limiter = ctx.createDynamicsCompressor();
+      limiter.threshold.value = -1;
+      limiter.knee.value = 0;
+      limiter.ratio.value = 20;
+      limiter.attack.value = 0.001;
+      limiter.release.value = 0.05;
+
+      // DC blocker
+      dcBlocker = ctx.createBiquadFilter();
+      dcBlocker.type = 'highpass';
+      dcBlocker.frequency.value = 10;
+
+      // Chain: chorus → drive → delay → reverb → master → limiter → dcBlocker → analyser → dest
+      chorusNode.output.connect(driveNode);
+      driveNode.connect(delayIn);
       delayOut.connect(reverbIn);
       reverbOut.connect(masterGain);
-      masterGain.connect(analyser);
+      masterGain.connect(limiter);
+      limiter.connect(dcBlocker);
+      dcBlocker.connect(analyser);
       analyser.connect(ctx.destination);
 
-      // Init MIDI
       initMIDI();
     }
 
@@ -763,7 +900,9 @@
       for (let ch = 0; ch < 2; ch++) {
         const d = ir.getChannelData(ch);
         for (let i = 0; i < len; i++) {
-          d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+          const t = i / ctx.sampleRate;
+          const early = t < 0.015 ? 0.8 : 1;
+          d[i] = (Math.random() * 2 - 1) * early * Math.pow(1 - i / len, decay);
         }
       }
       try { reverbNode.buffer = ir; } catch(e) {
@@ -771,6 +910,108 @@
         r2.buffer = ir;
         reverbNode = r2;
       }
+    }
+
+    // ── Vocoder ──
+    function buildVocoderBands(numBands) {
+      if (!ctx) return;
+      // Disconnect old bands
+      voc.carrierFilters.forEach(f => { try { synthBus.disconnect(f); } catch(e){} });
+      voc.carrierGains.forEach(g => { try { g.disconnect(); } catch(e){} });
+      voc.carrierFilters = [];
+      voc.carrierGains = [];
+      voc.bandFreqs = [];
+
+      const minFreq = 80, maxFreq = 12000;
+      for (let i = 0; i < numBands; i++) {
+        const freq = minFreq * Math.pow(maxFreq / minFreq, i / (numBands - 1));
+        voc.bandFreqs.push(freq);
+
+        const bp = ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.value = freq;
+        bp.Q.value = Math.max(numBands / 3, 2);
+
+        const g = ctx.createGain();
+        g.gain.value = 0;
+
+        synthBus.connect(bp);
+        bp.connect(g);
+        g.connect(vocoderWet);
+
+        voc.carrierFilters.push(bp);
+        voc.carrierGains.push(g);
+      }
+    }
+
+    async function startMic() {
+      initAudio();
+      if (ctx.state === 'suspended') ctx.resume();
+      try {
+        voc.micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        voc.micSource = ctx.createMediaStreamSource(voc.micStream);
+        voc.analyser = ctx.createAnalyser();
+        voc.analyser.fftSize = 2048;
+        voc.analyser.smoothingTimeConstant = 0.4;
+        voc.micSource.connect(voc.analyser);
+        voc.fftData = new Uint8Array(voc.analyser.frequencyBinCount);
+        voc.active = true;
+
+        // Set vocoder wet/dry based on mix
+        const mix = P.vocMix / 100;
+        vocoderDry.gain.setTargetAtTime(1 - mix, ctx.currentTime, 0.02);
+        vocoderWet.gain.setTargetAtTime(mix, ctx.currentTime, 0.02);
+
+        document.getElementById('micDot').classList.add('active');
+        updateVocoder();
+      } catch(e) {
+        console.warn('Mic access denied:', e);
+      }
+    }
+
+    function stopMic() {
+      voc.active = false;
+      if (voc.micStream) {
+        voc.micStream.getTracks().forEach(t => t.stop());
+        voc.micStream = null;
+      }
+      if (voc.micSource) {
+        voc.micSource.disconnect();
+        voc.micSource = null;
+      }
+      // Reset: full dry, no wet
+      if (ctx) {
+        vocoderDry.gain.setTargetAtTime(1, ctx.currentTime, 0.02);
+        vocoderWet.gain.setTargetAtTime(0, ctx.currentTime, 0.02);
+      }
+      voc.carrierGains.forEach(g => { try { g.gain.value = 0; } catch(e){} });
+      document.getElementById('micDot').classList.remove('active');
+    }
+
+    function updateVocoder() {
+      if (!voc.active || !voc.analyser) return;
+
+      voc.analyser.getByteFrequencyData(voc.fftData);
+      const binHz = ctx.sampleRate / voc.analyser.fftSize;
+      const shift = P.vocShift || 0;
+
+      for (let i = 0; i < voc.carrierGains.length; i++) {
+        let freq = voc.bandFreqs[i] * Math.pow(2, shift / 12);
+        freq = Math.max(20, Math.min(ctx.sampleRate / 2 - 1, freq));
+        const bin = Math.round(freq / binHz);
+
+        // Average nearby bins for smoother response
+        let sum = 0, count = 0;
+        const w = Math.max(1, Math.floor(binHz > 0 ? (freq * 0.15) / binHz : 1));
+        for (let b = Math.max(0, bin - w); b <= Math.min(voc.fftData.length - 1, bin + w); b++) {
+          sum += voc.fftData[b];
+          count++;
+        }
+        const amp = count > 0 ? (sum / count) / 255 : 0;
+        voc.carrierGains[i].gain.setTargetAtTime(amp * amp, ctx.currentTime, 0.008);
+      }
+
+      requestAnimationFrame(updateVocoder);
     }
 
     // ── Voice ──
@@ -783,12 +1024,17 @@
         this.startTime = now;
 
         const vol = velocity * 0.3;
+        const uniVoices = Math.max(1, parseInt(P.unisonVoices) || 1);
+        const uniSpread = (P.unisonSpread / 100) * 35; // max 35 cents
+
+        // Gain normalization for unison
+        const uniGain = uniVoices > 1 ? 1 / Math.sqrt(uniVoices) : 1;
 
         // OSC1
         this.osc1 = ctx.createOscillator();
         this.osc1.type = P.osc1Wave;
         this.osc1Gain = ctx.createGain();
-        this.osc1Gain.gain.value = P.osc1Level / 100;
+        this.osc1Gain.gain.value = (P.osc1Level / 100) * uniGain;
         if (glideTime > 0 && lastNote >= 0) {
           this.osc1.frequency.setValueAtTime(noteFreq(lastNote), now);
           this.osc1.frequency.exponentialRampToValueAtTime(freq, now + glideTime);
@@ -797,11 +1043,29 @@
         }
         this.osc1.connect(this.osc1Gain);
 
+        // Unison copies of OSC1
+        this.unisonOscs = [];
+        this.unisonGains = [];
+        if (uniVoices > 1) {
+          for (let u = 1; u < uniVoices; u++) {
+            const detune = (u / uniVoices) * uniSpread * (u % 2 === 0 ? 1 : -1);
+            const uOsc = ctx.createOscillator();
+            uOsc.type = P.osc1Wave;
+            uOsc.frequency.value = freq;
+            uOsc.detune.value = detune;
+            const uG = ctx.createGain();
+            uG.gain.value = (P.osc1Level / 100) * uniGain * 0.85;
+            uOsc.connect(uG);
+            this.unisonOscs.push(uOsc);
+            this.unisonGains.push(uG);
+          }
+        }
+
         // OSC2
         this.osc2 = ctx.createOscillator();
         this.osc2.type = P.osc2Wave;
         this.osc2Gain = ctx.createGain();
-        this.osc2Gain.gain.value = P.osc2Level / 100;
+        this.osc2Gain.gain.value = (P.osc2Level / 100) * uniGain;
         const f2 = freq * Math.pow(2, parseInt(P.osc2Oct));
         if (glideTime > 0 && lastNote >= 0) {
           const prevF2 = noteFreq(lastNote) * Math.pow(2, parseInt(P.osc2Oct));
@@ -818,7 +1082,7 @@
         this.sub.type = 'sine';
         this.sub.frequency.value = freq / 2;
         this.subGain = ctx.createGain();
-        this.subGain.gain.value = P.subLevel / 100;
+        this.subGain.gain.value = (P.subLevel / 100) * uniGain;
         this.sub.connect(this.subGain);
 
         // Noise
@@ -826,7 +1090,7 @@
         this.noise.buffer = noiseBuffer;
         this.noise.loop = true;
         this.noiseGain = ctx.createGain();
-        this.noiseGain.gain.value = P.noiseLevel / 100;
+        this.noiseGain.gain.value = (P.noiseLevel / 100) * uniGain;
         this.noise.connect(this.noiseGain);
 
         // Filter
@@ -862,19 +1126,23 @@
         this.aR = aR;
         this.vol = vol;
 
-        // Routing: oscs → filter → vca → chorus input
+        // Routing: oscs → filter → vca → synthBus (instead of direct to chorus)
         this.osc1Gain.connect(this.filter);
         this.osc2Gain.connect(this.filter);
         this.subGain.connect(this.filter);
         this.noiseGain.connect(this.filter);
+        // Connect unison oscs to filter
+        this.unisonGains.forEach(g => g.connect(this.filter));
+
         this.filter.connect(this.vca);
-        this.vca.connect(chorusNode.input);
+        this.vca.connect(synthBus);
 
         // Start
         this.osc1.start(now);
         this.osc2.start(now);
         this.sub.start(now);
         this.noise.start(now);
+        this.unisonOscs.forEach(o => o.start(now));
         this.released = false;
       }
 
@@ -899,6 +1167,7 @@
         this.osc2.stop(stopTime);
         this.sub.stop(stopTime);
         this.noise.stop(stopTime);
+        this.unisonOscs.forEach(o => o.stop(stopTime));
         this.stopTime = stopTime;
       }
 
@@ -910,6 +1179,7 @@
           this.osc2Gain.disconnect();
           this.subGain.disconnect();
           this.noiseGain.disconnect();
+          this.unisonGains.forEach(g => g.disconnect());
         } catch(e) {}
       }
     }
@@ -982,55 +1252,63 @@
       const disp = document.querySelector(`[data-for="${param}"]`);
       if (disp) disp.textContent = val;
 
-      // Live-update effects chain
       if (!ctx) return;
       switch (param) {
         case 'masterVol': masterGain.gain.setTargetAtTime(val / 100, ctx.currentTime, 0.02); break;
+        case 'drive': driveNode.curve = makeDriveCurve(val / 100); break;
         case 'chorusDepth': chorusNode.wet.gain.value = val / 100; chorusNode.lfoGain.gain.value = (val / 100) * 0.005; break;
         case 'delayTime': delayNode.delayTime.setTargetAtTime(0.05 + (val / 100) * 0.95, ctx.currentTime, 0.05); break;
         case 'delayFeedback': delayFb.gain.setTargetAtTime(val / 100 * 0.85, ctx.currentTime, 0.02); break;
         case 'delayMix': delayWet.gain.value = val / 100; break;
         case 'reverbMix': reverbWet.gain.value = val / 100; break;
         case 'reverbSize': generateReverb(val); break;
+        case 'vocMix':
+          if (voc.active) {
+            const mix = val / 100;
+            vocoderDry.gain.setTargetAtTime(1 - mix, ctx.currentTime, 0.02);
+            vocoderWet.gain.setTargetAtTime(mix, ctx.currentTime, 0.02);
+          }
+          break;
+        case 'vocBands':
+          buildVocoderBands(parseInt(val));
+          break;
       }
     }
 
     // ── Presets ──
     function loadPreset(idx) {
       presetIdx = ((idx % PRESETS.length) + PRESETS.length) % PRESETS.length;
-      const base = PRESETS[0].p;
       const pr = PRESETS[presetIdx];
 
-      // Reset to INIT defaults then overlay preset
       const defaults = {
         osc1Wave:'sawtooth', osc1Level:80,
         osc2Wave:'sawtooth', osc2Oct:0, osc2Detune:7, osc2Level:0,
         subLevel:0, noiseLevel:0,
+        unisonVoices:1, unisonSpread:50,
         filterType:'lowpass', filterCutoff:80, filterRes:0, filterEnvAmt:0,
+        drive:0,
         ampA:2, ampD:20, ampS:70, ampR:25,
         filtA:5, filtD:30, filtS:50, filtR:30,
         lfoWave:'sine', lfoRate:30, lfoDepth:0, lfoDest:'filter',
         glide:0, chorusDepth:0,
         delayTime:25, delayFeedback:0, delayMix:0,
         reverbSize:30, reverbMix:0, masterVol:75,
+        vocBands:16, vocShift:0, vocMix:50,
       };
       const merged = { ...defaults, ...pr.p };
 
       for (const [k, v] of Object.entries(merged)) {
         P[k] = v;
-        // Update slider
         const slider = document.querySelector(`input[data-param="${k}"]`);
         if (slider) { slider.value = v; }
         const disp = document.querySelector(`[data-for="${k}"]`);
         if (disp) disp.textContent = v;
-        // Update wave selectors
         const sel = document.querySelector(`.wave-sel[data-param="${k}"]`);
         if (sel) {
           sel.querySelectorAll('.wave-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.val === String(v));
           });
         }
-        // Push to audio
         updateParam(k, v);
       }
 
@@ -1044,7 +1322,7 @@
     function buildKeyboard() {
       const kb = document.getElementById('keyboard');
       kb.innerHTML = '';
-      const startNote = (baseOctave + 1) * 12; // C(baseOctave)
+      const startNote = (baseOctave + 1) * 12;
       const endNote = startNote + 24;
 
       const whites = [], blacks = [];
@@ -1061,8 +1339,7 @@
         el.style.left = (i * ww) + '%';
         el.style.width = ww + '%';
         const name = NOTE_NAMES[n % 12];
-        const oct = Math.floor(n / 12) - 1;
-        if (name === 'C') el.textContent = 'C' + oct;
+        if (name === 'C') el.textContent = 'C' + (Math.floor(n / 12) - 1);
         kb.appendChild(el);
       });
 
@@ -1103,17 +1380,14 @@
         if (n >= 0) newMap.set(touch.identifier, n);
       }
 
-      // Notes that ended
       for (const [id, note] of activeTouch) {
         if (!newMap.has(id) || newMap.get(id) !== note) {
-          // Only note-off if no other finger on same note
           let stillHeld = false;
           for (const [id2, n2] of newMap) { if (n2 === note && id2 !== id) stillHeld = true; }
           if (!stillHeld) noteOff(note);
         }
       }
 
-      // Notes that started
       for (const [id, note] of newMap) {
         if (!activeTouch.has(id) || activeTouch.get(id) !== note) {
           noteOn(note);
@@ -1125,7 +1399,6 @@
       refreshKeyVisuals();
     }
 
-    // Mouse support for desktop
     let mouseDown = false, mouseNote = -1;
 
     // ── Visualizer ──
@@ -1198,6 +1471,7 @@
 
       // Wave selectors
       document.querySelectorAll('.wave-sel').forEach(sel => {
+        if (sel.id === 'vocMicSel') return; // handled separately
         sel.querySelectorAll('.wave-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             sel.querySelectorAll('.wave-btn').forEach(b => b.classList.remove('active'));
@@ -1205,8 +1479,21 @@
             const param = sel.dataset.param;
             const val = btn.dataset.val;
             P[param] = isNaN(val) ? val : +val;
+            if (param === 'vocBands') updateParam('vocBands', +val);
           });
         });
+      });
+
+      // Vocoder mic toggle
+      document.getElementById('vocMicOn').addEventListener('click', () => {
+        document.getElementById('vocMicOff').classList.remove('active');
+        document.getElementById('vocMicOn').classList.add('active');
+        startMic();
+      });
+      document.getElementById('vocMicOff').addEventListener('click', () => {
+        document.getElementById('vocMicOn').classList.remove('active');
+        document.getElementById('vocMicOff').classList.add('active');
+        stopMic();
       });
 
       // Presets
