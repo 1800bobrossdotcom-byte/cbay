@@ -257,12 +257,6 @@
       --card-bg: rgba(0,229,255,0.04);
       --card-glow: rgba(0,229,255,0.08);
     }
-    .card--artifact {
-      --card-accent: var(--magenta);
-      --card-border: rgba(255,0,229,0.2);
-      --card-bg: rgba(255,0,229,0.04);
-      --card-glow: rgba(255,0,229,0.08);
-    }
     .card--take {
       --card-accent: var(--amber);
       --card-border: rgba(255,136,0,0.2);
@@ -286,6 +280,18 @@
       --card-border: rgba(168,85,247,0.2);
       --card-bg: rgba(168,85,247,0.04);
       --card-glow: rgba(168,85,247,0.08);
+    }
+    .card--synth {
+      --card-accent: #FF0080;
+      --card-border: rgba(255,0,128,0.2);
+      --card-bg: rgba(255,0,128,0.04);
+      --card-glow: rgba(255,0,128,0.08);
+    }
+    .card--breaks {
+      --card-accent: #39FF14;
+      --card-border: rgba(57,255,20,0.2);
+      --card-bg: rgba(57,255,20,0.04);
+      --card-glow: rgba(57,255,20,0.08);
     }
 
     .card-top {
@@ -470,8 +476,9 @@
     .hero { animation: scaleIn 0.5s ease-out; }
     .card { animation: fadeUp 0.4s ease-out both; }
     .card:nth-child(1) { animation-delay: 0.1s; }
-    .card:nth-child(2) { animation-delay: 0.2s; }
-    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(2) { animation-delay: 0.15s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+    .card:nth-child(4) { animation-delay: 0.25s; }
     .cta-row { animation: fadeUp 0.4s ease-out 0.4s both; }
 
     /* ── Responsive ── */
@@ -503,8 +510,8 @@
       <h1>CBAY</h1>
       <p class="sub">computational instruments</p>
       <div class="status-row">
-        <span class="status-pill"><span class="dot"></span> 6 instruments live</span>
-        <span class="status-pill">29 shader modes</span>
+        <span class="status-pill"><span class="dot"></span> 7 instruments live</span>
+        <span class="status-pill">23 shader modes</span>
         <span class="status-pill">open beta</span>
       </div>
     </div>
@@ -523,32 +530,15 @@
           <h2 class="card-name">SPECTRA</h2>
           <span class="card-type">web app</span>
         </div>
-        <p class="card-desc">vision engine — 7 computational camera modes</p>
+        <p class="card-desc">vision engine — 13 computational camera modes</p>
         <div class="card-footer">
-          <span class="card-tags">night vision · thermal · edge detect · motion · text · halftone · normal</span>
+          <span class="card-tags">night vision · thermal · edge detect · motion · text · halftone · pixel sort · VHS · databend · melt · kaleidoscope · posterize · normal</span>
           <span class="card-action">launch &rarr;</span>
         </div>
         <button class="preview-toggle" data-target="prev-spectra">preview</button>
         <div class="preview-panel" id="prev-spectra">
           <img class="preview-img" src="/preview-spectra.svg" alt="SPECTRA preview">
           <p class="preview-caption">fig. 1 — night vision with low-light boost</p>
-        </div>
-      </a>
-
-      <a href="/artifact" class="card card--artifact">
-        <div class="card-top">
-          <h2 class="card-name">ARTIFACT</h2>
-          <span class="card-type">web app</span>
-        </div>
-        <p class="card-desc">glitch camera — 12 analog destruction modes</p>
-        <div class="card-footer">
-          <span class="card-tags">pixel sort · VHS · databend · signal mod · melt · kaleidoscope · posterize · invert · halftone · ASDF · screen · normal</span>
-          <span class="card-action">launch &rarr;</span>
-        </div>
-        <button class="preview-toggle" data-target="prev-artifact">preview</button>
-        <div class="preview-panel" id="prev-artifact">
-          <img class="preview-img" src="/preview-artifact.svg" alt="ARTIFACT preview">
-          <p class="preview-caption">fig. 2 — pixel sort with touch sensitivity</p>
         </div>
       </a>
 
@@ -616,6 +606,40 @@
       </a>
     </div>
 
+    <!-- ── PRODUCTION INSTRUMENTS ── -->
+    <div class="section-head">
+      <span class="line"></span>
+      <span class="label">production</span>
+      <span class="badge badge--free">free beta</span>
+      <span class="line"></span>
+    </div>
+
+    <div class="cards">
+      <a href="/synth" class="card card--synth">
+        <div class="card-top">
+          <h2 class="card-name">SYNTH</h2>
+          <span class="card-type">web app</span>
+        </div>
+        <p class="card-desc">polyphonic synthesizer — 8 voices, MIDI, effects chain</p>
+        <div class="card-footer">
+          <span class="card-tags">2 osc · sub · noise · filter ADSR · amp ADSR · LFO · unison · drive · chorus · delay · reverb · vocoder</span>
+          <span class="card-action">launch &rarr;</span>
+        </div>
+      </a>
+
+      <a href="/breaks" class="card card--breaks">
+        <div class="card-top">
+          <h2 class="card-name">BREAKS</h2>
+          <span class="card-type">web app</span>
+        </div>
+        <p class="card-desc">drum machine — 16 pads, step sequencer, sample loading</p>
+        <div class="card-footer">
+          <span class="card-tags">16 pads · 16 steps · 8 patterns · note repeat · bit crush · drive · delay · reverb · tap tempo</span>
+          <span class="card-action">launch &rarr;</span>
+        </div>
+      </a>
+    </div>
+
     <!-- ── CTAs ── -->
     <div class="cta-row">
       <a href="/apps" class="cta-block cta-block--store">
@@ -631,7 +655,7 @@
     </div>
 
     <div class="footer">
-      <span>cbay.ing &middot; v2.0</span><br>
+      <span>cbay.ing &middot; v3.0</span><br>
       <span style="margin-top:8px;display:inline-block;">
         <a href="mailto:support@clasp.codes" style="color:#8888aa;text-decoration:none;font-size:9px;letter-spacing:2px;">support@clasp.codes</a>
         &nbsp;&middot;&nbsp;
