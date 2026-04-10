@@ -199,13 +199,69 @@
     }
     .share-toast.show { opacity: 1; }
 
-    @media (max-width: 380px) {
-      .topbar button { width: 34px; height: 34px; font-size: 12px; }
-      .keyboard { height: 90px; }
-      .tab-btn { font-size: 9px; letter-spacing: 1px; padding: 6px 2px; }
+    /* ── Mobile optimizations ── */
+    .panel-wrap { overscroll-behavior: contain; }
+
+    @media (max-width: 480px) {
+      .viz { height: 40px; }
+      .preset-bar { padding: 4px 8px; }
+      .preset-bar button { width: 28px; height: 28px; font-size: 14px; }
+      .preset-name { font-size: 11px; }
+      .tabs { padding: 4px 6px; gap: 2px; }
+      .tab-btn { padding: 6px 2px; font-size: 9px; letter-spacing: 1px; }
+      .ctrl-group { padding: 6px; margin-bottom: 6px; }
+      .ctrl-row { gap: 6px; margin-bottom: 3px; }
+      .ctrl-label { min-width: 36px; font-size: 10px; }
+      .ctrl-val { min-width: 28px; font-size: 10px; }
+      .keyboard { height: 100px; }
     }
 
-    @media (env(safe-area-inset-bottom)) {
+    @media (max-width: 380px) {
+      .topbar { height: 44px; }
+      .topbar button { width: 34px; height: 34px; font-size: 12px; }
+      .topbar .title { font-size: 11px; letter-spacing: 3px; }
+      .viz { height: 32px; }
+      .preset-bar { padding: 3px 6px; }
+      .preset-bar button { width: 26px; height: 26px; }
+      .tabs { padding: 3px 4px; }
+      .tab-btn { font-size: 8px; letter-spacing: 0.5px; padding: 5px 1px; }
+      .keyboard { height: 85px; }
+      .oct-btn { width: 26px; font-size: 14px; }
+      .panel { padding: 6px 6px 10px; }
+      .wave-btn { font-size: 9px; padding: 5px 1px; }
+      input[type="range"]::-webkit-slider-thumb { width: 24px; height: 24px; }
+      input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; }
+    }
+
+    @media (max-height: 600px) {
+      .viz { height: 28px; }
+      .preset-bar { padding: 2px 6px; }
+      .preset-bar button { width: 24px; height: 24px; font-size: 12px; }
+      .keyboard { height: 80px; }
+      .kb-wrap { padding: 2px; }
+      .tabs { padding: 3px 4px; }
+      .tab-btn { padding: 5px 2px; }
+    }
+
+    /* ── Landscape mode ── */
+    @media (orientation: landscape) and (max-height: 500px) {
+      .topbar { height: 38px; padding: 0 8px; }
+      .topbar button { width: 32px; height: 32px; }
+      .topbar .title { font-size: 10px; }
+      .viz { height: 0; overflow: hidden; border: none; }
+      .preset-bar { padding: 2px 6px; }
+      .preset-bar button { width: 22px; height: 22px; font-size: 12px; }
+      .preset-name { font-size: 10px; }
+      .tabs { padding: 2px 4px; }
+      .tab-btn { padding: 4px 2px; font-size: 9px; }
+      .keyboard { height: 70px; }
+      .kb-wrap { padding: 2px; }
+      .oct-btn { width: 24px; }
+      .ctrl-group { padding: 4px; margin-bottom: 4px; }
+      .ctrl-row { margin-bottom: 2px; }
+    }
+
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
       .kb-wrap { padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
     }
 
