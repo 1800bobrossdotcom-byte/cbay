@@ -7,11 +7,11 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#080810;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.06);
-  --text:#f0e8f4;--text-dim:rgba(255,255,255,0.4);--text-muted:rgba(255,255,255,0.2);
-  --accent:#FF0080;--accent-dim:rgba(255,0,128,0.10);--accent-border:rgba(255,0,128,0.30);
-  --accent-glow:rgba(255,0,128,0.06);--pad-bg:rgba(255,255,255,0.025);
-  --rec:#FF3333;--rec-dim:rgba(255,51,51,0.12);
+  --bg:#0e0e1a;--surface:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.12);
+  --text:#f0e8f4;--text-dim:rgba(255,255,255,0.6);--text-muted:rgba(255,255,255,0.4);
+  --accent:#FF0080;--accent-dim:rgba(255,0,128,0.18);--accent-border:rgba(255,0,128,0.40);
+  --accent-glow:rgba(255,0,128,0.15);--pad-bg:rgba(255,255,255,0.06);
+  --rec:#FF3333;--rec-dim:rgba(255,51,51,0.18);
 }
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
@@ -127,6 +127,29 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
 .m-cell.beat-col{border-left:2px solid rgba(255,255,255,0.15)}
 .m-cell:active{background:rgba(255,0,128,0.25)}
 
+/* ── LAYERS view ── */
+.layers-view{flex:1;overflow-y:auto;min-height:0;display:none;background:rgba(0,0,0,0.3);padding:6px;
+  -webkit-overflow-scrolling:touch}
+.layers-view.active{display:flex;flex-direction:column;gap:3px}
+.layer-strip{display:flex;align-items:center;gap:4px;padding:4px 6px;border:1px solid var(--border);
+  border-radius:6px;background:var(--surface);min-height:28px;flex-shrink:0;transition:all 0.15s}
+.layer-strip.muted{opacity:0.3}
+.layer-strip .l-num{font-size:8px;color:var(--text-muted);letter-spacing:1px;min-width:16px;flex-shrink:0}
+.layer-strip .l-bar{flex:1;height:14px;display:flex;gap:0;overflow:hidden;border-radius:3px;
+  background:rgba(0,0,0,0.3)}
+.layer-strip .l-cell{flex:1;height:100%;background:transparent}
+.layer-strip .l-cell.on{border-radius:1px}
+.layer-strip .l-mute{font-size:7px;letter-spacing:1px;color:var(--text-muted);padding:2px 6px;
+  border:1px solid var(--border);border-radius:4px;background:var(--surface);cursor:pointer;
+  flex-shrink:0;text-transform:uppercase}
+.layer-strip .l-mute:active{border-color:var(--accent)}
+.layer-empty{text-align:center;padding:20px;font-size:9px;letter-spacing:2px;color:var(--text-muted);
+  text-transform:uppercase}
+.transport .stutter-on{border-color:#00DDFF;color:#00DDFF;background:rgba(0,221,255,0.15);
+  animation:rec-pulse 0.4s ease infinite}
+.transport .live-on{border-color:#FF3333;color:#FF3333;background:rgba(255,51,51,0.18);
+  animation:rec-pulse 1s ease infinite}
+
 /* ── Pattern bar + transport ── */
 .pattern-bar{display:flex;align-items:center;justify-content:center;gap:2px;
   padding:3px 6px;background:rgba(0,0,0,0.3);border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
@@ -220,6 +243,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   <div class="mode-tabs">
     <button class="mtab on" id="playTab">&#9654; PLAY</button>
     <button class="mtab" id="gridTab">&#9638; GRID</button>
+    <button class="mtab" id="layersTab">&#9776; LYRS</button>
   </div>
   <!-- PLAY view: touch pads + step row -->
   <div class="play-view" id="playView">
@@ -230,6 +254,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   <div class="grid-view" id="gridView">
     <div class="matrix" id="matrix"></div>
   </div>
+  <!-- LAYERS view: looper layer stack -->
+  <div class="layers-view" id="layersView"></div>
   <div class="pattern-bar">
     <div class="seg" id="lenG"></div>
     <div class="seg"><div class="sep"></div></div>
@@ -241,12 +267,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
     <button id="playB">&#9654; play</button>
     <button id="recB">&#9679; rec</button>
     <button id="clrB">&#10005; clr</button>
+    <button id="sttB">&#8644; stt</button>
     <button id="soundB">&#9834; snd</button>
     <button id="wavB">&#11015; wav</button>
+    <button id="liveB">&#9679; live</button>
   </div>
   <div class="lib-ov" id="libOv">
     <div class="lib-modal">
-      <div class="lib-hdr"><span id="libTitle">SOUND LIBRARY</span><button id="libX">&#10005;</button></div>
+      <div class="lib-hdr"><span id="libTitle">SOUND LIBRARY</span><button id="libLoad" style="font-size:9px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);border-radius:6px;padding:4px 8px;cursor:pointer;letter-spacing:1px;font-family:inherit;width:auto;height:auto">&#128193; LOAD</button><button id="libX">&#10005;</button></div>
+      <input type="file" id="sampleInput" accept=".wav,.mp3,audio/*" style="display:none">
       <div class="lib-cats" id="libCats"></div>
       <div class="lib-list" id="libList"></div>
     </div>
@@ -278,6 +307,12 @@ var NUM=32,selPad=0,bpm=120,swing=0,stepLen=32,direction='fwd',
     playing=false,recording=false,curStep=0,audibleStep=0,pingFwd=true,
     schedTimer=null,nextTime=0,libCat=0,curBank=0,
     rootNote=0,scaleIdx=1,baseOctave=3,viewMode='play';
+var layers=[],curLayerNotes=null;
+var stutterActive=false,stutterRate=2,stutterTimer=null,lastPlayedPad=0;
+var liveRecording=false,liveRecorder=null,liveChunks=[],liveDest=null;
+var userSounds=[];
+var LAYER_COLORS=['#FF0080','#00DDFF','#39FF14','#FFD700','#FF6B35','#A855F7','#06B6D4','#F43F5E'];
+function layerColor(idx){return LAYER_COLORS[idx%LAYER_COLORS.length];}
 var pattern=[];
 for(var p=0;p<NUM;p++)pattern.push(new Uint8Array(32));
 var padNotes=new Array(NUM);
@@ -414,10 +449,12 @@ function noteOn(padIdx,pointerId){
   src.connect(g);g.connect(master);g.connect(reverbNode);
   src.start();
   activeVoices[pointerId]={src:src,gain:g,pad:padIdx};
+  lastPlayedPad=padIdx;
   // ── RECORD: write pad to current audible step ──
   if(recording&&playing){
     pattern[padIdx][audibleStep]=1;
     refreshCellAt(padIdx,audibleStep);
+    if(curLayerNotes)curLayerNotes.push({p:padIdx,s:audibleStep});
   }
 }
 function noteOff(pointerId){
@@ -484,11 +521,41 @@ function startSeq(){
   nextTime=ctx.currentTime+0.05;schedTimer=setInterval(scheduler,25);renderTransport();
 }
 function stopSeq(){
-  playing=false;recording=false;
+  playing=false;
+  if(recording&&curLayerNotes&&curLayerNotes.length>0){
+    layers.push({notes:curLayerNotes.slice(),muted:false,color:layerColor(layers.length)});
+    if(viewMode==='layers')renderLayers();
+  }
+  recording=false;curLayerNotes=null;
   if(schedTimer){clearInterval(schedTimer);schedTimer=null;}
   curStep=0;audibleStep=0;highlightStep(-1);
   if(viewMode==='grid')highlightMatrixCol(-1);
   renderTransport();
+}
+
+/* ═══ STUTTER ═══ */
+function startStutter(){
+  if(!globalSoundBuffer)return;
+  stutterActive=true;
+  var ms=60000/bpm/Math.pow(2,stutterRate+1);
+  if(stutterTimer)clearInterval(stutterTimer);
+  stutterTimer=setInterval(function(){
+    triggerNote(lastPlayedPad);
+    if(padEls[lastPlayedPad]){setGlow(padEls[lastPlayedPad],0.9);
+      setTimeout(function(){if(padEls[lastPlayedPad])clearGlow(padEls[lastPlayedPad]);},ms*0.6);}
+  },ms);
+  renderTransport();
+}
+function stopStutter(){
+  stutterActive=false;
+  if(stutterTimer){clearInterval(stutterTimer);stutterTimer=null;}
+  renderTransport();
+}
+function cycleStutterRate(){
+  stutterRate=(stutterRate+1)%3;
+  var labels=['1/8','1/16','1/32'];
+  showToast('stutter '+labels[stutterRate]);
+  if(stutterActive){stopStutter();startStutter();}
 }
 
 /* ═══ WAV EXPORT ═══ */
@@ -566,6 +633,62 @@ function encodeWAV(buf){
   return ab;
 }
 
+/* ═══ SAMPLE IMPORT ═══ */
+function handleSampleLoad(file){
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    ctx.decodeAudioData(reader.result,function(buffer){
+      var name=file.name.replace(/\.[^.]+$/,'').substring(0,12).toUpperCase();
+      var key='USER:'+name;
+      var snd={name:name,buffer:buffer,key:key,dur:buffer.duration};
+      userSounds.push(snd);
+      libBuffers[key]=buffer;
+      var userCat=null;
+      for(var c=0;c<LIB.length;c++){if(LIB[c].cat==='USER'){userCat=LIB[c];break;}}
+      if(!userCat){userCat={cat:'USER',sounds:[]};LIB.push(userCat);}
+      userCat.sounds.push(snd);
+      setGlobalSound(key,name,buffer);
+      libCat=LIB.length-1;
+      if(libOvEl.classList.contains('open')){renderLibCats();renderLibList();}
+      libTitleEl.textContent='SOUND: '+name;
+      renderPads();
+      showToast(name+' loaded');
+    },function(){showToast('decode error');});
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* ═══ LIVE RECORDING ═══ */
+function startLiveRec(){
+  if(liveRecording)return;
+  if(!liveDest){
+    liveDest=ctx.createMediaStreamDestination();
+    limiter.connect(liveDest);
+  }
+  liveChunks=[];
+  try{liveRecorder=new MediaRecorder(liveDest.stream,{mimeType:'audio/webm;codecs=opus'});}
+  catch(e){try{liveRecorder=new MediaRecorder(liveDest.stream);}catch(e2){showToast('no recorder');return;}}
+  liveRecorder.ondataavailable=function(e){if(e.data.size>0)liveChunks.push(e.data);};
+  liveRecorder.onstop=function(){
+    var blob=new Blob(liveChunks,{type:liveRecorder.mimeType||'audio/webm'});
+    var ext=blob.type.indexOf('webm')>=0?'webm':'ogg';
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='synth-live.'+ext;a.click();URL.revokeObjectURL(a.href);
+    showToast('live exported');
+  };
+  liveRecorder.start(100);
+  liveRecording=true;
+  renderTransport();
+  showToast('live rec on');
+}
+function stopLiveRec(){
+  if(!liveRecording||!liveRecorder)return;
+  liveRecorder.stop();
+  liveRecording=false;
+  renderTransport();
+}
+
 /* ═══ PATTERN BANKS ═══ */
 var BKEY='synth_bank_';
 function saveBank(slot){
@@ -626,7 +749,10 @@ var pGridEl=document.getElementById('pGrid'),stepWEl=document.getElementById('st
     toastEl=document.getElementById('toast'),shareBtnEl=document.getElementById('shareBtn'),
     playViewEl=document.getElementById('playView'),gridViewEl=document.getElementById('gridView'),
     matrixEl=document.getElementById('matrix'),
-    playTabEl=document.getElementById('playTab'),gridTabEl=document.getElementById('gridTab');
+    playTabEl=document.getElementById('playTab'),gridTabEl=document.getElementById('gridTab'),
+    layersTabEl=document.getElementById('layersTab'),layersViewEl=document.getElementById('layersView'),
+    sttBEl=document.getElementById('sttB'),liveBEl=document.getElementById('liveB'),
+    libLoadEl=document.getElementById('libLoad'),sampleInputEl=document.getElementById('sampleInput');
 var cutREl=document.getElementById('cutR'),cutVEl=document.getElementById('cutV'),
     resREl=document.getElementById('resR'),resVEl=document.getElementById('resV'),
     atkREl=document.getElementById('atkR'),atkVEl=document.getElementById('atkV'),
@@ -783,6 +909,60 @@ function refreshCellAt(pad,step){
   }
 }
 
+/* ── LAYERS rendering ── */
+function renderLayers(){
+  layersViewEl.innerHTML='';
+  if(layers.length===0){
+    layersViewEl.innerHTML='<div class="layer-empty">no layers yet \u2014 arm REC and play</div>';
+    return;
+  }
+  for(var i=layers.length-1;i>=0;i--){
+    var layer=layers[i];
+    var strip=document.createElement('div');
+    strip.className='layer-strip'+(layer.muted?' muted':'');
+    var num=document.createElement('span');
+    num.className='l-num';num.textContent='L'+(i+1);
+    strip.appendChild(num);
+    var bar=document.createElement('div');bar.className='l-bar';
+    var stepMap=new Uint8Array(stepLen);
+    for(var n=0;n<layer.notes.length;n++)stepMap[layer.notes[n].s]=1;
+    for(var s=0;s<stepLen;s++){
+      var cell=document.createElement('div');cell.className='l-cell'+(stepMap[s]?' on':'');
+      if(stepMap[s])cell.style.background=layer.color;
+      bar.appendChild(cell);
+    }
+    strip.appendChild(bar);
+    var mute=document.createElement('button');mute.className='l-mute';
+    mute.textContent=layer.muted?'ON':'MUTE';
+    (function(idx){mute.addEventListener('pointerdown',function(e){
+      e.preventDefault();e.stopPropagation();toggleLayerMute(idx);
+    });})(i);
+    strip.appendChild(mute);
+    layersViewEl.appendChild(strip);
+  }
+}
+function toggleLayerMute(idx){
+  var layer=layers[idx];layer.muted=!layer.muted;
+  for(var n=0;n<layer.notes.length;n++){
+    var note=layer.notes[n];
+    if(layer.muted){
+      var hasOther=false;
+      for(var li=0;li<layers.length;li++){
+        if(li===idx||layers[li].muted)continue;
+        for(var ni=0;ni<layers[li].notes.length;ni++){
+          if(layers[li].notes[ni].p===note.p&&layers[li].notes[ni].s===note.s){hasOther=true;break;}}
+        if(hasOther)break;
+      }
+      if(!hasOther)pattern[note.p][note.s]=0;
+    } else {
+      pattern[note.p][note.s]=1;
+    }
+    refreshCellAt(note.p,note.s);
+  }
+  renderLayers();
+  if(viewMode!=='layers'){renderSteps();renderMatrix();}
+}
+
 function renderLenBtns(){
   lenGEl.innerHTML='';
   [8,16,32].forEach(function(n){
@@ -837,15 +1017,19 @@ function renderTransport(){
   playBEl.textContent=playing?'\u25A0 stop':'\u25B6 play';
   playBEl.classList.toggle('playing',playing);
   recBEl.classList.toggle('rec-armed',recording);
+  sttBEl.classList.toggle('stutter-on',stutterActive);
+  liveBEl.classList.toggle('live-on',liveRecording);
 }
 function renderModeTabs(){
   playTabEl.classList.toggle('on',viewMode==='play');
   gridTabEl.classList.toggle('on',viewMode==='grid');
+  layersTabEl.classList.toggle('on',viewMode==='layers');
   playViewEl.classList.toggle('hidden',viewMode!=='play');
   gridViewEl.classList.toggle('active',viewMode==='grid');
+  layersViewEl.classList.toggle('active',viewMode==='layers');
 }
 function renderAll(){
-  renderPads();renderSteps();renderMatrix();
+  renderPads();renderSteps();renderMatrix();renderLayers();
   renderLenBtns();renderDirBtns();renderBankBtns();
   renderScaleUI();renderEngine();renderTransport();renderModeTabs();
 }
@@ -917,13 +1101,20 @@ gridTabEl.addEventListener('pointerdown',function(e){
     if(rows[rowIdx])gridViewEl.scrollTop=Math.max(0,rows[rowIdx].offsetTop-gridViewEl.clientHeight/2+14);
   },50);
 });
+layersTabEl.addEventListener('pointerdown',function(e){e.preventDefault();viewMode='layers';renderModeTabs();renderLayers();});
 
 // Transport
 playBEl.addEventListener('pointerdown',function(e){e.preventDefault();if(playing)stopSeq();else startSeq();});
 recBEl.addEventListener('pointerdown',function(e){
   e.preventDefault();
-  if(!playing){recording=true;startSeq();showToast('rec armed');}
-  else{recording=!recording;showToast(recording?'rec armed':'rec off');}
+  if(!playing){recording=true;curLayerNotes=[];startSeq();showToast('rec armed');}
+  else if(recording){
+    if(curLayerNotes&&curLayerNotes.length>0){
+      layers.push({notes:curLayerNotes.slice(),muted:false,color:layerColor(layers.length)});
+      if(viewMode==='layers')renderLayers();
+    }
+    curLayerNotes=null;recording=false;showToast('layer saved');
+  } else {recording=true;curLayerNotes=[];showToast('rec armed');}
   renderTransport();
 });
 clrBEl.addEventListener('pointerdown',function(e){
@@ -934,6 +1125,20 @@ clrBEl.addEventListener('pointerdown',function(e){
 });
 soundBEl.addEventListener('pointerdown',function(e){e.preventDefault();openLib();});
 wavBEl.addEventListener('pointerdown',function(e){e.preventDefault();exportWAV();});
+var sttLastTap=0;
+sttBEl.addEventListener('pointerdown',function(e){
+  e.preventDefault();if(ctx.state==='suspended')ctx.resume();
+  var now=Date.now();
+  if(now-sttLastTap<400){cycleStutterRate();sttLastTap=0;return;}
+  sttLastTap=now;
+  if(stutterActive)stopStutter();else startStutter();
+});
+liveBEl.addEventListener('pointerdown',function(e){e.preventDefault();
+  if(ctx.state==='suspended')ctx.resume();
+  if(liveRecording)stopLiveRec();else startLiveRec();
+});
+libLoadEl.addEventListener('pointerdown',function(e){e.preventDefault();sampleInputEl.click();});
+sampleInputEl.addEventListener('change',function(){if(sampleInputEl.files.length)handleSampleLoad(sampleInputEl.files[0]);sampleInputEl.value='';});
 libXEl.addEventListener('pointerdown',function(e){e.preventDefault();closeLib();});
 libOvEl.addEventListener('pointerdown',function(e){if(e.target===libOvEl)closeLib();});
 shareBtnEl.addEventListener('pointerdown',function(e){
