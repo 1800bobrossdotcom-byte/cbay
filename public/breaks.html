@@ -7,10 +7,10 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0a100c;--surface:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.12);
-  --text:#e8f0e8;--text-dim:rgba(255,255,255,0.6);--text-muted:rgba(255,255,255,0.4);
-  --accent:#39FF14;--accent-dim:rgba(57,255,20,0.18);--accent-border:rgba(57,255,20,0.40);
-  --accent-glow:rgba(57,255,20,0.15);--pad-bg:rgba(255,255,255,0.06);
+  --bg:#141e16;--surface:rgba(255,255,255,0.10);--border:rgba(255,255,255,0.18);
+  --text:#e8f0e8;--text-dim:rgba(255,255,255,0.78);--text-muted:rgba(255,255,255,0.52);
+  --accent:#39FF14;--accent-dim:rgba(57,255,20,0.22);--accent-border:rgba(57,255,20,0.48);
+  --accent-glow:rgba(57,255,20,0.22);--pad-bg:rgba(255,255,255,0.09);
 }
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
@@ -56,13 +56,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
 .engine-bar::-webkit-scrollbar{display:none}
 .knob{display:flex;flex-direction:column;align-items:center;gap:0;min-width:44px;
   padding:2px 3px;flex:1;flex-shrink:0}
-.knob .lbl{font-size:7px;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;line-height:1}
-.knob input[type=range]{width:100%;min-width:32px;height:3px;-webkit-appearance:none;appearance:none;
-  background:var(--border);border-radius:2px;outline:none;margin:3px 0 1px}
-.knob input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;
-  border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-.knob .val{font-size:7px;color:var(--accent);font-variant-numeric:tabular-nums;
-  letter-spacing:0.5px;line-height:1;opacity:0.7}
+.knob .lbl{font-size:8px;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;line-height:1;font-weight:600}
+.knob input[type=range]{width:100%;min-width:32px;height:5px;-webkit-appearance:none;appearance:none;
+  background:var(--border);border-radius:3px;outline:none;margin:3px 0 2px}
+.knob input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--accent);border:2px solid rgba(255,255,255,0.2);cursor:pointer;
+  box-shadow:0 0 6px var(--accent-glow)}
+.knob .val{font-size:8px;color:var(--accent);font-variant-numeric:tabular-nums;
+  letter-spacing:0.5px;line-height:1;opacity:0.85}
 
 .pad-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:6px;
   min-height:0;align-content:center;max-width:480px;margin:0 auto;width:100%}
