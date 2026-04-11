@@ -103,22 +103,29 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
 .step.multi::after{opacity:1;box-shadow:0 0 4px var(--accent)}
 
 /* ── GRID view (master loop matrix) ── */
-.grid-view{flex:1;overflow:auto;min-height:0;-webkit-overflow-scrolling:touch;display:none}
-.grid-view.active{display:block}
-.matrix{display:flex;flex-direction:column}
-.m-row{display:flex;height:22px;flex-shrink:0}
-.m-row.sel-row .m-label{color:var(--accent)}
-.m-label{width:34px;flex-shrink:0;position:sticky;left:0;z-index:2;background:var(--bg);
-  display:flex;align-items:center;justify-content:flex-end;padding-right:3px;
-  font-size:7px;color:var(--text-muted);letter-spacing:0.5px;border-right:1px solid var(--border);
+.grid-view{flex:1;overflow:auto;min-height:0;-webkit-overflow-scrolling:touch;display:none;
+  background:rgba(0,0,0,0.3)}
+.grid-view.active{display:flex;flex-direction:column}
+.matrix{display:flex;flex-direction:column;padding:2px 0}
+.m-row{display:flex;height:28px;flex-shrink:0}
+.m-row:nth-child(even){background:rgba(255,255,255,0.015)}
+.m-row.sel-row{background:rgba(255,0,128,0.06)}
+.m-row.sel-row .m-label{color:var(--accent);font-weight:700}
+.m-label{width:42px;flex-shrink:0;position:sticky;left:0;z-index:2;background:var(--bg);
+  display:flex;align-items:center;justify-content:flex-end;padding-right:4px;
+  font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:0.5px;border-right:1px solid rgba(255,255,255,0.12);
   cursor:pointer}
 .m-label:active{color:var(--accent)}
-.m-cell{width:22px;height:22px;flex-shrink:0;border:1px solid rgba(255,255,255,0.03);
-  background:var(--surface);cursor:pointer;box-sizing:border-box}
-.m-cell.on{background:var(--accent-dim);border-color:rgba(255,0,128,0.15)}
-.m-cell.cur-col{box-shadow:inset 0 0 0 1px var(--accent)}
-.m-cell.beat-col{border-left:1px solid rgba(255,255,255,0.06)}
-.m-cell:active{background:var(--accent-dim)}
+.m-cell{width:28px;height:28px;flex-shrink:0;border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.04);cursor:pointer;box-sizing:border-box;
+  touch-action:none;transition:background 0.06s}
+.m-cell:hover{background:rgba(255,255,255,0.08)}
+.m-cell.on{background:rgba(255,0,128,0.35);border-color:rgba(255,0,128,0.5);
+  box-shadow:inset 0 0 6px rgba(255,0,128,0.3)}
+.m-cell.cur-col{box-shadow:inset 0 0 0 2px var(--accent);background:rgba(255,0,128,0.08)}
+.m-cell.on.cur-col{box-shadow:inset 0 0 0 2px #fff;background:rgba(255,0,128,0.5)}
+.m-cell.beat-col{border-left:2px solid rgba(255,255,255,0.15)}
+.m-cell:active{background:rgba(255,0,128,0.25)}
 
 /* ── Pattern bar + transport ── */
 .pattern-bar{display:flex;align-items:center;justify-content:center;gap:2px;
@@ -174,7 +181,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
 
 @media(max-width:380px){.pad .nm{font-size:8px}.pad-grid{grid-template-columns:repeat(4,1fr)}
   .transport button{font-size:8px;padding:8px 1px}.step{width:14px;height:18px}.knob{min-width:34px}
-  .m-cell{width:18px;height:18px}.m-row{height:18px}.m-label{width:28px;font-size:6px}}
+  .m-cell{width:24px;height:24px}.m-row{height:24px}.m-label{width:36px;font-size:7px}}
 @media(min-width:600px){.pad-grid{max-width:520px}}
 @media(min-height:750px){.pad-grid{gap:5px;padding:6px}}
 </style>
@@ -725,10 +732,12 @@ function renderMatrix(){
       cell.className='m-cell'+(pattern[p][s]?' on':'')+(s%4===0?' beat-col':'');
       (function(pi,si,el){
         el.addEventListener('pointerdown',function(e){
-          e.preventDefault();
+          e.preventDefault();e.stopPropagation();
           pattern[pi][si]=pattern[pi][si]?0:1;
           el.classList.toggle('on',!!pattern[pi][si]);
-          if(viewMode==='play'&&pi===selPad)renderSteps();
+          if(pi===selPad)renderSteps();
+          // audible feedback on tap
+          if(pattern[pi][si]&&ctx.state!=='suspended')triggerNote(pi);
         });
       })(p,s,cell);
       row.appendChild(cell);
@@ -898,8 +907,16 @@ vrbREl.addEventListener('input',function(){engVrb=+vrbREl.value;applyEngine();vr
 dlyREl.addEventListener('input',function(){engDly=+dlyREl.value;applyEngine();dlyVEl.textContent=engDly;});
 
 // Mode tabs
-playTabEl.addEventListener('pointerdown',function(e){e.preventDefault();viewMode='play';renderModeTabs();});
-gridTabEl.addEventListener('pointerdown',function(e){e.preventDefault();viewMode='grid';renderModeTabs();renderMatrix();});
+playTabEl.addEventListener('pointerdown',function(e){e.preventDefault();viewMode='play';renderModeTabs();renderSteps();});
+gridTabEl.addEventListener('pointerdown',function(e){
+  e.preventDefault();viewMode='grid';renderModeTabs();renderMatrix();
+  // scroll to selected row
+  setTimeout(function(){
+    var rowIdx=NUM-1-selPad;
+    var rows=matrixEl.querySelectorAll('.m-row');
+    if(rows[rowIdx])gridViewEl.scrollTop=Math.max(0,rows[rowIdx].offsetTop-gridViewEl.clientHeight/2+14);
+  },50);
+});
 
 // Transport
 playBEl.addEventListener('pointerdown',function(e){e.preventDefault();if(playing)stopSeq();else startSeq();});
